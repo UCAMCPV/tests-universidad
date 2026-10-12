@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ABD Tema 3 · Arquitectura de un SGBD</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ABD · Tema 3 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Bases de Datos · Tema 3</span>
+  <h1>Resumen: Arquitectura de un SGBD</h1>
+  <p class="lead">La física del motor: jerarquía de almacenamiento, páginas y registros, cálculo de capacidad, rutas de acceso, selectividad, taxonomía de índices y sargabilidad. Cubre los apartados 3.0, 3.1 y 3.2.</p>
+  <div class="actions-row"><a class="btn primary" href="abd-tema-3.html">Hacer el test (115 preguntas)</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">3.0 Introducción</a>
+  <a href="#sec1">3.1 Páginas y estructuras</a>
+  <a href="#sec2">3.1 Registros y capacidad</a>
+  <a href="#sec3">3.2 Rutas de acceso</a>
+  <a href="#sec4">3.2 Selectividad e índices</a>
+  <a href="#sec5">3.2 Sargabilidad y costes</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">Sección 3.0 - Introducción</h2>
+
+  <div class="bloque">
+    <h4>La tensión física que explica toda la arquitectura</h4>
+    <ul>
+      <li>La <b>memoria</b> es rápida, pero <b>volátil</b> (se pierde con un corte de energía) y <b>escasa</b>.</li>
+      <li>El <b>almacenamiento persistente</b> es duradero y abundante, pero <b>órdenes de magnitud más lento</b>, sobre todo en accesos aleatorios.</li>
+    </ul>
+    <div class="key">El motor debe trabajar <b>a velocidad de memoria</b> y, a la vez, garantizar la <b>durabilidad en disco</b>. Cada apartado del tema resuelve una parte de ese dilema.</div>
+    <p>La unidad es <b>agnóstica respecto al fabricante</b>: páginas, índices en árbol, buffer pool, WAL, checkpoints y recuperación existen en todos los motores relacionales modernos (y en muchos no relacionales). Cambian los nombres; la física es la misma. No tiene laboratorio: construye el mapa mental que la Unidad 4 pondrá a prueba sobre Oracle.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>Los cuatro apartados</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Apartado</th><th>Pregunta que responde</th></tr>
+      <tr><td><b>3.1 Almacenamiento y acceso</b></td><td>Cómo se organizan los bytes en disco para minimizar los viajes y que cada viaje traiga el máximo de información útil.</td></tr>
+      <tr><td><b>3.2 Técnicas de acceso</b></td><td>Cómo buscar: qué camino seguir para llegar a los datos con las mínimas operaciones de I/O.</td></tr>
+      <tr><td><b>3.3 Estructuras de indexación</b></td><td>Cómo están construidas físicamente las estructuras auxiliares (B+, hash, bitmap, LSM) y cómo se comportan bajo carga.</td></tr>
+      <tr><td><b>3.4 Persistencia, memoria, archivos y recuperación</b></td><td>Cómo el motor trabaja en memoria sin perder nada si todo se apaga de golpe.</td></tr>
+    </table></div>
+    <div class="warn">Los apuntes disponibles solo desarrollan <b>3.0, 3.1 y 3.2</b>. Los apartados 3.3 y 3.4 aparecen únicamente como portada, así que este resumen y el test no los cubren.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">Sección 3.1 - Almacenamiento: jerarquía, páginas y estructuras</h2>
+
+  <div class="bloque">
+    <h4>3.1.1 Jerarquía de almacenamiento: tres leyes</h4>
+    <p>Cada nivel (caché de CPU, RAM, SSD, HDD, red/objetos) ofrece un compromiso distinto entre <b>velocidad, capacidad, coste y volatilidad</b>. Las cifras son órdenes de magnitud: lo que importa es la distancia entre niveles.</p>
+    <ol>
+      <li><b>La unidad de coste es la operación de I/O, no la fila.</b> El motor intenta minimizar el número de páginas que trae del almacenamiento persistente.</li>
+      <li><b>Leer seguido (secuencial) es mejor que leer a saltos (aleatorio).</b> En HDD la diferencia es de <b>uno a dos órdenes de magnitud</b> (el cabezal tarda milisegundos en desplazarse). En SSD la brecha es menor, pero sigue existiendo.</li>
+      <li><b>Lo rápido es volátil y lo duradero es lento.</b> Resolver esa contradicción es el objeto del apartado 3.4.</li>
+    </ol>
+  </div>
+
+  <div class="bloque">
+    <h4>Tres métricas de I/O</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Métrica</th><th>Qué mide</th><th>Dónde domina</th></tr>
+      <tr><td><b>Latencia</b></td><td>Cuánto tarda una operación individual (µs o ms). "1 mensajero".</td><td>Transacciones individuales con respuesta inmediata.</td></tr>
+      <tr><td><b>IOPS</b></td><td>Cuántas operaciones por segundo soporta el dispositivo. "n mensajeros independientes".</td><td>Miles de usuarios con consultas pequeñas y aleatorias.</td></tr>
+      <tr><td><b>Throughput</b></td><td>Volumen de datos transferidos por segundo (MB/s o GB/s).</td><td>Analítica, informes masivos y copias de seguridad.</td></tr>
+    </table></div>
+    <div class="key"><b>OLTP</b> prioriza <b>baja latencia y altos IOPS</b>. <b>OLAP</b> prioriza <b>throughput masivo</b>, asumiendo latencias algo peores.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>3.1.2 Páginas, bloques y registros</h4>
+    <p>El motor no gestiona el almacenamiento fila a fila: lo organiza en <b>páginas (bloques)</b> de <b>tamaño fijo</b>, que son a la vez la <b>unidad mínima de lectura/escritura en disco</b> y la <b>unidad mínima de caché en memoria</b>.</p>
+    <p>"Bloque" es ambiguo; hay tres niveles:</p>
+    <ul>
+      <li><b>Sector o bloque del dispositivo</b>: unidad física del disco (512 B o 4 KB).</li>
+      <li><b>Bloque del sistema de archivos / página del SO</b>: habitualmente 4 KB.</li>
+      <li><b>Página o bloque de la base de datos</b>: entre 4 y 32 KB; lo más frecuente, <b>8 KB y 16 KB</b>.</li>
+    </ul>
+    <div class="warn">La página del motor debe ser <b>múltiplo exacto</b> del bloque del sistema de archivos y estar <b>alineada</b> con él. Si no, una lectura lógica puede provocar <b>dos lecturas físicas</b> y una escritura interrumpida puede dejar la página "rota" a medias.</div>
+    <p>Jerarquía: tabla → conjunto de páginas → registros (filas o tuplas). Leer una fila de 100 bytes obliga a traer la <b>página completa de 8 KB</b>. Por eso la <b>localidad</b> (que las filas que se consultan juntas vivan en las mismas páginas) es una de las palancas de rendimiento más potentes.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Página más grande</th><th>Página más pequeña</th></tr>
+      <tr><td>Mejor para recorridos secuenciales y cargas analíticas.</td><td>Mejor para accesos puntuales a filas aisladas.</td></tr>
+      <tr><td>Índices más "anchos" y menos profundos.</td><td>Menos datos inútiles traídos por cada lectura.</td></tr>
+      <tr><td>Más filas por página: más contención concurrente.</td><td>Menos contención por página.</td></tr>
+      <tr><td>Más memoria desperdiciada si solo se usa una fila.</td><td>Más páginas que gestionar y más cabeceras.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>3.1.3 De la tabla al archivo: la escalera de mapeo</h4>
+    <p><b>Independencia física de datos</b>: las aplicaciones no dependen de la estructura física; se pueden mover, reorganizar o comprimir los datos sin reescribir una consulta. El administrador sí debe conocer ambas.</p>
+    <ol>
+      <li><b>Objeto lógico</b>: una tabla, un índice o una partición.</li>
+      <li><b>Contenedor lógico de almacenamiento</b>: agrupación con nombre que decide en qué archivos viven los objetos (<b>tablespace</b>, filegroup o directorio de datos).</li>
+      <li><b>Segmento</b>: todo el espacio físico de <b>un único objeto</b>. Una tabla con dos índices = tres segmentos.</li>
+      <li><b>Extensión (extent)</b>: bloque grande de <b>páginas contiguas</b> que se asigna de una vez cuando el segmento crece. Reduce el coste de gestión y favorece la lectura secuencial.</li>
+      <li><b>Página</b>: unidad mínima de I/O.</li>
+      <li><b>Archivo del sistema operativo</b> (o volumen gestionado por el motor): soporte físico final.</li>
+    </ol>
+    <ul>
+      <li>10 tablas y 5 índices = <b>15 segmentos</b>.</li>
+      <li>Un contenedor es dueño de N archivos; un segmento se divide en N extensiones que "flotan" por cualquiera de los archivos del contenedor.</li>
+      <li>Un segmento puede acabar repartido en varios archivos, pero porque <b>el contenedor lógico</b> lo distribuye así, no porque el segmento los controle.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>Tres consecuencias prácticas</h4>
+    <ul>
+      <li><b>Una tabla no equivale a un archivo</b>: la relación no es 1 a 1. Por eso <b>DELETE no reduce el tamaño del archivo</b>: el motor marca las páginas como libres para reutilizarlas.</li>
+      <li><b>High-water mark (marca de nivel máximo)</b>: el motor recuerda el máximo histórico del segmento. Si la tabla tuvo 10 millones de filas y quedan 100, un escaneo completo sigue leyendo el espacio de los 10 millones. Solución: <b>forzar una reorganización</b>.</li>
+      <li><b>Gestión del espacio libre</b>: estructuras como <b>mapas de bits</b> indican qué páginas tienen hueco suficiente sin revisarlas una a una.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>3.1.4 Página ranurada (slotted page)</h4>
+    <p>Resuelve dos problemas a la vez: las filas tienen <b>longitud variable</b> (y se borran o crecen), y los índices necesitan una <b>dirección estable</b> para apuntar a cada fila. Cuatro zonas con crecimiento invertido:</p>
+    <ol>
+      <li><b>Cabecera de página</b>: identificador y tipo de página, número de ranuras, punteros al inicio y fin del espacio libre, <b>checksum</b> (detecta corrupción) y <b>LSN</b> de la última modificación (vital para la recuperación).</li>
+      <li><b>Directorio de ranuras (slot array)</b>: cada ranura guarda el <b>desplazamiento (offset) y la longitud</b> de la fila. Empieza tras la cabecera y <b>crece hacia el centro</b>.</li>
+      <li><b>Área de datos</b>: las filas se escriben <b>desde el final</b> de la página hacia el centro.</li>
+      <li><b>Espacio libre</b>: queda <b>en el medio</b> y se consume desde ambos extremos.</li>
+    </ol>
+    <div class="key">La clave es la <b>indirección</b>. Cada fila se identifica por su <b>RID = (archivo, página, ranura)</b>. Los índices guardan el RID, no el desplazamiento en bytes: si la fila se reubica dentro de la página o esta se compacta, <b>solo cambia la entrada del directorio</b> y ningún índice se entera.</div>
+    <p>Al borrar una fila, su ranura se marca como libre y el espacio se recupera al compactar: el espacio libre no siempre es contiguo.</p>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">Sección 3.1 - Registros, capacidad y coste de I/O</h2>
+
+  <div class="bloque">
+    <h4>3.1.5 Anatomía de un registro (fila)</h4>
+    <p>El motor <b>serializa</b> la fila. Los <b>nombres de columnas y la estructura no se guardan en la fila</b>: están en el <b>diccionario de datos</b>, lo que permite calcular saltos exactos sin leer byte a byte.</p>
+    <ul>
+      <li><b>Cabecera de fila</b>: longitud, indicadores de estado (borrado, bloqueos) en máscaras de bits, y el <b>mapa de nulos</b>: un bit por columna; si vale 1, el campo es NULL y <b>no ocupa nada</b> en la zona de datos. En motores MVCC, además, metadatos transaccionales ocultos (id de la última transacción y puntero a la versión anterior).</li>
+      <li><b>Datos de longitud fija primero</b>: su desplazamiento se calcula sin leer los campos anteriores.</li>
+      <li><b>Datos de longitud variable</b> después.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Tipo</th><th>Codificación</th></tr>
+      <tr><td><b>Enteros</b></td><td>Binario. <b>Big-endian</b> (mainframes, SPARC, POWER) o <b>little-endian</b> (x86, mayoría de ARM). Crítico al copiar archivos físicos entre plataformas.</td></tr>
+      <tr><td><b>FLOAT / REAL / DOUBLE</b></td><td>IEEE 754 (signo, exponente, mantisa). Rápidos pero <b>inexactos</b> (0,1 + 0,2 ≠ 0,3).</td></tr>
+      <tr><td><b>NUMERIC / DECIMAL</b></td><td>Dígitos en base 10, 100 o 10.000. Más lentos, pero <b>los únicos aceptables para dinero</b>.</td></tr>
+      <tr><td><b>Fechas</b></td><td>Enteros relativos a una "época" (p. ej. ms desde 1970) o campos empaquetados.</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Alineación y relleno (padding)</b>: se alinean columnas a múltiplos de 4 u 8 bytes. <b>Ordenar las columnas de mayor a menor tamaño</b> reduce el relleno.</li>
+      <li><b>Cadenas</b>: no terminan en carácter nulo (como en C). Dos técnicas: <b>prefijo de longitud</b> (1-2 bytes; llegar a la columna k exige k-1 saltos) o <b>array de desplazamientos</b> (acceso a cualquier columna en <b>tiempo constante</b>).</li>
+      <li><b>Objetos grandes (BLOB/Text)</b>: se guardan <b>fuera de la fila</b> en segmentos propios; en la fila solo queda un <b>localizador</b>.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>3.1.6 Filas o columnas</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Criterio</th><th>Orientado a filas (row store, NSM)</th><th>Orientado a columnas (column store, DSM)</th></tr>
+      <tr><td>Carga ideal</td><td><b>OLTP</b>: leer o modificar pocas filas completas</td><td><b>OLAP</b>: agregar pocas columnas sobre millones de filas</td></tr>
+      <tr><td>Insertar/modificar una fila</td><td>Barato: una página</td><td>Caro: una página por columna</td></tr>
+      <tr><td>Leer 3 columnas de 100</td><td>Lee las 100</td><td>Lee solo las 3</td></tr>
+      <tr><td>Compresión</td><td>Moderada</td><td>Muy alta</td></tr>
+      <tr><td>Ejecución</td><td>Fila a fila</td><td>Vectorizada (SIMD)</td></tr>
+    </table></div>
+    <p>Muchos motores son <b>híbridos</b>, o usan formatos intermedios como <b>PAX</b> (agrupa por columnas dentro de cada página).</p>
+  </div>
+
+  <div class="bloque">
+    <h4>3.1.7 Factor de bloqueo y cálculo de capacidad</h4>
+    <pre>bfr = ⌊ (B − H) / R ⌋     filas enteras por página (suelo: no cabe media fila)
+b   = ⌈ r / bfr ⌉         páginas de la tabla (techo: si sobra una fila, página nueva)
+
+B = tamaño de página   H = cabecera de página   R = tamaño medio de fila   r = nº de filas</pre>
+    <p><b>Ejemplo:</b> r = 1.000.000, R = 200 B, B = 8.192 B, H = 96 B.</p>
+    <ul>
+      <li>Espacio útil: 8.192 − 96 = 8.096 B → 8.096 / 200 = 40,48 → <b>bfr = 40</b>.</li>
+      <li>Páginas: 1.000.000 / 40 = <b>25.000 páginas</b> ≈ <b>200 MB</b>.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Leer las 25.000 páginas</th><th>SSD NVMe</th><th>HDD</th></tr>
+      <tr><td><b>Secuencial</b></td><td>0,2 s (a 1 GB/s)</td><td>1,3 s (a 150 MB/s)</td></tr>
+      <tr><td><b>Aleatorio</b> (tiempo = páginas × latencia)</td><td>2,5 s (100 µs por lectura)</td><td>250 s (10 ms por lectura)</td></tr>
+    </table></div>
+    <div class="key"><b>Reserva de espacio</b>: en producción nunca se llena una página al 100 %. Se deja un <b>10 % libre</b> para futuras actualizaciones (<b>PCTFREE</b> en Oracle). Con esa reserva caben <b>36 filas</b> por página y la tabla necesita <b>27.778 páginas</b>: más disco, mejor rendimiento a largo plazo.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>3.1.8 Los asesinos silenciosos del I/O</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th></th><th>Encadenamiento (row chaining)</th><th>Migración (row migration)</th></tr>
+      <tr><td><b>Causa</b></td><td>La fila es <b>más grande que la página entera</b>. Organización extendida (spanned): la fila se trocea en varias páginas enlazadas.</td><td>Un <b>UPDATE</b> hace crecer la fila y ya no cabe en su página ("insertar casi vacía y rellenar después").</td></tr>
+      <tr><td><b>Efecto</b></td><td>Leer una fila exige varias lecturas de página.</td><td>La fila se traslada entera y queda un <b>puntero de reenvío</b> en la ranura original: cada acceso por índice cuesta <b>dos lecturas</b>.</td></tr>
+      <tr><td><b>Solución</b></td><td><b>No</b> se arregla reorganizando: rediseñar el esquema (sacar objetos grandes) o aumentar el tamaño de bloque.</td><td>Configurar el <b>fill factor</b> (reservar 10-20 % libre por página).</td></tr>
+    </table></div>
+    <p>Por defecto se usa organización <b>no extendida (unspanned)</b>: si la fila no cabe en el hueco restante, el hueco se desperdicia y la fila va a la página siguiente. Así leer una fila cuesta exactamente 1 I/O.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>3.1.9 Lectura lógica, lectura física y recorridos masivos</h4>
+    <ul>
+      <li><b>Lectura lógica</b>: toda petición de una página al <b>Buffer Pool</b>, la encuentre o no. Si está en RAM (hit), cuesta microsegundos de CPU.</li>
+      <li><b>Lectura física</b>: tras un fallo, hay que traer la página del disco. Milisegundos.</li>
+      <li><b>Lectura multibloque (read-ahead)</b>: en un escaneo completo, el motor trae bloques enormes de páginas contiguas en una sola orden de I/O, exprimiendo el throughput. El encadenamiento y la migración rompen la lectura anticipada.</li>
+    </ul>
+    <p><b>Bypassing the cache</b>: para que un escaneo masivo no expulse del Buffer Pool los datos útiles de otras sesiones:</p>
+    <ul>
+      <li><b>Lectura directa</b>: del disco a la memoria privada de la sesión, saltándose la caché general.</li>
+      <li><b>Anillo de páginas (ring buffer)</b>: usa solo 3 o 4 espacios de la caché y los sobrescribe en bucle.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">Sección 3.2 - Organización primaria y rutas de acceso</h2>
+
+  <div class="bloque">
+    <h4>3.2.1 Organización primaria frente a estructuras auxiliares</h4>
+    <p>Una <b>técnica de acceso</b> es el camino que sigue el motor para llegar a las filas. Elegir bien no depende de "tener índices", sino de <b>cuántas filas se piden, cómo están dispuestas físicamente y cuánto cuesta mantener cada estructura</b>.</p>
+    <p>La <b>organización primaria</b> es cómo se apilan los datos en disco: <b>solo puede haber una por tabla</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Organización</th><th>Cómo funciona</th><th>Punto fuerte / débil</th></tr>
+      <tr><td><b>Montículo (heap)</b></td><td>La fila va al primer hueco libre.</td><td>Inserción instantánea; buscar exige escaneo completo.</td></tr>
+      <tr><td><b>Ordenada por clave</b></td><td>Filas físicamente en orden.</td><td>Rangos juntos; insertar obliga a mover miles de filas (casi no se usa).</td></tr>
+      <tr><td><b>Agrupada en árbol (índice agrupado)</b></td><td>Las filas viven en las hojas de un <b>árbol B+</b>, ordenadas por la clave primaria.</td><td>Evolución de la anterior; es el estándar.</td></tr>
+      <tr><td><b>Dispersa (hash)</b></td><td>Una función hash da la dirección exacta.</td><td>Igualdad instantánea; inútil para rangos.</td></tr>
+    </table></div>
+    <div class="key"><b>Índice</b> es la <b>función</b> (estructura auxiliar que acelera la localización). <b>Árbol B+, hash, bitmap o LSM</b> son la <b>implementación</b>.</div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Estructura disponible (tabla de 25.000 páginas)</th><th>Páginas leídas para encontrar una fila</th></tr>
+      <tr><td>Montículo sin índice</td><td>12.500 de media; 25.000 en el peor caso</td></tr>
+      <tr><td>Tabla ordenada (búsqueda binaria)</td><td>⌈log₂ 25.000⌉ = 15</td></tr>
+      <tr><td>Árbol B+ de altura 3 más la página de la tabla</td><td>4</td></tr>
+      <tr><td>Organización hash sin colisiones</td><td>1-2</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>3.2.2 Las 8 rutas de acceso</h4>
+    <p>El <b>optimizador</b> funciona como un GPS: evalúa matemáticamente la consulta antes de ejecutarla, estima el coste de cada ruta y ensambla el plan que lee <b>menos páginas</b>.</p>
+    <ol>
+      <li><b>Full Table Scan</b>: ignora los índices y lee todos los bloques hasta la <b>high-water mark</b>. Es la ruta óptima si hay que procesar un <b>gran porcentaje</b> de la tabla (lecturas multibloque).</li>
+      <li><b>Index Seek / Unique Lookup</b>: de la raíz del B+ a una hoja, obtiene el RID y hace un único viaje a la tabla. Coste fijo: <b>altura del árbol + 1</b>.</li>
+      <li><b>Index Range Scan</b> (BETWEEN, &gt;): baja una vez hasta el primer valor y avanza horizontalmente por las <b>hojas enlazadas</b>.</li>
+      <li><b>Table Access by RID</b>: el salto del índice a la tabla. Cada salto es una <b>lectura aleatoria</b>: 50.000 coincidencias = 50.000 saltos.</li>
+      <li><b>Index-Only Scan (índice cubriente)</b>: todas las columnas del SELECT están en el índice; <b>no se visita la tabla</b>.</li>
+      <li><b>Full Index Scan</b>: lee el índice entero, mucho más pequeño que la tabla. Ideal para <b>COUNT</b> y <b>ORDER BY</b> (ya viene ordenado).</li>
+      <li><b>Index / Bitmap Merge</b>: recorre varios índices por separado, cruza las listas de RIDs en RAM y solo entonces salta a la tabla.</li>
+      <li><b>Acceso por hash</b>: una fórmula da la coordenada exacta, sin navegar ningún árbol.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">Sección 3.2 - Selectividad, punto de equilibrio y taxonomía de índices</h2>
+
+  <div class="bloque">
+    <h4>3.2.3 Las tres métricas del optimizador</h4>
+    <ul>
+      <li><b>Selectividad</b>: fracción de filas que cumplen un filtro, entre <b>0 y 1</b>. Un filtro muy selectivo (DNI exacto) <b>tiende a 0</b>; si devuelve la mitad de la tabla, 0,5.</li>
+      <li><b>Cardinalidad</b>, con dos significados:
+        <ul>
+          <li>En el <b>plan de ejecución</b>: número de filas que se espera devolver (filas totales × selectividad).</li>
+          <li>En el <b>diseño</b> (<b>NDV</b>, Number of Distinct Values): variedad de los datos. "Género" tiene cardinalidad bajísima; "Email", altísima.</li>
+        </ul>
+      </li>
+      <li><b>Correlación física (Clustering Factor)</b>: grado de alineación entre el orden lógico del índice y el orden físico de las filas. Buena: leer 40 filas carga 1 página. Mala: 40 filas = 40 saltos aleatorios.</li>
+    </ul>
+    <div class="warn">Con datos <b>sesgados</b> (99 % "Pagadas", 1 % "Pendientes") la estimación 1 / NDV falla y el motor necesita <b>histogramas</b>.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>Punto de equilibrio (break-even point)</h4>
+    <p>Tabla de 1.000.000 de filas en 25.000 páginas (bfr = 40). Una consulta devuelve el 1 % (10.000 filas). Con mala correlación, el índice provoca <b>10.000 lecturas aleatorias</b>; si una aleatoria cuesta 5 veces una secuencial, equivalen a <b>50.000 secuenciales</b>. El escaneo completo solo lee <b>25.000</b>: gana.</p>
+    <pre>El índice compensa si:    k / r  &lt;  (1 / bfr) · (c_sec / c_aleat)
+
+k = filas devueltas   r = filas totales   bfr = factor de bloqueo
+Con bfr = 40 y coste aleatorio 5× → 1/40 · 1/5 = 0,5 %</pre>
+    <div class="key">Derriba el mito de que "un índice es útil hasta el 10-15 % de la tabla": con mala correlación, pedir más de un <b>0,5 %</b> ya justifica un escaneo completo.</div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Motor</th><th>Cómo trata la correlación</th></tr>
+      <tr><td><b>PostgreSQL</b></td><td>Guarda la estadística <code>correlation</code> (entre -1 y 1) y abarata los índices cuando roza el 1.</td></tr>
+      <tr><td><b>SQL Server</b></td><td>Pesimista: asume que cada RID Lookup es una lectura aleatoria pura; prefiere Full Table Scan enseguida.</td></tr>
+      <tr><td><b>MariaDB / InnoDB</b></td><td>Para la clave primaria el problema no existe: tabla agrupada por índice, correlación siempre perfecta.</td></tr>
+      <tr><td><b>Oracle</b></td><td>Métrica <b>Clustering Factor</b> (se ve en la Unidad 4).</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>3.2.4 Taxonomía de índices</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Dimensión</th><th>Tipos</th></tr>
+      <tr><td><b>1. Orden físico</b></td><td><b>Agrupado (clustered)</b>: las filas viven en las hojas; tabla e índice son el mismo objeto; <b>solo uno por tabla</b>. <b>No agrupado (secundario)</b>: estructura separada con clave + RID; puede haber varios.</td></tr>
+      <tr><td><b>2. Densidad</b></td><td><b>Denso</b>: una entrada por fila. <b>Disperso</b>: una entrada por página (apunta al primer valor del bloque); exige que la tabla esté <b>ordenada físicamente</b> por esa clave.</td></tr>
+      <tr><td><b>3. Clasificación clásica</b></td><td><b>Primario</b>: sobre la clave de ordenación y <b>única</b>. <b>De agrupación (clustering)</b>: sobre el campo de ordenación física pero <b>no único</b>. <b>Secundario</b>: cualquier otro campo.</td></tr>
+      <tr><td><b>4. Unicidad</b></td><td><b>Único</b>: además impone una restricción de integridad (impide duplicados). <b>No único</b>: solo optimiza el acceso.</td></tr>
+      <tr><td><b>5. Niveles</b></td><td><b>De un nivel</b>: archivo plano, ineficiente en tablas grandes. <b>Multinivel</b>: el índice indexa a su índice; el <b>árbol B+</b> es la implementación dinámica estándar.</td></tr>
+      <tr><td><b>6. Columnas</b></td><td><b>Simple</b> (un campo) o <b>compuesto</b> (dos o más, con dependencia del orden).</td></tr>
+      <tr><td><b>7. Contenido</b></td><td><b>De clave</b>: columna indexada + RID. <b>Cubriente (covering)</b>: incluye columnas adicionales en las hojas.</td></tr>
+      <tr><td><b>8. Alcance y expresión</b></td><td><b>Parcial (filtrado)</b>: solo indexa las filas que cumplen una condición. <b>Funcional</b>: guarda el resultado de una expresión (<code>UPPER(email)</code>).</td></tr>
+    </table></div>
+    <div class="warn"><b>Denso no es cubriente</b>: denso = todas las <i>filas</i> apuntadas; cubriente = todas las <i>columnas</i> que pide la consulta.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>Regla del prefijo izquierdo (índices compuestos)</h4>
+    <p>Un índice <code>(país, ciudad, fecha)</code> ordena primero por país, luego por ciudad y luego por fecha, como una guía telefónica (Apellido, Nombre).</p>
+    <ul>
+      <li><b>Sí</b> sirve: <code>país = ?</code></li>
+      <li><b>Sí</b> sirve: <code>país = ? AND ciudad = ?</code></li>
+      <li><b>Sí</b> sirve: <code>país = ? AND ciudad = ? AND fecha BETWEEN ? AND ?</code></li>
+      <li><b>No</b> sirve: <code>ciudad = ?</code> sin país (salvo motores con <b>Skip Scan</b>).</li>
+    </ul>
+    <div class="key"><b>Orden de las columnas</b> al crear un índice compuesto: 1) las comparadas por <b>igualdad</b> (=), 2) las filtradas por <b>rango</b> (&lt;, &gt;, BETWEEN), 3) la del <b>ORDER BY</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">Sección 3.2 - Sargabilidad, matriz de decisión y mantenimiento</h2>
+
+  <div class="bloque">
+    <h4>3.2.5 Sargabilidad</h4>
+    <p><b>Sargabilidad</b> (SARGable: <i>Search ARGument ABLE</i>) es la capacidad de una consulta para aprovechar un índice.</p>
+    <div class="key">Regla de oro: la columna indexada debe aparecer <b>"desnuda"</b> (aislada) en un lado del operador. Si se envuelve en una función, se le suma un valor o se fuerza un cambio de tipo, el resultado es un <b>Full Table Scan</b>.</div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Anti-patrón</th><th>Por qué anula el índice</th><th>Solución</th></tr>
+      <tr><td><code>UPPER(email) = 'ANA@X.COM'</code></td><td>El árbol está ordenado por el texto original.</td><td><b>Índice funcional</b> sobre <code>UPPER(email)</code> o, mejor, normalizar los datos antes de insertarlos.</td></tr>
+      <tr><td><code>fecha + 30 &gt; CURRENT_DATE</code></td><td>Obliga a operar fila por fila.</td><td>Despejar: <code>fecha &gt; CURRENT_DATE - 30</code>.</td></tr>
+      <tr><td><code>codigo = 12345</code> (codigo es VARCHAR)</td><td>Conversión implícita: <code>CAST(codigo AS INT)</code> oculto.</td><td>Respetar el tipo: <code>codigo = '12345'</code>.</td></tr>
+      <tr><td><code>LIKE '%lez'</code></td><td>Sin punto de entrada alfabético (<code>LIKE 'Gonz%'</code> sí funciona).</td><td>Índices de <b>texto completo (Full-Text)</b> o de <b>trigramas</b>.</td></tr>
+      <tr><td><code>a = 1 OR b = 2</code> (b sin índice)</td><td>Hay que recorrer toda la tabla igualmente; se descarta el índice de a.</td><td>Indexar ambas (<b>Index Merge</b>) o reescribir con <b>UNION</b>.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>3.2.6 Árbol B+, hash o bitmap: matriz de decisión</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Patrón de acceso</th><th>Árbol B+</th><th>Hash</th><th>Bitmap</th></tr>
+      <tr><td>Igualdad exacta (id = 42)</td><td>Muy bueno</td><td><b>Óptimo</b></td><td>Bueno (solo con poca variedad)</td></tr>
+      <tr><td>Rangos (BETWEEN)</td><td><b>Óptimo</b></td><td>Inútil</td><td>Limitado</td></tr>
+      <tr><td>Orden y límites (ORDER BY, MAX)</td><td>Sí</td><td>No</td><td>No</td></tr>
+      <tr><td>Prefijos de texto (LIKE 'abc%')</td><td>Sí</td><td>No</td><td>No</td></tr>
+      <tr><td>Combinación masiva de filtros</td><td>Aceptable</td><td>No</td><td><b>Óptimo</b></td></tr>
+      <tr><td>Concurrencia (escrituras masivas)</td><td>Bueno</td><td>Bueno</td><td><b>Muy malo</b> (bloqueos severos)</td></tr>
+      <tr><td>Hábitat natural</td><td>OLTP</td><td>Operaciones internas en RAM</td><td>OLAP (Data Warehousing)</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Árbol B+, la navaja suiza</b>: no es el estándar por ser "el más rápido", sino por ser <b>el más equilibrado</b>. Casi nunca es una mala elección.</li>
+      <li><b>Hash</b>: O(1) teórico, pero las <b>colisiones</b> crean <b>páginas de desbordamiento (overflow)</b> con lecturas extra. Con las ramas superiores del B+ en caché, su ventaja desaparece. PostgreSQL y Oracle lo reservan para operaciones en RAM: <b>Hash Joins</b> y <b>Hash Aggregation</b>.</li>
+      <li><b>Bitmap</b>: mapas de bits puros; combina filtros con operaciones <b>AND</b> a nivel de procesador. Talón de Aquiles: la <b>concurrencia</b>. Modificar un bit puede bloquear todo el fragmento del mapa: letal en OLTP.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>3.2.7 Ningún índice es gratis</h4>
+    <ul>
+      <li><b>INSERT</b>: escribe en la tabla y en <b>cada</b> índice. Puede provocar <b>page splits</b> (divisiones de página).</li>
+      <li><b>DELETE</b>: además de la fila, hay que localizar y marcar como borrado el RID en cada índice secundario.</li>
+      <li><b>UPDATE</b> de columna indexada: el impacto se duplica, porque equivale a un <b>DELETE lógico + INSERT</b> en el árbol.</li>
+    </ul>
+    <div class="warn">Con <b>8 índices</b>, un INSERT de una fila modifica unas <b>9 páginas</b>. Daños colaterales: expulsa datos útiles del Buffer Pool, dispara el volumen de <b>Redo/WAL</b>, agranda las copias de seguridad y ralentiza al optimizador.</div>
+    <p><b>Protocolo profesional</b> antes de un <code>CREATE INDEX</code>:</p>
+    <ol>
+      <li><b>Auditoría de necesidad</b>: ¿qué consultas lo usarán y cuántas veces por segundo? Un índice para un informe mensual que castiga miles de inserciones diarias es un error.</li>
+      <li><b>Viabilidad matemática</b>: selectividad y correlación física. Con mala correlación y más de un 1 % de los datos, el optimizador lo descartará.</li>
+      <li><b>Tolerancia de escritura</b>: volumen de inserciones y modificaciones, y latencia añadida.</li>
+      <li><b>Análisis de redundancia</b>: un índice sobre <code>(país)</code> sobra si ya existe <code>(país, ciudad)</code>.</li>
+      <li><b>Ciclo de vida y monitorización</b>: un índice sin lecturas en <b>seis meses</b> es un parásito transaccional y debe eliminarse.</li>
+    </ol>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="abd-tema-3.html">Hacer el test (115 preguntas)</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Resumen basado en «ABD – Tema 3 – Arquitectura de un SGBD» (Parte 1 y apartado 3.2).
+</footer>
+</main>
+
+</body>
+</html>

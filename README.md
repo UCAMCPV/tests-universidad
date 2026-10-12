@@ -8,7 +8,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 
 | Asignatura | Material disponible |
 | --- | --- |
-| Administración de Bases de Datos | Resúmenes y tests de los temas 1 (fundamentos) y 2 (Oracle y ecosistema de datos). |
+| Administración de Bases de Datos | Resúmenes y tests de los temas 1 (fundamentos), 2 (Oracle y ecosistema de datos) y 3 (arquitectura de un SGBD, apartados 3.0–3.2). |
 | Aplicaciones para Dispositivos Móviles | Resumen y test del tema 2 (Kotlin), más 16 ejercicios resueltos. |
 | Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1 y 2, más un examen parcial de 30 preguntas. |
 | Calidad de Software | Resumen y test del tema 1 (concepto de calidad del software). |
