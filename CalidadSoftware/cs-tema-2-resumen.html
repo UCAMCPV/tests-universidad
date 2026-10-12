@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen CS Tema 2 · Técnicas de revisión</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="CS · Tema 2 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Calidad de Software · Tema 2</span>
+  <h1>Resumen: Técnicas de revisión</h1>
+  <p class="lead">Secciones 2.0–2.5: proceso de revisión, métricas de flujo, Pull Requests, revisión de código generado por IA, SAST/SCA/SBOM y revisión estructural (código limpio, code smells y SOLID).</p>
+  <div class="actions-row"><a class="btn primary" href="cs-tema-2.html">Hacer el test (150 preguntas)</a></div>
+</div>
+
+<nav class="toc">
+  <a href="#sec0">2.0 Proceso</a>
+  <a href="#sec1">2.1 Métricas</a>
+  <a href="#sec2">2.2 Pull Requests</a>
+  <a href="#sec3">2.3 IA</a>
+  <a href="#sec4">2.4 SAST, SCA, SBOM</a>
+  <a href="#sec5">2.5 Estructural</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">2.0 Introducción y proceso de revisión</h2>
+
+  <div class="bloque">
+    <h4>Qué es revisar hoy</h4>
+    <p>La revisión de software es una disciplina holística con <b>cuatro dimensiones</b>:</p>
+    <ul>
+      <li><b>Velocidad de entrega (flujo)</b>: cuánto tarda una idea en convertirse en valor, sin sacrificar calidad.</li>
+      <li><b>Seguridad de la cadena de suministro</b>: código propio y librerías de terceros sin vulnerabilidades.</li>
+      <li><b>Diseño y arquitectura</b>: que el sistema siga siendo mantenible dentro de dos años.</li>
+      <li><b>Integración segura de código generado por IA</b>: auditarlo es una competencia obligatoria.</li>
+    </ul>
+    <p>Las técnicas de revisión son <b>filtros tempranos</b>: buscan descubrir errores y defectos para eliminarlos, y producen una <b>lista de errores encontrados junto con el estado final del producto</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Término</th><th>Cuándo se detecta</th></tr>
+      <tr><td><b>Error</b></td><td>Durante el desarrollo, <b>antes</b> de la entrega a los usuarios finales.</td></tr>
+      <tr><td><b>Defecto</b></td><td><b>Después</b> de la entrega. También lo es si el problema se <b>propaga de una actividad a otra</b> (p. ej. de modelado a construcción).</td></tr>
+    </table></div>
+    <div class="key">Con <b>pocas</b> revisiones, el flujo de trabajo queda <b>sucio</b>. Con <b>demasiadas</b>, se hace lento hasta detenerse. El objetivo es evitar que los errores se conviertan en defectos.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>De Fagan al Pull Request</h4>
+    <p>En <b>1976</b>, <b>Michael Fagan (IBM)</b> formalizó el primer proceso estructurado de inspección (<b>Fagan Inspection</b>). Su hallazgo central:</p>
+    <div class="key">Los defectos encontrados en una fase temprana y estructurada cuestan <b>mucho menos</b> de corregir que los descubiertos en producción.</div>
+    <p>El principio no ha cambiado en cincuenta años; ha cambiado el <b>vehículo</b>: de la reunión presencial con actas en papel al <b>Pull Request</b>, el pipeline de <b>CI/CD</b> y los agentes de IA. La reunión se volvió asíncrona, el acta se volvió comentario trazable y cada vez más la "inspección" la ejecutan máquinas antes que un humano.</p>
+    <p>Todo empieza con un <b>ticket o issue</b> (qué problema, por qué, comportamiento esperado, criterios de aceptación, restricciones). En ese momento todavía no hay PR ni código que revisar.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>Las seis fases del proceso clásico (y su versión actual)</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Fase</th><th>Hoy</th></tr>
+      <tr><td><b>1. Planificación</b></td><td>Decidir qué cambio se revisa, objetivo, riesgos, partes críticas, quién revisa y qué pruebas hacen falta. Basta una <b>plantilla de PR con checklist</b>, que debería indicar si el cambio fue generado o asistido por IA.</td></tr>
+      <tr><td><b>2. Preparación</b></td><td><b>Autor</b>: PR pequeño, descripción clara (qué y por qué), enlace al ticket, pruebas, riesgos, capturas, comprobaciones en verde. <b>Revisor</b>: entiende contexto e intención <b>antes de juzgar una sola línea</b>.</td></tr>
+      <tr><td><b>3. Revisión o examen</b></td><td>Rara vez es una reunión: autoevaluación, revisión de pares, análisis estático, tests, escaneo de dependencias, CI/CD, IA. Las decisiones de <b>alto impacto</b> (seguridad, privacidad, arquitectura, datos, lógica de negocio) siguen exigiendo <b>criterio humano</b>.</td></tr>
+      <tr><td><b>4. Registro y clasificación de defectos</b></td><td>Comentarios trazables sobre la línea de código. Clasificación: <b>Bloqueante</b>, <b>Importante</b> (antes del merge, salvo acuerdo explícito), <b>Menor</b>, <b>Pregunta</b>, <b>Sugerencia</b>, <b>Fuera de alcance</b> (problema real, pero para otra tarea).</td></tr>
+      <tr><td><b>5. Corrección y seguimiento</b></td><td>El autor corrige y se reejecutan las comprobaciones. Hay que verificar que la corrección <b>no introdujo un problema nuevo</b>, no solo que el comentario quedó resuelto.</td></tr>
+      <tr><td><b>6. Cierre</b></td><td>Se extiende <b>más allá del merge</b>: confirmar el despliegue, revisar métricas y logs, registrar defectos recurrentes, mejorar la checklist, vigilar falsos positivos.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>Los cinco niveles de la planificación (en cascada)</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Nivel</th><th>Momento</th><th>Objetivo</th></tr>
+      <tr><td>1. De producto</td><td>Creación del ticket</td><td>Qué problema de negocio se resuelve y por qué.</td></tr>
+      <tr><td>2. Del ticket</td><td>Refinamiento (grooming)</td><td>Criterios de aceptación, alcance y riesgos funcionales.</td></tr>
+      <tr><td>3. Técnica</td><td>Asignación y desarrollo</td><td>Cómo se implementa a nivel de código y arquitectura.</td></tr>
+      <tr><td>4. Del PR</td><td>Transición a "Ready for Review"</td><td>Estructurar el PR para que cuente una historia clara.</td></tr>
+      <tr><td>5. De la revisión</td><td>Asignación de Code Owners</td><td>Qué roles (seguridad, arquitectura, dominio) deben auditar.</td></tr>
+    </table></div>
+    <div class="warn">Cuando un PR se atasca, la causa casi nunca está en la revisión en sí: se saltó alguno de los <b>niveles anteriores</b>. Diagnosticar en qué nivel falló es más útil que pedir "que se planifique mejor".</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2.1 Métricas de revisión: Cycle Time, Lead Time y Tasa de rechazo</h2>
+
+  <div class="bloque">
+    <h4>Para qué sirven y de dónde vienen</h4>
+    <p>El objetivo <b>nunca</b> es vigilar o penalizar a una persona, sino <b>diagnosticar la salud del flujo de valor (Value Stream)</b> del equipo completo. Heredan sus fundamentos de la <b>Teoría de Colas</b> y del <b>Lean Manufacturing</b> (Sistema de Producción Toyota), adaptados al software mediante el marco <b>DORA</b> (DevOps Research and Assessment).</p>
+    <pre>Ley de Little:   L = λ · W
+
+L = nº medio de elementos en el sistema (WIP)
+λ = tasa media de llegada      W = tiempo medio dentro del sistema</pre>
+    <div class="key">Con el ritmo de apertura de PRs (λ) constante, la única forma de bajar el tiempo de espera (W) es reducir los PRs simultáneos (L): <b>controlar el WIP</b>. El Cycle Time no se reduce leyendo código más rápido, sino gestionando <b>el tamaño y la frecuencia de los PRs</b>.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>Glosario</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Término</th><th>Definición</th></tr>
+      <tr><td><b>Lead Time</b></td><td>Desde que el cliente o el Product Owner pide la funcionalidad hasta que está en producción. Mide la agilidad de <b>todo el negocio</b> (incluye la espera en el backlog).</td></tr>
+      <tr><td><b>Cycle Time</b></td><td>Desde el <b>primer commit</b> hasta que el código está fusionado y desplegado. Mide la eficiencia del <b>equipo de desarrollo</b>.</td></tr>
+      <tr><td><b>Review Time / Idle Time</b></td><td>Parte del Cycle Time en la que el PR está abierto pero nadie lo ha revisado. Es donde más tiempo se pierde.</td></tr>
+      <tr><td><b>Change Failure Rate / Tasa de rechazo</b></td><td>% de PRs devueltos con cambios significativos, o % de despliegues que fallan en producción por una revisión deficiente.</td></tr>
+      <tr><td><b>Value Stream</b></td><td>Todos los pasos, de la idea al usuario final, que generan valor de negocio.</td></tr>
+      <tr><td><b>Rubber-stamping</b></td><td>Aprobar un PR sin leerlo realmente. Uno de los mayores antipatrones.</td></tr>
+      <tr><td><b>WIP</b></td><td>Número de tareas abiertas y sin terminar en un momento dado.</td></tr>
+    </table></div>
+    <p><b>Ejemplo:</b> Lead Time 14 días, Cycle Time 3 días, Idle Time 48 h. El <b>67 %</b> del ciclo es esperar revisión: el cuello de botella no es programar, sino la burocracia de aprobación y las zonas horarias. Hay que <b>descomponer</b> la cifra agregada.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>Errores frecuentes</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Error</th><th>Solución</th></tr>
+      <tr><td><b>Optimización local ciega</b>: presionar por bajar el Cycle Time provoca rubber-stamping. <b>Ley de Goodhart</b>: una métrica convertida en objetivo deja de ser buena métrica.</td><td>Nunca fijar objetivos sobre una sola métrica. Acompañar el Cycle Time con la Tasa de Rechazo y los bugs en producción.</td></tr>
+      <tr><td><b>Ignorar el tamaño del lote (Batch Size)</b>.</td><td>Medir el Cycle Time junto al tamaño del PR y fijar un límite de tamaño como política de equipo.</td></tr>
+      <tr><td><b>Confundir Lead Time con Cycle Time</b> ante negocio.</td><td>Reportar ambas por separado: el Cycle Time es del equipo de ingeniería; el Lead Time depende también de la priorización de negocio.</td></tr>
+      <tr><td><b>Fatiga de métricas</b> ("dashboard ansiedad").</td><td>Empezar con tres: <b>Cycle Time, Idle Time y Tasa de Rechazo</b>.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>Mejores prácticas</h4>
+    <ul>
+      <li><b>Micro PRs</b>: máximo <b>200-400 líneas</b> modificadas. A partir de 400 el cerebro deja de "leer" y empieza a "hojear".</li>
+      <li><b>Límites WIP</b>: si la columna "En Revisión" alcanza su límite (p. ej. 3 PRs por revisor), <b>todo el equipo deja de escribir código nuevo y revisa</b>.</li>
+      <li><b>Métricas DORA</b>: añaden la <b>Frecuencia de Despliegue</b> y el <b>MTTR</b>. Un equipo élite despliega bajo demanda, tiene un Lead Time para cambios <b>inferior a una hora</b> y un Change Failure Rate <b>por debajo del 15 %</b>.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">2.2 Revisiones de Pull Requests</h2>
+
+  <div class="bloque">
+    <h4>GitHub Flow y revisión asíncrona</h4>
+    <p><b>GitHub Flow</b>: estándar de facto, basado en <b>ramas efímeras</b>, integración continua y despliegues frecuentes. Seis pasos:</p>
+    <ol>
+      <li>Crear una rama a partir de main</li>
+      <li>Añadir commits</li>
+      <li>Abrir un Pull Request</li>
+      <li>Discutir y revisar el código</li>
+      <li>Fusionar (merge) cuando se aprueba</li>
+      <li>Desplegar</li>
+    </ol>
+    <ul>
+      <li><b>Rama efímera</b>: vive idealmente menos de <b>dos o tres días</b> y se elimina al fusionarse.</li>
+      <li><b>Revisión asíncrona entre pares</b>: autor y revisor no coinciden en tiempo ni espacio; todo el contexto queda por escrito.</li>
+      <li><b>Round-trip time</b>: el coste de una aclaración no es leerla, sino esperar a que la otra parte esté disponible: hasta <b>24 horas</b> por pregunta.</li>
+      <li><b>Empatía cognitiva</b>: el autor anticipa las preguntas del revisor; el revisor propone mejoras sin activar los sesgos defensivos del autor.</li>
+    </ul>
+    <div class="key">Una buena descripción de PR responde a cuatro cosas: <b>qué</b> hace el cambio, <b>por qué</b> (con enlace al ticket), <b>cómo probarlo</b> y <b>evidencia visual</b> cuando aplica.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>Errores frecuentes</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Error</th><th>Solución</th></tr>
+      <tr><td><b>Falta de empatía</b> ("Esto está mal").</td><td>Reformular como propuesta razonada; preguntar antes de afirmar.</td></tr>
+      <tr><td><b>PR huérfano</b> (título "Fix bug", sin contexto ni ticket).</td><td><b>Plantilla de PR obligatoria</b> (PR template).</td></tr>
+      <tr><td><b>Review dump</b> (revisiones-maratón al final del día).</td><td>Dos franjas fijas al día dedicadas a revisar.</td></tr>
+      <tr><td><b>Comentarios ambiguos</b> sobre severidad.</td><td>Etiquetas de <b>Conventional Comments</b>.</td></tr>
+      <tr><td><b>Bikeshedding</b> (Ley de la Trivialidad de Parkinson): días debatiendo un nombre mientras pasa un problema de concurrencia.</td><td>Automatizar el estilo con <b>linters y formatters</b>.</td></tr>
+      <tr><td><b>Ghosting</b> de PRs.</td><td>Ningún PR más de <b>24-48 horas</b> sin primera respuesta; los abandonados se cierran o se retoman.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>Conventional Commits</h4>
+    <pre>&lt;type&gt;[optional scope]: &lt;description&gt;      ej.  feat(parser): add ability to parse arrays</pre>
+    <p>Permite a CI/CD deducir la versión siguiente (SemVer), generar el <b>CHANGELOG</b> y publicar el release sin intervención humana.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Type</th><th>SemVer</th><th>Significado</th></tr>
+      <tr><td><code>fix:</code></td><td><b>PATCH</b> (2.1.0 → 2.1.1)</td><td>Parchea un bug.</td></tr>
+      <tr><td><code>feat:</code></td><td><b>MINOR</b> (2.1.0 → 2.2.0)</td><td>Nueva funcionalidad compatible.</td></tr>
+      <tr><td><code>BREAKING CHANGE:</code> / <code>!</code></td><td><b>MAJOR</b> (2.1.0 → 3.0.0)</td><td>Rompe la compatibilidad de la API.</td></tr>
+      <tr><td><code>perf:</code></td><td>PATCH</td><td>Mejora cuantificable del rendimiento.</td></tr>
+      <tr><td><code>build:</code></td><td>Ninguno</td><td>Sistema de compilación o dependencias (package.json, pom.xml, Docker).</td></tr>
+      <tr><td><code>ci:</code></td><td>Ninguno</td><td>Configuración de Integración Continua (.github/workflows).</td></tr>
+      <tr><td><code>docs:</code></td><td>Ninguno</td><td>Solo documentación.</td></tr>
+      <tr><td><code>style:</code></td><td>Ninguno</td><td>Formato; no cambia el significado del código.</td></tr>
+      <tr><td><code>refactor:</code></td><td>Ninguno</td><td>Ni arregla un error ni añade funcionalidad.</td></tr>
+      <tr><td><code>test:</code></td><td>Ninguno</td><td>Añade o corrige pruebas.</td></tr>
+      <tr><td><code>chore:</code></td><td>Ninguno</td><td>Rutina que no encaja en las demás.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>Conventional Comments</h4>
+    <pre>&lt;label&gt; [decorations]: &lt;subject&gt;
+ej.  issue (ux, non-blocking): These buttons should be red, but let's handle this in a follow-up.</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Label</th><th>Nivel</th><th>Uso</th></tr>
+      <tr><td><code>issue:</code></td><td><b>Bloqueante (por defecto)</b></td><td>Problema específico (bug, vulnerabilidad). Mejor con una sugerencia.</td></tr>
+      <tr><td><code>todo:</code></td><td><b>Bloqueante</b></td><td>Cambio pequeño y trivial, pero necesario antes del merge.</td></tr>
+      <tr><td><code>suggestion:</code></td><td>No bloqueante</td><td>Propone una mejora, explicando qué y por qué.</td></tr>
+      <tr><td><code>nitpick:</code> / <code>nit:</code></td><td>No bloqueante</td><td>Preferencia personal o estilo; el autor puede ignorarlo.</td></tr>
+      <tr><td><code>quibble:</code></td><td>No bloqueante</td><td>Igual que nitpick, sin la connotación de "buscar piojos".</td></tr>
+      <tr><td><code>question:</code></td><td>Informativo</td><td>Preocupación sin certeza de que sea relevante.</td></tr>
+      <tr><td><code>chore:</code></td><td>Tarea / proceso</td><td>Tarea de proceso antes de aceptar (p. ej. actualizar el ticket).</td></tr>
+      <tr><td><code>praise:</code> / <code>kudos:</code></td><td>Refuerzo positivo</td><td>Al menos uno por revisión.</td></tr>
+      <tr><td><code>thought:</code> / <code>note:</code></td><td>No bloqueante</td><td>Idea para el futuro / detalle del que tomar nota.</td></tr>
+      <tr><td><code>typo:</code> / <code>polish:</code></td><td>Menor</td><td>Error ortográfico / forma de pulir la calidad.</td></tr>
+    </table></div>
+    <p><b>Decorations:</b> <code>(blocking)</code> impide aceptar el código; <code>(non-blocking)</code> no debe impedir la aprobación; <code>(if-minor)</code> resolver solo si el cambio es trivial.</p>
+    <div class="warn">Las etiquetas se escriben <b>en inglés</b>: solo funcionan si todo el equipo usa exactamente las mismas. Un "bloqueante:" en español no se reconoce como convención.</div>
+  </div>
+
+  <div class="bloque">
+    <h4>Draft PRs, Code Owners y Bus Factor</h4>
+    <ul>
+      <li><b>Fail Fast</b>: abrir un <b>Draft PR</b> (WIP PR) tras el primer commit estructural. Actúa como <b>RFC</b> (Request for Comments): los senior validan modelos de datos y patrones antes de invertir horas. Evita la <b>Sunk Cost Fallacy</b> (defender un mal diseño por las horas ya invertidas).</li>
+      <li><b>CODEOWNERS</b> (<code>.github/CODEOWNERS</code>): mapea rutas con usuarios o equipos (<code>/backend/payments/ @fintech-arch-team</code>) y asigna automáticamente <b>revisores obligatorios</b>. Erradica el rubber-stamping accidental.</li>
+      <li><b>Bus Factor</b>: ¿cuántos desarrolladores tendrían que ser atropellados para que el proyecto quiebre? Un Bus Factor de <b>1</b> es una situación crítica.</li>
+      <li><b>Silos of Knowledge</b>: causa raíz de un Bus Factor bajo. Se destruyen <b>rotando el Code Owner</b> y exigiendo <b>revisiones cruzadas</b>.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">2.3 Revisiones asistidas por IA y validación de alucinaciones</h2>
+
+  <div class="bloque">
+    <h4>Qué es (y qué no es) un LLM</h4>
+    <p>Un LLM no es un motor de razonamiento lógico determinista: es un <b>motor estadístico probabilístico</b> que predice el token más probable dado el contexto. El ingeniero pasa de "picar código" a ser <b>auditor</b>.</p>
+    <div class="key">Una <b>alucinación</b> no es un error en sentido tradicional: es una <b>consecuencia directa de cómo funciona</b> el modelo, que genera lo estadísticamente plausible (una API que no existe, un parámetro inventado) sin poder distinguirlo de lo correcto. No se arregla pidiéndole "más cuidado": la auditoría humana es una <b>consecuencia estructural</b>, no un paso transitorio.</div>
+    <ul>
+      <li><b>Boilerplate</b>: código repetitivo y de bajo valor intelectual (getters/setters, configuración estándar).</li>
+      <li><b>Automation Bias</b> ("piloto automático"): confiar en exceso en un sistema automatizado por parecer sofisticado.</li>
+      <li><b>Tests alucinados</b>: tests de la IA que validan un comportamiento incorrecto, escritos "a juego" con su error.</li>
+      <li><b>Zero-Trust aplicado a IA</b>: nunca asumir que una sugerencia es correcta por venir de un modelo avanzado.</li>
+      <li><b>Pruebas de mutación</b>: introducir defectos intencionados para comprobar si los tests los detectan.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>Cinco reglas para detectar alucinaciones</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Trampa</th><th>Regla</th></tr>
+      <tr><td><b>1. Plausibilidad</b>: métodos lógicos que "deberían existir".</td><td>Desconfiar del método que lo resuelve todo en una línea. Verificar la firma en la <b>documentación oficial de la versión exacta</b> (la IA alucina la 3.x cuando usas la 2.x).</td></tr>
+      <tr><td><b>2. Sesgo del Happy Path</b>: código limpio de cinco líneas para red, BD o microservicios.</td><td>Auditar la <b>ausencia de topología defensiva</b>: timeout explícito, <b>Retry Pattern</b>, <b>Circuit Breaker</b>.</td></tr>
+      <tr><td><b>3. Degradación de seguridad</b>: entrenada con foros de 2010-2020.</td><td>Escrutinio máximo en autenticación, hashing y tokens. Sospechar de <b>MD5, SHA-1, Math.random()</b> o JWT manual; usar librerías modernas (<b>Argon2</b>).</td></tr>
+      <tr><td><b>4. Alucinación semántica</b>: ciega a las reglas de tu negocio.</td><td>Cuestionar la lógica funcional; buscar violaciones del modelo de negocio.</td></tr>
+      <tr><td><b>5. Tautología del testing</b>: la misma IA escribe código y tests.</td><td>Si la IA implementa, <b>el humano diseña los casos borde</b>; si el humano implementa, la IA puede proponer los tests básicos.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>Errores frecuentes</h4>
+    <ul>
+      <li><b>Efecto "piloto automático"</b>: tratar a la IA como "un becario muy rápido que nunca ha visto tu sistema en producción".</li>
+      <li><b>Tests alucinados que validan el error</b>: todo en verde, lógica rota. Revisión humana independiente de las condiciones de frontera.</li>
+      <li><b>Confiar en el formato</b>: separar "legibilidad" de "corrección"; pedir <b>evidencia de ejecución real</b>.</li>
+      <li><b>No verificar la vigencia de APIs</b>: el modelo tiene fecha de corte; contrastar con la documentación oficial vigente.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>Mejores prácticas</h4>
+    <ol>
+      <li><b>Zero-Trust AI Review</b>: "la IA genera <b>probabilidades</b>, el humano certifica <b>determinismo</b>". El revisor delega sintaxis y estilo en los linters y reserva su atención para la <b>semántica de frontera</b>: seguridad, rendimiento bajo estrés y arquitectura distribuida. <b>Halo Effect</b>: la elocuencia de la explicación no es evidencia de corrección.</li>
+      <li><b>Pruebas de mutación</b> (Stryker, Infection): se inyectan <b>mutantes</b> (cambiar <code>&gt;</code> por <code>&lt;</code>, <code>&amp;&amp;</code> por <code>||</code>). Si los tests siguen en verde, el mutante <b>ha sobrevivido</b> y el test no vale nada. Métrica: <b>Mutation Score</b> = % de mutantes asesinados.</li>
+      <li><b>AI Triage / First-Pass Review</b>: la IA como primer filtro, <b>nunca como filtro único</b>. Nunca dar al agente permisos de <b>auto-merge</b> sobre ramas principales: la responsabilidad legal y moral es del humano.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">2.4 SAST, SCA, SBOM y cadena de suministro</h2>
+
+  <div class="bloque">
+    <h4>Por qué importa: SolarWinds y el efecto iceberg</h4>
+    <p>En <b>2020</b>, atacantes de nivel estado-nación comprometieron el <b>proceso de construcción (build)</b> de <b>SolarWinds</b> para infectar a miles de clientes. Junto con normativas como la <b>Cyber Resilience Act</b> europea, la seguridad de la cadena de suministro pasó a ser innegociable.</p>
+    <ul>
+      <li><b>Dependencias directas</b> (punta del iceberg): las que el equipo instala conscientemente.</li>
+      <li><b>Dependencias transitivas</b> (parte oculta): llegan "de arrastre". Un proyecto es un <b>Grafo Acíclico Dirigido (DAG)</b>, no una lista plana.</li>
+      <li><b>Superficie de ataque real</b>: 10 directas × 15 transitivas = <b>150 librerías</b> que nadie ha auditado línea por línea.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>SAST, SCA, SBOM y SLSA</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Técnica</th><th>Qué hace</th></tr>
+      <tr><td><b>SAST</b> (Static Application Security Testing)</td><td>Análisis de <b>caja blanca</b>: examina el código fuente <b>sin ejecutarlo</b>. Compila a un <b>AST</b> y aplica <b>Taint Analysis</b>: traza el camino desde un <b>Source</b> (entrada de datos) hasta un <b>Sink</b> (ejecución crítica) y comprueba si pasa por un filtro de sanitización.</td></tr>
+      <tr><td><b>SCA</b> (Software Composition Analysis)</td><td>Recorre el grafo de dependencias <b>en profundidad</b> y cruza hashes o versiones contra bases de <b>CVEs</b>. Es una "obligación matemática": nadie puede leer 150 librerías.</td></tr>
+      <tr><td><b>SBOM</b> (Software Bill of Materials)</td><td>Inventario exhaustivo y <b>firmado criptográficamente</b> del código de terceros: la "lista de ingredientes". Se apoya en hashes (SHA-256) y firmas asimétricas.</td></tr>
+      <tr><td><b>SLSA</b> (Supply-chain Levels for Software Artifacts)</td><td>Marco de niveles de madurez (<b>0 a 3</b>) que actúa como notario digital. Garantiza el <b>no repudio</b>: el binario en producción se compiló del código exacto del repositorio.</td></tr>
+    </table></div>
+    <div class="warn"><b>Regla innegociable</b>: los ingenieros nunca escriben sus propios filtros de sanitización. Se delega en librerías estándar: <b>ORMs</b> (TypeORM, SQLAlchemy, Hibernate, Entity Framework), que usan <b>consultas parametrizadas</b> por defecto.</div>
+    <ul>
+      <li><b>Inyección SQL</b>: introducir código SQL en un campo de entrada para manipular la base de datos.</li>
+      <li><b>XSS</b>: inyectar JavaScript malicioso en una página que ven otros usuarios.</li>
+      <li><b>CVE</b>: identificador público y estandarizado de una vulnerabilidad conocida.</li>
+      <li><b>VEX</b>: documento legible por máquinas que declara si una vulnerabilidad presente es realmente <b>explotable</b> en tu contexto.</li>
+      <li><b>Keyless Signing</b>: firma con un certificado <b>efímero</b> vinculado a la identidad del pipeline, sin clave privada permanente.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>Mejores prácticas</h4>
+    <ul>
+      <li><b>Shift-Left Security</b>: cuanto antes se detecta, más barato es corregir. SAST y linters en el <b>IDE</b>, en tiempo real.</li>
+      <li><b>VEX</b>: en lugar de ignorar una alerta, justificar formalmente la no explotabilidad junto al SBOM.</li>
+      <li><b>Sigstore / Cosign</b>: el CI/CD se autentica por <b>OIDC</b>, genera un certificado efímero, firma la imagen y su SBOM, lo registra en el ledger inmutable <b>Rekor</b> y destruye la clave.</li>
+      <li><b>Dependabot / Renovate</b>: abren PRs de actualización ante un CVE y solo hacen auto-merge de <b>parches de seguridad sin cambios de compatibilidad</b>.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Herramienta</th><th>Qué aporta</th></tr>
+      <tr><td><b>Semgrep</b></td><td>SAST rápido con reglas parecidas al código; se integra como <b>pre-commit hook</b>.</td></tr>
+      <tr><td><b>GitHub CodeQL</b></td><td>Análisis semántico: trata el código como una <b>base de datos relacional</b> consultable.</td></tr>
+      <tr><td><b>Trivy</b></td><td>Escáner de repos, ficheros e imágenes; con CRITICAL o HIGH parcheables, tumba el pipeline (<b>exit code 1</b>).</td></tr>
+      <tr><td><b>OWASP Dependency-Check</b></td><td>SCA gratuito contra la base pública de CVEs.</td></tr>
+      <tr><td><b>Syft + Grype</b></td><td>Syft <b>genera</b> el SBOM (CycloneDX o SPDX); Grype lo <b>analiza</b>.</td></tr>
+      <tr><td><b>OWASP Dependency-Track</b></td><td>Centraliza los SBOMs de toda la organización; alerta de qué microservicios afecta un nuevo CVE.</td></tr>
+      <tr><td><b>SonarQube Community</b></td><td>SAST básico y métricas estructurales.</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">2.5 Revisión estructural: código limpio, smells y SOLID</h2>
+
+  <div class="bloque">
+    <h4>Funcional frente a estructural</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Dimensión</th><th>Revisión funcional</th><th>Revisión estructural</th></tr>
+      <tr><td>Pregunta</td><td>¿Hace lo que pide el ticket?</td><td>¿Es fácil de cambiar, probar y extender?</td></tr>
+      <tr><td>Evidencia</td><td>Tests, criterios de aceptación, demo</td><td>Métricas de diseño, dependencias, code smells</td></tr>
+      <tr><td>Coste si se ignora</td><td>Incidente inmediato</td><td>Deuda técnica</td></tr>
+      <tr><td>Quién la domina</td><td>Cualquier desarrollador</td><td>Senior, Tech Lead, Staff Engineer</td></tr>
+    </table></div>
+    <div class="key">Regla de oro: cada hallazgo debe llevar <b>síntoma → principio violado → refactorización propuesta</b>. Un "esto está mal" no es una revisión; es una opinión.</div>
+    <p>La IA generativa amplifica el problema: duplica lógica, ignora abstracciones y acopla capas. El revisor humano es <b>la última línea de defensa del diseño</b>.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>Hotspots y leyes de la degradación</h4>
+    <ul>
+      <li><b>Hotspots</b>: los defectos se concentran en pocos archivos <b>complejos y modificados con frecuencia</b>. Técnica de <b>Adam Tornhill</b> (<i>Your Code as a Crime Scene</i>): cruzar métricas de código con el historial de Git.</li>
+      <li><b>Leyes de Lehman</b>: un sistema en uso cambia continuamente y su complejidad crece salvo que se trabaje activamente para reducirla.</li>
+      <li><b>Ley de Conway</b>: la estructura del software copia la estructura de comunicación de la organización.</li>
+    </ul>
+  </div>
+
+  <div class="bloque">
+    <h4>Cómo se trabaja en la industria</h4>
+    <p>Dos filtros <b>en serie</b>: primero la <b>máquina</b> (CI y análisis estático con Quality Gate), después el <b>humano</b>.</p>
+    <p><b>Antes de pedir revisión</b>, el autor: PR pequeño (200–400 líneas; lo grande se divide en <b>stacked PRs</b>), auto-revisión del diff, análisis local sin avisos nuevos y descripción del diseño.</p>
+    <p><b>Las tres pasadas del revisor</b> (el orden importa):</p>
+    <ol>
+      <li><b>Macro — arquitectura</b> (5–10 min): capa correcta, dependencias nuevas o circulares, dirección hacia el dominio, ADR.</li>
+      <li><b>Meso — clases y módulos</b>: una sola razón para cambiar, switch sobre tipos, abstracciones, patrones.</li>
+      <li><b>Micro — funciones y nombres</b>: tamaño, parámetros, nombres, efectos secundarios, errores.</li>
+    </ol>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Severidad</th><th>Ejemplos</th><th>Acción</th></tr>
+      <tr><td><b>Blocking</b></td><td>Violación de capas, dependencia circular, nueva clase Dios, lógica de negocio duplicada, Quality Gate en rojo</td><td>No se aprueba hasta corregir</td></tr>
+      <tr><td><b>Non-blocking</b></td><td>Extracción de método menor, patrón no urgente</td><td>El autor decide</td></tr>
+      <tr><td><b>Nitpick</b></td><td>Nombre mejorable, orden de métodos</td><td>Opcional</td></tr>
+      <tr><td><b>Fuera de alcance</b></td><td>Deuda preexistente que el PR no empeora</td><td>Abrir un issue de deuda técnica</td></tr>
+    </table></div>
+    <p><b>Acuerdos habituales</b>: primera respuesta en menos de un día laborable; sesiones de <b>60 minutos</b> como máximo; <b>dos aprobaciones</b> en módulos críticos (una del code owner); desacuerdo tras <b>dos rondas</b> → conversación síncrona de <b>15 minutos</b>.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>Métricas y señales objetivas</h4>
+    <pre>I = Ce / (Ca + Ce)        D = |A + I − 1|
+
+Ca = acoplamiento aferente (cuántos módulos dependen de este)
+Ce = acoplamiento eferente (de cuántos depende este)
+A  = proporción de clases abstractas e interfaces</pre>
+    <ul>
+      <li><b>I = 0</b>: muy estable (todos dependen de él). <b>I = 1</b>: muy inestable.</li>
+      <li><b>D = 0</b>: módulo sano. <b>Zona de dolor</b>: D alto con A bajo e I bajo (concreto y todos dependen de él). <b>Zona de inutilidad</b>: D alto con A alto e I alto (abstracciones que nadie usa).</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Métrica</th><th>Umbral orientativo</th></tr>
+      <tr><td>Complejidad ciclomática (McCabe): caminos independientes</td><td>≤ 10 por método</td></tr>
+      <tr><td>Complejidad cognitiva: esfuerzo mental (penaliza anidamiento)</td><td>≤ 15 por método</td></tr>
+      <tr><td>Profundidad de anidamiento</td><td>≤ 3</td></tr>
+      <tr><td>Longitud de método</td><td>≤ 20–30 líneas</td></tr>
+      <tr><td>Longitud de clase</td><td>≤ 300–500 líneas; ≤ 20 métodos públicos</td></tr>
+      <tr><td>Número de parámetros</td><td>≤ 3 ideal; &gt; 5 señal fuerte</td></tr>
+      <tr><td>Acoplamiento entre objetos (CBO)</td><td>≤ 20</td></tr>
+      <tr><td>Falta de cohesión (LCOM)</td><td>Cuanto más bajo, mejor</td></tr>
+      <tr><td>Profundidad de herencia (DIT)</td><td>≤ 5</td></tr>
+      <tr><td>Duplicación en código nuevo</td><td>≤ 3 %</td></tr>
+    </table></div>
+    <p>Los umbrales son heurísticas: un valor fuera de rango obliga a <b>justificar</b>, no a refactorizar automáticamente. Compara contra la <b>rama base</b> (<b>Clean as You Code</b>), no uses una sola métrica y <b>cítala</b> en el comentario.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>Código limpio</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Regla</th><th>Síntoma</th><th>Corrección</th></tr>
+      <tr><td>Nombres que revelan intención</td><td><code>d</code>, <code>tmp</code>, <code>processData()</code></td><td>Renombrar con el concepto de negocio</td></tr>
+      <tr><td>Funciones pequeñas</td><td>Método de 60 líneas con comentarios-paso</td><td>Extract Method</td></tr>
+      <tr><td>Pocos argumentos</td><td><code>create(name, email, true, false, null, 3)</code></td><td>Parameter Object o Builder</td></tr>
+      <tr><td>Sin argumentos booleanos</td><td><code>render(true)</code></td><td>Dos funciones</td></tr>
+      <tr><td>Separación comando-consulta (CQS)</td><td><code>checkPassword()</code> que además inicia sesión</td><td>Cambia estado o devuelve valor, nunca ambas</td></tr>
+      <tr><td>Cláusulas de guarda</td><td>Pirámide de <code>if</code> (arrow code)</td><td>Retornar temprano</td></tr>
+      <tr><td>Sin números mágicos</td><td><code>price * 0.21</code></td><td>Constantes o enums con nombre</td></tr>
+      <tr><td>No tragar excepciones</td><td><code>catch (e) {}</code></td><td>Manejar, envolver o propagar</td></tr>
+      <tr><td>Ley de Demeter</td><td><code>a.getB().getC().getD()</code></td><td>Tell, don't ask</td></tr>
+      <tr><td>KISS / YAGNI</td><td>Abstracciones que nadie pidió</td><td>Añadirlas cuando exista el segundo caso real</td></tr>
+      <tr><td>Regla del Boy Scout</td><td>El PR deja igual un archivo sucio</td><td>Dejarlo un poco mejor, sin desviar el alcance</td></tr>
+    </table></div>
+    <p>Suelen ser <i>non-blocking</i> o <i>nitpick</i>, salvo que afecten a la corrección (excepciones tragadas, efectos secundarios ocultos), que son <b>blocking</b>. Si el linter puede detectarlo, <b>no lo comentes a mano</b>: pide que se añada la regla.</p>
+  </div>
+
+  <div class="bloque">
+    <h4>Code smells (cinco familias de Mäntylä)</h4>
+    <p>Un <b>code smell</b> (Kent Beck y Martin Fowler) no es un error: es un <b>síntoma superficial de un problema de diseño más profundo</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Familia</th><th>Smells</th></tr>
+      <tr><td><b>Bloaters</b> (hinchazón)</td><td>Long Method, Large/God Class, Long Parameter List, <b>Primitive Obsession</b> (emails o importes como string sueltos), <b>Data Clumps</b> (los mismos datos viajan juntos).</td></tr>
+      <tr><td><b>OO Abusers</b></td><td>Switch Statements repetidos, <b>Refused Bequest</b> (subclase que ignora lo heredado), Temporary Field, Alternative Classes with Different Interfaces.</td></tr>
+      <tr><td><b>Change Preventers</b></td><td><b>Divergent Change</b> (una clase cambia por muchos motivos), <b>Shotgun Surgery</b> (un cambio obliga a tocar muchas clases), Parallel Inheritance Hierarchies.</td></tr>
+      <tr><td><b>Dispensables</b></td><td>Duplicated Code, Dead Code, <b>Speculative Generality</b>, Lazy Class, Data Class, Comments (desodorante).</td></tr>
+      <tr><td><b>Couplers</b> (acopladores)</td><td><b>Feature Envy</b> (usa más datos de otra clase que de la suya), Inappropriate Intimacy, <b>Message Chains</b>, Middle Man.</td></tr>
+    </table></div>
+  </div>
+
+  <div class="bloque">
+    <h4>Los 5 principios SOLID</h4>
+    <p>De <b>Robert C. Martin</b>; el acrónimo lo acuñó <b>Michael Feathers</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Principio</th><th>Qué dice</th><th>Señal en el diff</th></tr>
+      <tr><td><b>SRP</b> Single Responsibility</td><td>Una sola razón para cambiar: responder ante <b>un único actor</b>.</td><td>Imports de capas muy distintas en un archivo; el nombre necesita «y».</td></tr>
+      <tr><td><b>OCP</b> Open/Closed</td><td>Abierto a la extensión, cerrado a la modificación.</td><td><code>switch</code> sobre un tipo, repetido.</td></tr>
+      <tr><td><b>LSP</b> Liskov Substitution</td><td>Los subtipos sustituyen a su base: no exigen más (precondiciones más fuertes) ni garantizan menos (postcondiciones más débiles).</td><td>Método sobrescrito vacío o que lanza excepción.</td></tr>
+      <tr><td><b>ISP</b> Interface Segregation</td><td>Ningún cliente debe depender de métodos que no usa.</td><td>Métodos vacíos o <i>not supported</i>.</td></tr>
+      <tr><td><b>DIP</b> Dependency Inversion</td><td>Alto y bajo nivel dependen de abstracciones, que define <b>el dominio</b>.</td><td><code>new</code> de infraestructura dentro del dominio.</td></tr>
+    </table></div>
+    <ul>
+      <li>OCP no es abstraer todo desde el primer día: regla de <b>«las tres veces»</b>.</li>
+      <li>ISP y LSP se refuerzan: una interfaz gorda empuja a implementaciones que violan LSP.</li>
+    </ul>
+    <div class="warn"><b>Dependency Inversion</b> (principio de diseño) ≠ <b>Dependency Injection</b> (técnica de pasar dependencias desde fuera) ≠ <b>IoC container</b> (herramienta como Spring o NestJS).</div>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="cs-tema-2.html">Hacer el test (150 preguntas)</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Resumen basado en «CS Tema 2 – Técnicas de Revisión. Completo v1.0».
+</footer>
+</main>
+
+</body>
+</html>

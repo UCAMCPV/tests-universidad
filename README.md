@@ -11,7 +11,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 | Administración de Bases de Datos | Resúmenes y tests de los temas 1 (fundamentos), 2 (Oracle y ecosistema de datos) y 3 (arquitectura de un SGBD, apartados 3.0–3.2). |
 | Aplicaciones para Dispositivos Móviles | Resumen y test del tema 2 (Kotlin), más 16 ejercicios resueltos. |
 | Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1 y 2, más un examen parcial de 30 preguntas. |
-| Calidad de Software | Resumen y test del tema 1 (concepto de calidad del software). |
+| Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5). |
 | Administración de Sistemas | Resúmenes y tests de los temas 1 (sistemas de información) y 2 (virtualización). |
 
 Los materiales se basan en los apuntes de las asignaturas. Conviene contrastar las respuestas con los apuntes oficiales; el examen parcial de Ingeniería del Conocimiento contiene respuestas interpretadas a partir de los apuntes, no un solucionario oficial.
@@ -73,7 +73,7 @@ El progreso depende del navegador y del origen utilizado: cambiar de dominio, pu
 ├── ABD/                        # Administración de Bases de Datos
 ├── Moviles/                    # Kotlin: resumen, test y ejercicios
 ├── IngenieriaConocimiento/     # Resúmenes, tests y examen parcial
-├── CalidadSoftware/            # Resumen y test de calidad del software
+├── CalidadSoftware/            # Resúmenes y tests de calidad del software
 └── Sistemas/                   # Resúmenes, tests y apuntes en Unidad1/*.md
 ```
 
