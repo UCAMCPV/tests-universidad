@@ -10,7 +10,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 | --- | --- |
 | Administración de Bases de Datos | Resúmenes y tests de los temas 1 (fundamentos), 2 (Oracle y ecosistema de datos) y 3 (arquitectura de un SGBD, apartados 3.0–3.2). |
 | Aplicaciones para Dispositivos Móviles | Resumen y test del tema 2 (Kotlin), más 16 ejercicios resueltos. |
-| Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1, 2, 2.1 y 2.2, más un examen parcial de 30 preguntas. |
+| Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1, 2, 2.1, 2.2, 2.3 y 2.4, más un examen parcial de 30 preguntas. |
 | Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5). |
 | Administración de Sistemas | Resúmenes y tests de los temas 1 (sistemas de información) y 2 (virtualización). |
 
