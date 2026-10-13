@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía del simulacro parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro parcial · Guía">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Ingeniería del Conocimiento · Simulacro</span>
+  <h1>Guía para entender el examen parcial</h1>
+  <p class="lead">Todo lo necesario para resolver el examen parcial real y el simulacro, con ejemplos: cómo identificar el tipo de problema, qué modelo, activación, función de costo y métrica corresponde a cada caso, y cómo diagnosticar un entrenamiento.</p>
+  <div class="actions-row"><a class="btn primary" href="ic-simulacro-parcial.html">Hacer el simulacro (30 preguntas)</a><a class="btn" href="ic-examen-parcial.html">Examen parcial real</a></div>
+</div>
+
+<nav class="toc" aria-label="Secciones">
+  <a href="#sec0">0. El método en 4 pasos</a>
+  <a href="#sec1">1. Tipo de problema y de aprendizaje</a>
+  <a href="#sec2">2. ML o DL; qué modelo</a>
+  <a href="#sec3">3. Preprocesamiento</a>
+  <a href="#sec4">4. Entrenar: backprop y ajuste</a>
+  <a href="#sec5">5. Activación y costo</a>
+  <a href="#sec6">6. Métricas</a>
+  <a href="#sec7">7. Evaluación e hiperparámetros</a>
+  <a href="#sec8">8. Trampas del examen</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">0. El método en 4 pasos</h2>
+  <div class="bloque">
+    <p>Casi todas las preguntas son un <b>caso con personajes</b> y la respuesta se deduce leyendo bien <b>qué se quiere predecir</b>. Ignora los nombres y haz siempre esto:</p>
+    <ol>
+      <li><b>¿Qué entra?</b> Tabla de números, imagen, secuencia en el tiempo (últimas 5 semanas, últimas 24 h…), texto.</li>
+      <li><b>¿Qué sale?</b> Un número (regresión), una categoría (clasificación: 2 clases = binaria, más = multiclase) o grupos sin etiqueta (agrupamiento).</li>
+      <li><b>¿Hay etiquetas / datos históricos con la respuesta?</b> Sí → supervisado. No → no supervisado. Recompensas y penalizaciones → refuerzo.</li>
+      <li>Con eso eliges: <b>modelo → activación de salida → función de costo → métrica</b>.</li>
+    </ol>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Problema</th><th>Modelos típicos</th><th>Activación de salida</th><th>Costo</th><th>Métricas</th></tr>
+      <tr><td><b>Clasificación binaria</b></td><td>Reg. Logística, SVM, RF, KNN, MLP/CNN</td><td>Sigmoide</td><td>Binary Cross-Entropy</td><td>Accuracy, Precision, Recall, F1, AUC-ROC</td></tr>
+      <tr><td><b>Clasificación multiclase</b></td><td>SVM, RF, KNN, MLP/CNN</td><td>Softmax</td><td>Multiclass Cross-Entropy (one-hot) o Sparse (enteros)</td><td>Las mismas + matriz de confusión</td></tr>
+      <tr><td><b>Regresión</b></td><td>Reg. Lineal, SVR, RF, KNN, MLP, LSTM</td><td>Lineal</td><td>MSE (o MAE con outliers)</td><td>R², MSE, RMSE, MAE, MAPE</td></tr>
+      <tr><td><b>Agrupamiento</b></td><td>K-Means, DBSCAN, jerárquico, autoencoder</td><td>—</td><td>—</td><td>Silueta, SSW, SSB (ARI si hay etiquetas)</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">1. Tipo de problema y de aprendizaje</h2>
+  <div class="bloque">
+    <h4>Los tipos de aprendizaje, con ejemplo</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Tipo</th><th>Cuándo</th><th>Ejemplo de examen</th></tr>
+      <tr><td><b>Supervisado</b></td><td>Hay datos históricos con la respuesta (etiqueta o valor).</td><td>Se han recopilado los litros de keroseno de los cohetes y se quiere predecirlos. Predecir la cosecha de mañana con el histórico.</td></tr>
+      <tr><td><b>No supervisado</b></td><td>No hay etiquetas; se buscan estructuras o grupos.</td><td>Agrupar pívots o clientes por parecido.</td></tr>
+      <tr><td><b>Semi-supervisado</b></td><td>Muy pocos datos etiquetados y muchos sin etiquetar.</td><td>500 000 fotos, solo 2 000 con etiqueta.</td></tr>
+      <tr><td><b>Por refuerzo</b></td><td>Un agente actúa en un entorno y recibe recompensas/penalizaciones; no hay datos históricos etiquetados.</td><td>Una pelusa/aspirador autónomo que se mueve por la casa.</td></tr>
+      <tr><td><b>Por transferencia</b></td><td>Se reutiliza un modelo ya entrenado en otra tarea y se reentrena con pocos datos.</td><td>Reentrenar una red de imágenes genéricas con 300 fotos de hojas enfermas.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Clasificación, regresión o agrupamiento: pistas en el enunciado</h4>
+    <ul>
+      <li><b>«Si va a pagar o no», «si hay lesión», «positivo o negativo»</b> → clasificación binaria.</li>
+      <li><b>«Cuántos litros / metros / kilómetros / qué precio / qué temperatura»</b> → regresión.</li>
+      <li><b>«Generar grupos», «segmentar», «encontrar uno parecido»</b> → agrupamiento (clustering).</li>
+      <li><b>Cuidado:</b> «con una determinada probabilidad (ej. 80 %)» es un valor numérico → el parcial real lo interpretó como regresión. Lee qué se predice: ¿una clase o un número?</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">2. ¿Machine Learning o Deep Learning? ¿Qué modelo?</h2>
+  <div class="bloque">
+    <h4>ML frente a DL</h4>
+    <ul>
+      <li>La IA contiene al <b>ML</b> (estadístico/algorítmico) y el ML contiene al <b>DL</b> (redes neuronales con muchas capas).</li>
+      <li><b>Elige DL</b> con <b>imágenes, vídeo, audio, texto, secuencias</b> o enormes volúmenes de datos (reconocimiento facial, millones de fotos).</li>
+      <li><b>Elige ML</b> con datos tabulares y tamaño moderado.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Guía rápida: qué modelo para qué</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Si el enunciado habla de…</th><th>Modelo</th></tr>
+      <tr><td>Una <b>imagen</b> (rodilla, rostro, radiografía)</td><td><b>CNN</b></td></tr>
+      <tr><td>Datos <b>en el tiempo</b> (últimas 5 semanas, serie de precios, 24 horas), lenguaje</td><td><b>LSTM</b> o <b>GRU</b> (redes recurrentes)</td></tr>
+      <tr><td>Tabla de variables, clasificación o regresión «general»</td><td><b>MLP</b>, Random Forest, SVM, KNN</td></tr>
+      <tr><td>Clasificar sí/no con probabilidad, modelo sencillo</td><td><b>Regresión logística</b> (clasificador, aunque se llame regresión)</td></tr>
+      <tr><td>Predecir un número con relación lineal</td><td><b>Regresión lineal</b></td></tr>
+      <tr><td>Regresión con SVM</td><td><b>SVR</b> (Support Vector Regression)</td></tr>
+      <tr><td>Agrupar sin etiquetas</td><td><b>K-Means</b> (k conocido), <b>DBSCAN</b> (densidad, detecta ruido), <b>jerárquico</b> (árbol)</td></tr>
+      <tr><td>Reducir dimensionalidad / comprimir</td><td><b>PCA</b>, t-SNE, NMF, <b>autoencoder</b></td></tr>
+    </table></div>
+    <p><b>Ejemplo:</b> «las últimas cinco semanas de condición física ayudan a predecir si un jugador se lesiona esta semana» → entrada secuencial → <b>LSTM</b> (no CNN, que es para imágenes; no MLP, que ignora el orden).</p>
+    <p><b>Trampas:</b> K-Means, DBSCAN y jerárquico <b>no</b> son para clasificar con etiquetas. SVM, RF y KNN sirven para clasificación <b>y</b> regresión. La regresión lineal es solo para regresión.</p>
+  </div>
+  <div class="bloque">
+    <h4>La CNN y la LSTM, lo que suelen preguntar</h4>
+    <ul>
+      <li><b>CNN:</b> varias capas convolucionales (filtros/kernels) + varias de pooling (max o average) + capas fully-connected al final. Activación oculta habitual: <b>ReLU</b>. Salida: <b>softmax</b> si es multiclase, <b>sigmoide</b> si es binaria. <i>«Solo puede tener una capa convolucional» es falso.</i></li>
+      <li><b>LSTM:</b> RNN con <b>celda de memoria</b> y 3 puertas (<b>olvido, entrada, salida</b>), pensada para dependencias a largo plazo (series temporales, lenguaje). Resuelve el desvanecimiento de gradiente de las RNN simples. La <b>GRU</b> es una versión más simple.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">3. Preprocesamiento de datos</h2>
+  <div class="bloque">
+    <h4>Qué transformación para qué situación</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Situación</th><th>Proceso</th><th>Ejemplo</th></tr>
+      <tr><td>Continua → cualitativa</td><td><b>Discretización</b></td><td>Ingresos 1 200 € → «bajo / medio / alto». Edad 17 → «joven».</td></tr>
+      <tr><td>Categórica → numérica</td><td><b>Codificación categórica</b></td><td>Color {rojo, verde, azul}. One-Hot: rojo = [1,0,0], verde = [0,1,0], azul = [0,0,1]. Label encoding: rojo=0, verde=1, azul=2 (suele usarse en el target).</td></tr>
+      <tr><td>Rangos muy distintos entre variables</td><td><b>Normalización</b></td><td>Min-max: x' = (x − mín)/(máx − mín). Por ejemplo, con mín 10 y máx 30, el 20 pasa a 0,5. Z-score: z = (x − μ)/σ.</td></tr>
+      <tr><td>Demasiadas variables</td><td><b>Reducción de dimensionalidad</b></td><td>PCA, t-SNE, NMF, autoencoder; o muestreo de atributos.</td></tr>
+      <tr><td>Valores faltantes</td><td><b>Imputación o eliminación</b></td><td>Numérico: media, mediana o moda. Categórico: valor más frecuente. Series temporales: interpolación. O quitar los registros.</td></tr>
+      <tr><td>Caracteres raros en campos de texto</td><td><b>Limpieza de texto</b></td><td>Quitar caracteres incrustados que rompen la alineación.</td></tr>
+    </table></div>
+    <p><b>Regla anti-confusión:</b> discretizar y codificar son «opuestos». Discretizar: número → categoría. Codificar: categoría → número.</p>
+  </div>
+  <div class="bloque">
+    <h4>Clases desbalanceadas</h4>
+    <ul>
+      <li><b>Problema:</b> si el 90 % de los comentarios son negativos, el modelo aprende a predecir siempre «negativo».</li>
+      <li><b>Soluciones válidas (las tres, «todas las anteriores»):</b> <b>oversampling</b> (repetir ejemplos de la clase minoritaria), <b>undersampling</b> (reducir la mayoritaria) y <b>SMOTE</b> (generar ejemplos sintéticos de la minoritaria). También holdout/k-fold <b>estratificado</b> y el parámetro <code>class_weight</code>.</li>
+      <li><b>Métrica:</b> con desbalanceo, la <i>accuracy</i> engaña; mejor F1, recall o precision.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">4. Entrenar: backpropagation, descenso de gradiente y ajuste</h2>
+  <div class="bloque">
+    <h4>El ciclo de entrenamiento</h4>
+    <ol>
+      <li><b>Feed forward:</b> el dato atraviesa la red y se obtiene una predicción.</li>
+      <li><b>Costo:</b> se compara con el valor real (función de costo).</li>
+      <li><b>Backpropagation (retropropagación):</b> el error se propaga hacia atrás para calcular cuánto contribuyó cada peso. Sirve para <b>reajustar los pesos y disminuir el error de salida</b>.</li>
+      <li><b>Descenso de gradiente:</b> cada peso se mueve en la dirección que reduce el error, con un paso marcado por el <b>learning rate</b>: w ← w − η·∂Costo/∂w.</li>
+    </ol>
+    <p><b>Trampa del examen:</b> la retropropagación nunca «aumenta el error», ni «elimina neuronas». Reajusta pesos (suben o bajan) <b>para reducir</b> el error.</p>
+  </div>
+  <div class="bloque">
+    <h4>Diagnóstico por los errores (tabla clave)</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Error de entrenamiento</th><th>Error de validación/test</th><th>Diagnóstico</th><th>Qué hacer</th></tr>
+      <tr><td><b>Alto</b> (p. ej. 30 %)</td><td><b>Alto</b> (p. ej. 32 %)</td><td><b>Underfitting</b> (modelo demasiado simple)</td><td>Más capas/neuronas, más épocas, mejores variables.</td></tr>
+      <tr><td><b>Bajo</b> (p. ej. 2 %)</td><td><b>Mucho mayor</b> (p. ej. 25 %)</td><td><b>Overfitting</b> (memoriza, no generaliza)</td><td>Regularización L1/L2, dropout, más datos, modelo más simple, parar antes.</td></tr>
+      <tr><td><b>Bajo</b> (3 %)</td><td><b>Bajo y parecido</b> (4 %)</td><td><b>Buen ajuste</b></td><td>Nada: está entrenando bien.</td></tr>
+    </table></div>
+    <p><b>Mnemotecnia:</b> la primera columna decide si hay underfitting (alto) y la diferencia entre columnas decide si hay overfitting (gran brecha). Tener error alto en ambos conjuntos <b>sí es posible</b>.</p>
+    <p><b>Otros problemas:</b> convergencia lenta o inexistente (learning rate mal elegido) y <b>desvanecimiento de gradiente</b> (sigmoide/tanh en capas ocultas: por eso se usa ReLU).</p>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">5. Funciones de activación y de costo</h2>
+  <div class="bloque">
+    <h4>Activación</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Función</th><th>Dónde</th><th>Para qué</th></tr>
+      <tr><td><b>ReLU</b></td><td>Capas <b>ocultas</b> (CNN, MLP)</td><td>f(z) = max(0, z). La más usada; evita el desvanecimiento del gradiente.</td></tr>
+      <tr><td><b>Tanh / Sigmoide</b></td><td>Ocultas de RNN y puertas de LSTM</td><td>No recomendadas en ocultas de redes profundas (desvanecimiento).</td></tr>
+      <tr><td><b>Sigmoide</b></td><td>Salida</td><td><b>Binaria</b> (o multietiqueta): probabilidad en (0,1).</td></tr>
+      <tr><td><b>Softmax</b></td><td>Salida</td><td><b>Multiclase</b> excluyente: probabilidades que suman 1.</td></tr>
+      <tr><td><b>Lineal</b></td><td>Salida</td><td><b>Regresión</b>: cualquier valor real.</td></tr>
+    </table></div>
+    <p><b>Ejemplo:</b> predecir «¿se lesionará?» (sí/no) con una red → 1 neurona de salida con <b>sigmoide</b>. Predecir cuántos kilómetros recorrerá → 1 neurona <b>lineal</b>. Clasificar un parte en 5 categorías → 5 neuronas con <b>softmax</b>. Una red <b>siempre</b> necesita neurona(s) de salida.</p>
+  </div>
+  <div class="bloque">
+    <h4>Función de costo</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Problema</th><th>Costo</th><th>Detalle</th></tr>
+      <tr><td>Binaria</td><td><b>Binary Cross-Entropy</b></td><td>Objetivos {0,1}. (Hinge: {−1,1}, pensada para SVM.)</td></tr>
+      <tr><td>Multiclase con one-hot</td><td><b>Multiclass Cross-Entropy</b></td><td>Objetivo como vector [0,0,1,0,0].</td></tr>
+      <tr><td>Multiclase con enteros</td><td><b>Sparse Multiclass Cross-Entropy</b></td><td>Objetivo como entero 0…n; evita vectores enormes.</td></tr>
+      <tr><td>Regresión</td><td><b>MSE</b> (o <b>MAE</b>)</td><td>MSE penaliza más los errores grandes; MAE es más robusto a outliers; MSLE relaja el castigo en magnitudes grandes.</td></tr>
+    </table></div>
+    <p><b>Regla:</b> <i>sigmoide + binary cross-entropy</i>, <i>softmax + multiclass cross-entropy</i>, <i>lineal + MSE</i>. Nunca MSE/MAE para clasificar ni cross-entropy para regresión.</p>
+  </div>
+</section>
+
+<section class="cat" id="sec6">
+  <h2 class="cat-title">6. Métricas de evaluación</h2>
+  <div class="bloque">
+    <h4>La matriz de confusión con un ejemplo</h4>
+    <p>Un modelo detecta lesiones en 100 radiografías. Resultado: <b>TP = 40</b> (lesión detectada), <b>FP = 10</b> (falsa alarma), <b>FN = 20</b> (lesión no detectada), <b>TN = 30</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Métrica</th><th>Fórmula</th><th>Resultado</th></tr>
+      <tr><td><b>Accuracy</b></td><td>(TP+TN)/total</td><td>(40+30)/100 = <b>0,70</b></td></tr>
+      <tr><td><b>Precision</b></td><td>TP/(TP+FP)</td><td>40/50 = <b>0,80</b></td></tr>
+      <tr><td><b>Recall</b></td><td>TP/(TP+FN)</td><td>40/60 ≈ <b>0,67</b></td></tr>
+      <tr><td><b>F1</b></td><td>2·P·R/(P+R)</td><td>2·0,80·0,67/(1,47) ≈ <b>0,73</b></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>¿Cuál priorizo?</h4>
+    <ul>
+      <li><b>Recall</b> → que no se escape ningún positivo (<b>falsos negativos</b> costosos): cáncer, lesión, fraude.</li>
+      <li><b>Precision</b> → que lo marcado como positivo lo sea (<b>falsos positivos</b> costosos): spam.</li>
+      <li><b>F1</b> → equilibrio, y mejor con clases desbalanceadas.</li>
+      <li><b>Accuracy</b> → solo con clases balanceadas.</li>
+      <li><b>AUC-ROC</b> → capacidad de distinguir clases; útil cuando importan las probabilidades.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Regresión y agrupamiento</h4>
+    <ul>
+      <li><b>Regresión:</b> R² (más cerca de 1, mejor), MSE, RMSE (misma unidad que el objetivo), MAE, MAPE (en %). Menor error = mejor.</li>
+      <li><b>Agrupamiento:</b> <b>silueta</b> (−1 a 1; más alto, mejor), <b>SSW</b> (cohesión; bajo, mejor), <b>SSB</b> (separación; alto, mejor), <b>ARI</b> (compara con etiquetas reales).</li>
+      <li><b>Nunca mezcles familias:</b> R², MSE, MAE y SSE son de regresión; accuracy, precision, recall, F1 y AUC de clasificación; silueta, SSW, SSB y ARI de clustering.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Elegir entre modelos: ejemplos resueltos</h4>
+    <ul>
+      <li><b>Mismo MSE, distinto R²:</b> perceptrón (MSE 0,5; R² 0,75) frente a SVR (MSE 0,5; R² 0,6) → <b>el perceptrón</b>: a igual error, explica más variabilidad.</li>
+      <li><b>Métricas distintas:</b> SVM (F1 = 0,61), RF (F1 = 0,50), MLP (R² = 0,45), KNN (accuracy = 0,1) → solo se comparan métricas iguales y válidas para el problema; entre los F1 gana <b>la SVM</b>. R² no existe en clasificación.</li>
+      <li><b>Silueta 0,72 frente a 0,31:</b> gana el de 0,72.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec7">
+  <h2 class="cat-title">7. Evaluación e hiperparámetros</h2>
+  <div class="bloque">
+    <h4>Reparto de datos y técnicas</h4>
+    <ul>
+      <li><b>Train</b> ajusta pesos y bias; <b>validación</b> ajusta hiperparámetros y elige modelo; <b>test</b> da la evaluación final. El de entrenamiento debe ser el mayor: <b>60:20:20</b>, 50:20:30 o 40:20:40. Un 20 % de train y 60 % de validación es un error.</li>
+      <li><b>Holdout</b> (reparto aleatorio; <i>estratificado</i> si hay clases desbalanceadas), <b>validación cruzada k-fold</b> (k=5 o 10, ideal con pocos datos, media de k evaluaciones) y <b>bootstrap</b> (muestreo con reemplazo, estimación optimista). Ninguna es obligatoria «siempre».</li>
+      <li><b>Calidad final del modelo:</b> comparar las <b>predicciones sobre test (y_pred) con los valores reales de test (y_test)</b>. Nunca con los datos de entrenamiento.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Hiperparámetros</h4>
+    <ul>
+      <li>Son configuraciones <b>externas</b> que <b>no se aprenden</b> (learning rate, batch size, nº de capas, neuronas, dropout, k en KNN, C en SVM…). Los <b>parámetros</b> (pesos y bias) sí se aprenden.</li>
+      <li>Para buscarlos: <b>manual</b>, <b>Grid Search</b> (todas las combinaciones), <b>Random Search</b>, optimización <b>bayesiana</b>, <b>evolutiva</b>, por gradiente (poco recomendable) y <b>AutoML</b>. Si preguntan «¿qué método puedo usar?», suele valer <b>«todos los anteriores»</b>.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec8">
+  <h2 class="cat-title">8. Trampas frecuentes del examen</h2>
+  <div class="bloque">
+    <ul>
+      <li><b>«A y B son correctas» / «todas las anteriores»:</b> comprueba cada opción antes de elegir; en estas preguntas puede haber varias válidas.</li>
+      <li><b>Respuestas imposibles:</b> «es imposible tener error alto en train y test» (falso), «la retropropagación aumenta el error» (falso), «la regresión logística no sirve para clasificar» (falso).</li>
+      <li><b>Preguntas «señala la falsa»:</b> busca la afirmación absoluta («solo», «siempre», «nunca»): suele ser la falsa.</li>
+      <li><b>Misma familia de métrica:</b> si el problema es de regresión, descarta recall y F1; si es de clasificación, descarta R² y MSE; si es de clustering, solo silueta, SSW, SSB o ARI.</li>
+      <li><b>Secuencia → LSTM; imagen → CNN; tabla → MLP/RF/SVM.</b></li>
+      <li><b>Sigmoide ↔ binaria; softmax ↔ multiclase; lineal ↔ regresión; ReLU ↔ capas ocultas.</b></li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="ic-simulacro-parcial.html">Hacer el simulacro (30 preguntas)</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Guía elaborada a partir del examen parcial y de los apuntes de los Temas 1 a 2.4 (Ingeniería del Conocimiento).
+</footer>
+</main>
+</body>
+</html>
