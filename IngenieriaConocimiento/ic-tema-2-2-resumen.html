@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen IC Tema 2.2 · Desarrollo de modelos de IA</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Tema 2.2 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Ingeniería del Conocimiento · Tema 2.2</span>
+  <h1>Resumen: Desarrollo de modelos de IA</h1>
+  <p class="lead">Modelos de Machine Learning (regresión, RF, SVM, KNN, K-Means, DBSCAN, jerárquico) y Deep Learning (MLP, CNN, GRU, LSTM, autoencoders), con sus hiperparámetros; funciones de activación, funciones de costo y cómo combinarlas.</p>
+  <div class="actions-row"><a class="btn primary" href="ic-tema-2-2.html">Hacer el test (140 preguntas)</a><a class="btn" href="ic-tema-2-1-resumen.html">Tema 2.1</a></div>
+</div>
+
+<nav class="toc" aria-label="Secciones">
+  <a href="#sec1">1. Introducción</a>
+  <a href="#sec2">2. Machine Learning</a>
+  <a href="#sec3">3. Deep Learning</a>
+  <a href="#sec4">4. Funciones de activación</a>
+  <a href="#sec5">5. Funciones de costo</a>
+  <a href="#sec6">6. Activación + costo</a>
+</nav>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">1. Introducción</h2>
+  <div class="bloque">
+    <ul>
+      <li>Los modelos de IA se agrupan en <b>ML</b> y <b>DL</b>; se estudian en tres escenarios: <b>clasificación, regresión y agrupamiento (clustering)</b>.</li>
+      <li>Objetivos: desarrollar modelos de ML y DL, y conocer y combinar las funciones de activación y de costo.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">2. Machine Learning</h2>
+  <div class="bloque">
+    <h4>Clasificación de modelos</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Modelo</th><th>Clasificación</th><th>Regresión</th><th>Agrupamiento</th></tr>
+      <tr><td>Regresión Logística</td><td>✔</td><td></td><td></td></tr>
+      <tr><td>Regresión Lineal</td><td></td><td>✔</td><td></td></tr>
+      <tr><td>Random Forest (RF)</td><td>✔</td><td>✔</td><td></td></tr>
+      <tr><td>SVM</td><td>✔</td><td>✔</td><td></td></tr>
+      <tr><td>KNN</td><td>✔</td><td>✔</td><td></td></tr>
+      <tr><td>K-Means</td><td></td><td></td><td>✔</td></tr>
+      <tr><td>DBSCAN</td><td></td><td></td><td>✔</td></tr>
+      <tr><td>Hierarchical Clustering</td><td></td><td></td><td>✔</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Regresión Logística y Regresión Lineal</h4>
+    <ul>
+      <li><b>Regresión Logística:</b> clasificación <b>binaria</b>. Pese al nombre, estima la <b>probabilidad</b> de pertenecer a una clase. Una función logística mapea la combinación lineal de características a un valor entre 0 y 1; si supera un umbral (p. ej. 0,5) se predice una clase, si no, la otra.</li>
+      <li><b>Regresión Lineal:</b> regresión. Busca la mejor línea (o hiperplano) que se ajuste linealmente a los datos <b>minimizando la suma de los errores al cuadrado</b>; calcula los coeficientes que ponderan las características.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Random Forest (RF)</h4>
+    <ul>
+      <li>Clasificación y regresión. <b>Ensemble de múltiples árboles de decisión</b>, cada uno entrenado con una submuestra aleatoria de datos y características.</li>
+      <li>Cada árbol emite una predicción; la final sale por <b>votación</b> (clasificación) o <b>promedio</b> (regresión).</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Hiperparámetro</th><th>Función</th></tr>
+      <tr><td><code>n_estimators</code></td><td>Número de árboles. Más suele mejorar el rendimiento, pero aumenta tiempo y complejidad.</td></tr>
+      <tr><td><code>max_depth</code></td><td>Profundidad máxima; limitarla evita sobreajuste. Sin especificar, crecen hasta hojas puras o con mínimo de muestras.</td></tr>
+      <tr><td><code>min_samples_split</code></td><td>Mínimo de muestras para dividir un nodo interno.</td></tr>
+      <tr><td><code>min_samples_leaf</code></td><td>Mínimo de muestras en una hoja.</td></tr>
+      <tr><td><code>max_features</code></td><td>Máximo de características consideradas al dividir un nodo (número fijo o porcentaje).</td></tr>
+      <tr><td><code>bootstrap</code></td><td>Si se usa muestreo bootstrap (observaciones con reemplazo) al construir cada árbol.</td></tr>
+      <tr><td><code>random_state</code></td><td>Semilla del generador aleatorio, para reproducir resultados.</td></tr>
+      <tr><td><code>n_jobs</code></td><td>Núcleos de CPU a usar; −1 = todos.</td></tr>
+      <tr><td><code>class_weight</code></td><td>Pesos distintos por clase (solo clasificación).</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Support Vector Machine (SVM)</h4>
+    <ul>
+      <li>Clasificación y regresión. Busca el <b>hiperplano</b> que mejor separa las clases; en clasificación lineal, el que <b>maximiza el margen</b>. En problemas no lineales transforma las características a un espacio donde sean linealmente separables.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Hiperparámetro</th><th>Función</th></tr>
+      <tr><td><code>C</code></td><td>Regularización: equilibrio entre margen amplio y errores de clasificación. Valor pequeño → frontera más suave; grande → más estricta.</td></tr>
+      <tr><td><code>kernel</code></td><td><code>linear</code>, <code>poly</code>, <code>rbf</code>, <code>sigmoid</code>.</td></tr>
+      <tr><td><code>degree</code></td><td>Grado del polinomio (kernel <code>poly</code>).</td></tr>
+      <tr><td><code>gamma</code></td><td>Coeficiente del kernel (rbf, poly, sigmoid). Bajo → frontera suave; alto → más ajustada a los datos.</td></tr>
+      <tr><td><code>class_weight</code></td><td>Pesos por clase (solo clasificación).</td></tr>
+      <tr><td><code>epsilon</code></td><td>Zona sin penalización por errores (solo regresión).</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>K-Nearest Neighbors (KNN)</h4>
+    <ul>
+      <li>Clasificación y regresión. Calcula la distancia a todas las instancias de entrenamiento y toma los <b>k vecinos más cercanos</b>: en clasificación, la <b>clase mayoritaria</b>; en regresión, el <b>promedio</b> (o ponderación) de sus valores.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Hiperparámetro</th><th>Función</th></tr>
+      <tr><td><code>n_neighbors</code></td><td>Número de vecinos (k); afecta al sesgo-varianza.</td></tr>
+      <tr><td><code>weights</code></td><td><code>uniform</code> (contribuciones iguales) o <code>distance</code> (inverso de la distancia).</td></tr>
+      <tr><td><code>algorithm</code></td><td><code>ball_tree</code>, <code>kd_tree</code>, <code>brute</code> o <code>auto</code>.</td></tr>
+      <tr><td><code>leaf_size</code></td><td>Tamaño de hoja para ball_tree y kd_tree.</td></tr>
+      <tr><td><code>p</code></td><td>p=1 distancia Manhattan (L1); p=2 euclidiana (L2).</td></tr>
+      <tr><td><code>metric</code></td><td><code>minkowski</code>, <code>manhattan</code>, <code>euclidean</code>…</td></tr>
+      <tr><td><code>n_jobs</code></td><td>Núcleos de CPU; −1 = todos.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>K-Means</h4>
+    <ul>
+      <li>Agrupamiento en <b>k clústeres</b>. Elige k centros iniciales, asigna cada instancia al centro más cercano, recalcula los centros como el <b>promedio</b> de cada clúster y repite hasta que los centros <b>convergen</b>.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Hiperparámetro</th><th>Función</th></tr>
+      <tr><td><code>n_clusters</code></td><td>Número de clústeres; parámetro crítico.</td></tr>
+      <tr><td><code>init</code></td><td>Inicialización: <code>k-means++</code>, <code>random</code> o array de centroides.</td></tr>
+      <tr><td><code>n_init</code></td><td>Nº de ejecuciones con distintos centroides; se queda la de menor inercia.</td></tr>
+      <tr><td><code>max_iter</code></td><td>Iteraciones máximas por ejecución.</td></tr>
+      <tr><td><code>tol</code></td><td>Tolerancia de convergencia (diferencia de inercias entre iteraciones).</td></tr>
+      <tr><td><code>algorithm</code></td><td><code>auto</code>, <code>full</code> (fuerza bruta), <code>elkan</code> (optimizado).</td></tr>
+      <tr><td><code>random_state</code></td><td>Semilla aleatoria.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>DBSCAN y Hierarchical Clustering</h4>
+    <ul>
+      <li><b>DBSCAN:</b> agrupamiento basado en <b>densidad</b>, sin fijar el nº de clústeres. Parámetros: <b>radio de búsqueda (ε)</b> y <b>número mínimo de puntos (MinPts)</b> en ese radio. Si un punto no cumple la densidad, es <b>ruido / outlier</b>. Útil para clústeres de formas y tamaños irregulares y con densidades distintas.</li>
+      <li><b>Hierarchical Clustering:</b> construye un <b>árbol jerárquico</b>: cada instancia empieza como su propio clúster y se <b>fusionan</b> los más similares hasta quedar uno solo. Al <b>cortar el árbol</b> a distintos niveles se obtienen distintos agrupamientos.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">3. Deep Learning</h2>
+  <div class="bloque">
+    <h4>Clasificación de modelos</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Modelo</th><th>Clasificación</th><th>Regresión</th><th>Agrupamiento</th></tr>
+      <tr><td>MLP</td><td>✔</td><td>✔</td><td></td></tr>
+      <tr><td>CNN</td><td>✔</td><td>✔</td><td></td></tr>
+      <tr><td>GRU</td><td>✔</td><td>✔</td><td></td></tr>
+      <tr><td>LSTM</td><td>✔</td><td>✔</td><td></td></tr>
+      <tr><td>Autoencoders</td><td></td><td></td><td>✔</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>MultiLayer Perceptron (MLP)</h4>
+    <ul>
+      <li>Red neuronal <b>feedforward</b> de capas <b>fully-connected</b>: al menos una capa de entrada, una o más <b>ocultas</b> y una de salida. Los pesos se ajustan por <b>retropropagación</b> minimizando la función de pérdida.</li>
+      <li><b>Capa de entrada:</b> introduce los patrones, sin procesamiento; asigna pesos y envía a la primera capa oculta. <b>Capas ocultas:</b> realizan el cómputo (backpropagation y descenso de gradiente). <b>Capa de salida:</b> genera la salida del modelo.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Bloque</th><th>Hiperparámetros</th></tr>
+      <tr><td>Capa oculta</td><td><code>units</code>, <code>activation</code> (relu, tanh), <code>kernel_initializer</code> (glorot_uniform, he_normal), <code>kernel_regularizer</code> (L1/L2, reduce sobreajuste)</td></tr>
+      <tr><td>Capa de salida</td><td><code>units</code> (una por cada feature a predecir), <code>activation</code> (softmax clasificación, linear regresión)</td></tr>
+      <tr><td>Entrenamiento</td><td><code>batch_size</code> (ejemplos por actualización de pesos), <code>epochs</code> (pasadas completas al dataset), <code>verbose</code></td></tr>
+      <tr><td>Compilación</td><td><code>optimizer</code> (adam, sgd, rmsprop), <code>learning_rate</code>, <code>loss</code> (categorical_crossentropy, mean_squared_error), <code>metrics</code></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Convolutional Neural Network (CNN)</h4>
+    <ul>
+      <li>Para datos con <b>estructura de cuadrícula</b> como imágenes; muy eficaz en clasificación de imágenes.</li>
+      <li><b>Capa convolucional:</b> filtros (kernels) aprendibles que extraen características locales (bordes, texturas). <b>Pooling:</b> reduce la dimensionalidad. <b>Fully-connected:</b> predicción final, con <b>softmax</b> para las probabilidades de clase.</li>
+      <li><b>Stride:</b> paso con el que se desplaza el filtro (1 en 1, 2 en 2…).</li>
+      <li><b>Padding:</b> <i>valid</i> (se descarta la última convolución si el filtro sale de la matriz), <i>same</i> (la salida mantiene el tamaño de la entrada) y <i>full</i> (borde de ceros que aumenta el tamaño de salida).</li>
+      <li><b>Pooling:</b> <i>Max Pooling</i> (guarda el máximo) y <i>Average Pooling</i> (guarda el promedio).</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Bloque</th><th>Hiperparámetros</th></tr>
+      <tr><td>Convolucional</td><td><code>filters</code>, <code>kernel_size</code>, <code>strides</code>, <code>padding</code> (same/valid), <code>activation</code>, <code>kernel_initializer</code>, <code>kernel_regularizer</code></td></tr>
+      <tr><td>Pooling</td><td><code>pool_size</code>, <code>strides</code></td></tr>
+      <tr><td>Fully-connected / salida / entrenamiento / compilación</td><td>Como en el MLP</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>GRU y LSTM (redes recurrentes)</h4>
+    <ul>
+      <li><b>GRU (Gated Recurrent Unit):</b> tipo de RNN diseñado para el <b>desvanecimiento y explosión de gradientes</b> de las RNN tradicionales. Variante <b>más simple</b> que la LSTM pero efectiva en secuencias (NLP, series temporales).</li>
+      <li><b>LSTM (Long Short-Term Memory):</b> variante de RNN para <b>secuencias largas y dependencias a largo plazo</b>. Tiene una <b>celda de memoria</b> que transporta información sin degradación y tres puertas.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Puerta LSTM</th><th>Qué hace</th></tr>
+      <tr><td><b>Forget gate</b> (olvido)</td><td>Decide qué se descarta de la celda anterior. Usa estado oculto previo + entrada actual con <b>sigmoide</b>: cerca de 0 se elimina, cerca de 1 se mantiene.</td></tr>
+      <tr><td><b>Input gate</b> (entrada)</td><td>Decide cuánta información nueva se añade. Sigmoide + vector de valores candidatos; el producto se suma a la celda de estado.</td></tr>
+      <tr><td><b>Output gate</b> (salida)</td><td>Calcula el nuevo estado oculto y la salida: versión filtrada del estado de la celda.</td></tr>
+    </table></div>
+    <ul>
+      <li>Hiperparámetros específicos de la capa LSTM: <code>units</code>, <code>activation</code> (tanh), <code>dropout</code> (neuronas desactivadas entre capas, evita sobreajuste), <code>recurrent_dropout</code> (en las conexiones recurrentes), <code>return_sequences</code>, <code>kernel_initializer</code>, <code>kernel_regularizer</code>. Salida, entrenamiento y compilación, como en el MLP.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Autoencoders</h4>
+    <ul>
+      <li>Usados sobre todo para <b>reducción de dimensionalidad</b>, y también para <b>agrupamiento</b> (con las representaciones latentes).</li>
+      <li>Redes que intentan <b>reconstruir la entrada en la salida</b>, pasando por una <b>capa de codificación</b> y una de <b>decodificación</b> con capas latentes.</li>
+      <li>Una vez entrenado, el codificador reduce dimensionalidad o, en autoencoders <b>variacionales</b>, genera datos similares a los de entrada.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">4. Funciones de activación en Deep Learning</h2>
+  <div class="bloque">
+    <h4>Concepto</h4>
+    <ul>
+      <li>Controlan qué información se propaga de una capa a la siguiente (<b>forward propagation</b>): convierten el valor neto de entrada de la neurona (inputs, pesos y bias) en un nuevo valor.</li>
+      <li>Combinando activaciones <b>no lineales</b> con varias capas, la red aprende <b>relaciones no lineales</b>.</li>
+      <li>La mayoría devuelve valores en (0, 1) o (−1, 1). Con activación cero, la neurona está <b>inactiva</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Las funciones</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Función</th><th>Características</th></tr>
+      <tr><td><b>Lineal</b></td><td>«Sin activación» o identidad: devuelve el valor recibido.</td></tr>
+      <tr><td><b>Sigmoide</b></td><td>Logística; salida en (0, 1) → probabilidades. Por defecto en la salida de la clasificación binaria. <b>No usar en capas ocultas</b> (desvanecimiento de gradiente).</td></tr>
+      <tr><td><b>Softmax</b></td><td>Extensión de la sigmoide (una por clase). Devuelve un vector de probabilidades que <b>suma 1</b>. Solo en la <b>capa de salida</b>.</td></tr>
+      <tr><td><b>Tanh</b></td><td>Similar a la sigmoide, salida en [−1, +1]; continua. <b>No usar en capas ocultas</b> (desvanecimiento de gradiente).</td></tr>
+      <tr><td><b>ReLU</b></td><td>La más usada; f(z)=0 si z&lt;0 y f(z)=z si z≥0. Solo en <b>capas ocultas</b>, típica en CNN.</td></tr>
+      <tr><td><b>Leaky-ReLU</b></td><td>Mejora de ReLU que maneja los negativos: <code>max(0,01x, x)</code>.</td></tr>
+      <tr><td><b>ELU</b></td><td>Tiene valores negativos, acerca las activaciones medias a cero y acelera el aprendizaje; satura en un valor negativo.</td></tr>
+      <tr><td><b>Swish</b></td><td>Suave y no monótona; iguala o supera a ReLU en redes profundas. Se usa en modelos complejos de <b>más de 40 capas</b>.</td></tr>
+      <tr><td><b>Mish</b></td><td>No monótona y autorregulada, inspirada en Swish; tiende a igualar o mejorar a Swish, ReLU y Leaky ReLU en visión por computador.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Cómo elegirla</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Capa de salida según el problema</th><th>Activación</th></tr>
+      <tr><td>Regresión</td><td>Lineal</td></tr>
+      <tr><td>Clasificación binaria</td><td>Sigmoide</td></tr>
+      <tr><td>Clasificación multiclase</td><td>Softmax</td></tr>
+      <tr><td>Clasificación multietiqueta</td><td>Sigmoide</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Capas ocultas:</b> CNN → ReLU; RNN → Tanh y/o Sigmoide.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">5. Funciones de costo en Deep Learning</h2>
+  <div class="bloque">
+    <h4>Concepto</h4>
+    <ul>
+      <li>La <b>función de costo (loss)</b> cuantifica la distancia entre el valor real y el predicho: cuánto se equivoca la red.</li>
+      <li>Suele devolver valores positivos; cuanto más cerca de <b>cero</b>, mejores predicciones (0 = coincidencia exacta).</li>
+      <li>Puede calcularse para una observación o para un conjunto (promedio); este último es el que <b>dirige el entrenamiento</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Clasificación</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Función</th><th>Características</th></tr>
+      <tr><td><b>Binary Cross-Entropy</b></td><td>Por defecto en clasificación binaria; objetivos en {0, 1}. Valor perfecto: 0.</td></tr>
+      <tr><td><b>Hinge Loss</b></td><td>Alternativa para binaria, pensada para SVM; objetivos en {−1, 1}. Penaliza más cuando el signo es incorrecto.</td></tr>
+      <tr><td><b>Squared Hinge Loss</b></td><td>Cuadrado de la hinge; suaviza la función de error y es numéricamente más fácil de manejar.</td></tr>
+      <tr><td><b>Multi-Class Cross-Entropy</b></td><td>Por defecto en multiclase; objetivos con <b>one-hot encoding</b>.</td></tr>
+      <tr><td><b>Sparse Multiclass Cross-Entropy</b></td><td>Igual cálculo sin one-hot: objetivos como <b>enteros</b> (una clase = un entero). Evita vectores enormes si hay muchas categorías.</td></tr>
+      <tr><td><b>Kullback-Leibler Divergence</b></td><td>Mide cuánto difiere una distribución de otra de referencia; 0 = idénticas. Para modelos que aproximan funciones complejas, p. ej. modelos probabilísticos generativos.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Regresión</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Función</th><th>Características</th></tr>
+      <tr><td><b>MSE</b> (Mean Squared Error)</td><td>Por defecto en regresión: promedio de diferencias al cuadrado. Siempre positivo; los errores grandes penalizan más. Mejor con objetivo gaussiano.</td></tr>
+      <tr><td><b>MSLE</b> (Mean Squared Logarithmic Error)</td><td>Aplica el logaritmo natural antes del MSE; relaja el castigo a errores grandes cuando el objetivo tiene gran amplitud. Útil con cantidades sin escalar.</td></tr>
+      <tr><td><b>MAE</b> (Mean Absolute Error)</td><td>Promedio de la diferencia absoluta; <b>más robusto ante outliers</b>.</td></tr>
+    </table></div>
+    <ul>
+      <li><b>Directrices:</b> binaria → Binary Cross-Entropy; multiclase → Multiclass Cross-Entropy (one-hot) o Sparse (sin one-hot); regresión → MSE (también válido MAE).</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec6">
+  <h2 class="cat-title">6. Combinación activación-costo</h2>
+  <div class="bloque">
+    <p>Se buscan pares (activación de salida, costo) que minimicen el error de la red.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Problema</th><th>Activación de la capa de salida</th><th>Función de costo</th></tr>
+      <tr><td>Clasificación binaria</td><td>Sigmoide</td><td>Binary Cross-Entropy</td></tr>
+      <tr><td>Clasificación multiclase</td><td>Softmax</td><td>Multiclass Cross-Entropy</td></tr>
+      <tr><td>Regresión</td><td>Lineal</td><td>MSE</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="ic-tema-2-2.html">Hacer el test (140 preguntas)</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Resumen basado en «Tema 2.2 – Desarrollo de modelos de IA» (Ingeniería del Conocimiento).
+</footer>
+</main>
+</body>
+</html>
