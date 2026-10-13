@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen IC Tema 2.3 · Evaluación de modelos de IA</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Tema 2.3 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Ingeniería del Conocimiento · Tema 2.3</span>
+  <h1>Resumen: Evaluación de modelos de IA</h1>
+  <p class="lead">Qué es evaluar un modelo, técnicas de evaluación (holdout, validación cruzada y bootstrap) y métricas para clasificación, regresión y agrupamiento.</p>
+  <div class="actions-row"><a class="btn primary" href="ic-tema-2-3.html">Hacer el test (71 preguntas)</a><a class="btn" href="ic-tema-2-2-resumen.html">Tema 2.2</a></div>
+</div>
+
+<nav class="toc" aria-label="Secciones">
+  <a href="#sec1">1. Introducción</a>
+  <a href="#sec2">2. Técnicas de evaluación</a>
+  <a href="#sec3">3. Métricas</a>
+</nav>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">1. Introducción</h2>
+  <div class="bloque">
+    <h4>¿Qué es evaluar y para qué?</h4>
+    <ul>
+      <li><b>Evaluar</b> es cuantificar el rendimiento (calidad de predicción) del modelo con métricas, según el tipo de problema: clasificación, regresión o agrupamiento.</li>
+      <li>Sirve para <b>comparar modelos</b> y elegir el mejor, <b>estimar cómo se comportará en producción</b> y <b>convencer al cliente</b> de que cumplirá su propósito.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Regla básica</h4>
+    <ul>
+      <li>La evaluación final <b>nunca</b> debe hacerse sobre los datos de entrenamiento, ni siquiera sobre los de validación: se hace con los <b>datos de prueba</b>.</li>
+      <li>Forma más básica: dividir en entrenamiento, validación y prueba; aprender con el primero, validar con el segundo, evaluar con el tercero.</li>
+      <li>A veces no es posible (pocos datos) → se usan técnicas como validación cruzada o bootstrap.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">2. Técnicas de evaluación</h2>
+  <div class="bloque">
+    <h4>Holdout</h4>
+    <ul>
+      <li>Separar <b>aleatoriamente</b> los datos en entrenamiento, validación y prueba. Porcentajes habituales: <b>60:20:20, 50:20:30, 40:20:40</b>.</li>
+      <li><b>Problemas:</b> clases no balanceadas (el reparto puede no respetar las proporciones; ej.: 900 de «A» y 100 de «B»); a veces no hay datos suficientes para separar; puede que en entrenamiento queden los datos «fáciles» (o al revés).</li>
+      <li><b>Holdout estratificado:</b> reparte aleatoriamente respetando las proporciones de cada clase.</li>
+      <li>La validación cruzada contrarresta los dos últimos problemas.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Validación cruzada (cross validation)</h4>
+    <ul>
+      <li><b>k-fold:</b> se divide el conjunto en <b>k partes iguales</b> (preferentemente estratificadas; k=10 o k=5), se hacen <b>k aprendizajes</b>: en cada uno una parte es test y las otras <b>k−1</b> entrenamiento; se devuelve la <b>media</b> de las evaluaciones.</li>
+      <li><b>Ventajas:</b> buena opción con pocos datos; cada dato aparece <b>exactamente una vez</b> en test; permite medir la <b>varianza</b> entre conjuntos de prueba.</li>
+      <li><b>Desventaja:</b> tiempo de cómputo.</li>
+      <li><b>Observaciones:</b> no es un método para aprender un modelo, sino para estimar su capacidad de generalización; se usa p. ej. para ajustar parámetros. Después se suele aprender el modelo con todo el conjunto de entrenamiento y evaluarlo con un conjunto de prueba independiente.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Variante</th><th>Descripción</th></tr>
+      <tr><td><b>Leave One Out (LOOCV)</b></td><td>Un solo dato como test y el resto como entrenamiento; se repite para cada dato. Útil con conjuntos pequeños; costoso con grandes.</td></tr>
+      <tr><td><b>Monte Carlo CV</b></td><td>Combina reorganización aleatoria de los datos con validación cruzada (particiones aleatorias). Permite <i>subsampling</i>, útil con muchos datos.</td></tr>
+      <tr><td><b>Stratified K-Fold</b></td><td>La distribución de clases en cada pliegue es similar a la del conjunto original. Útil con clases desequilibradas.</td></tr>
+      <tr><td><b>Time Series CV</b></td><td>Específica para series temporales: divisiones según el tiempo, simulando predecir el futuro a partir del pasado.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Bootstrap</h4>
+    <ul>
+      <li>Técnica de <b>resampling</b>: extraer repetidamente muestras de los datos <b>con reemplazo</b> (un dato puede aparecer varias veces o no aparecer).</li>
+      <li>En cada iteración: muestra del <b>mismo tamaño</b> que el dataset; se entrena con ella y se evalúa sobre el conjunto original; se devuelve la <b>media</b> de las iteraciones.</li>
+      <li>Es una <b>estimación optimista</b>, por el gran solape entre entrenamiento y prueba.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">3. Métricas de evaluación</h2>
+  <div class="bloque">
+    <h4>Resumen por tipo de problema</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Problema</th><th>Métricas</th></tr>
+      <tr><td>Clasificación</td><td>Matriz de confusión, Accuracy, Precision, Recall (sensibilidad), F1, AUC-ROC, Jaccard, Log Loss</td></tr>
+      <tr><td>Regresión</td><td>R², MSE, RMSE, MAE, MAPE</td></tr>
+      <tr><td>Agrupamiento</td><td>Validación interna: SSW, SSB, Silhouette. Validación externa: ARI</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Clasificación: matriz de confusión</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Estado</th><th>Significado</th></tr>
+      <tr><td><b>TP</b> (verdadero positivo)</td><td>Clasificado como positivo y realmente positivo.</td></tr>
+      <tr><td><b>TN</b> (verdadero negativo)</td><td>Clasificado como negativo y realmente negativo.</td></tr>
+      <tr><td><b>FP</b> (falso positivo)</td><td>Clasificado como positivo, pero realmente negativo.</td></tr>
+      <tr><td><b>FN</b> (falso negativo)</td><td>Clasificado como negativo, pero realmente positivo.</td></tr>
+    </table></div>
+    <p>Puede ser binaria o multiclase.</p>
+  </div>
+  <div class="bloque">
+    <h4>Clasificación: métricas</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Métrica</th><th>Fórmula</th><th>Notas</th></tr>
+      <tr><td><b>Accuracy</b></td><td><code>(TP+TN) / (TP+FP+TN+FN)</code></td><td>Proporción de predicciones correctas sobre el total. <b>No adecuada con clases desbalanceadas.</b></td></tr>
+      <tr><td><b>Precision</b></td><td><code>TP / (TP+FP)</code></td><td>De lo clasificado como positivo, cuánto lo es realmente. Útil para <b>minimizar falsos positivos</b> (ej.: detección de spam).</td></tr>
+      <tr><td><b>Recall</b> (sensibilidad, ratio de verdaderos positivos)</td><td><code>TP / (TP+FN)</code></td><td>De los positivos reales, cuántos detecta. Útil para <b>minimizar falsos negativos</b> (ej.: detección de cáncer).</td></tr>
+      <tr><td><b>F1 Score</b></td><td><code>2 · (recall·precision) / (recall+precision)</code></td><td><b>Media armónica</b> de precision y recall; equilibra ambas. Suele comportarse mejor con datasets desbalanceados.</td></tr>
+      <tr><td><b>AUC-ROC</b></td><td>Área bajo la curva ROC (TPR frente a FPR)</td><td>Capacidad del modelo para distinguir entre clases positivas y negativas. Útil cuando las probabilidades de las clases importan.</td></tr>
+      <tr><td><b>Jaccard (IoU)</b></td><td><code>|A ∩ B| / |A ∪ B|</code></td><td>Clasificación y <b>segmentación</b>; Intersection over Union; superposición de conjuntos.</td></tr>
+      <tr><td><b>Log Loss</b></td><td><code>−(y·log p + (1−y)·log(1−p))</code></td><td>Discrepancia entre predicciones y valores reales (logarítmica). Muy importante con <b>modelos de probabilidad</b>.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Regresión</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Métrica</th><th>Descripción</th></tr>
+      <tr><td><b>R²</b></td><td>Proporción de la variabilidad de la variable dependiente explicada por el modelo. Entre 0 y 1; <b>1 = ajuste perfecto</b>.</td></tr>
+      <tr><td><b>MSE</b></td><td>Promedio de los errores al cuadrado. Penaliza los errores grandes más que el MAE.</td></tr>
+      <tr><td><b>RMSE</b></td><td>Raíz cuadrada del MSE: error promedio en la <b>misma unidad</b> que la variable objetivo. También penaliza más los errores grandes que el MAE.</td></tr>
+      <tr><td><b>MAE</b></td><td>Promedio de las diferencias absolutas entre predicciones y valores reales.</td></tr>
+      <tr><td><b>MAPE</b></td><td>Promedio de los errores porcentuales absolutos; interpreta el error en <b>porcentaje</b>.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Agrupamiento</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Métrica</th><th>Tipo</th><th>Descripción</th></tr>
+      <tr><td><b>SSW</b> (Sum of Squared Within)</td><td>Validación interna</td><td>Evalúa la <b>cohesión</b> de los clústeres. <b>Valores bajos</b> deseados.</td></tr>
+      <tr><td><b>SSB</b> (Sum of Squared Between)</td><td>Validación interna</td><td>Evalúa la <b>separación</b> entre clústeres (distancia interclúster). <b>Valores altos</b> deseados.</td></tr>
+      <tr><td><b>Silhouette Score</b></td><td>Validación interna</td><td>Similitud de un punto con su propio clúster (cohesión) frente a otros (separación): <i>a</i> = distancia media al clúster propio, <i>b</i> = distancia media al clúster vecino más próximo. Valor entre <b>−1 y 1</b>; más alto = clústeres más densos y separados.</td></tr>
+      <tr><td><b>ARI</b> (Adjusted Rand Index)</td><td>Validación externa</td><td>Compara las etiquetas reales con las asignadas por el algoritmo; <b>requiere conocer las etiquetas</b>. Mide la similitud entre ambas asignaciones.</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="ic-tema-2-3.html">Hacer el test (71 preguntas)</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Resumen basado en «Tema 2.3 – Evaluación de los modelos de IA» (Ingeniería del Conocimiento).
+</footer>
+</main>
+</body>
+</html>

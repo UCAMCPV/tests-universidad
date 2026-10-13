@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen IC Tema 2.4 · Hiperparametrización de modelos de IA</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Tema 2.4 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Ingeniería del Conocimiento · Tema 2.4</span>
+  <h1>Resumen: Hiperparametrización de modelos de IA</h1>
+  <p class="lead">Hiperparámetros frente a parámetros y técnicas para encontrar sus valores óptimos: manual, Grid Search, Random Search, optimización bayesiana, evolutiva y por gradiente, y AutoML.</p>
+  <div class="actions-row"><a class="btn primary" href="ic-tema-2-4.html">Hacer el test (28 preguntas)</a><a class="btn" href="ic-tema-2-3-resumen.html">Tema 2.3</a></div>
+</div>
+
+<nav class="toc" aria-label="Secciones">
+  <a href="#sec1">1. Introducción</a>
+  <a href="#sec2">2. Técnicas</a>
+</nav>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">1. Introducción</h2>
+  <div class="bloque">
+    <h4>Hiperparámetros</h4>
+    <ul>
+      <li>Son <b>configuraciones externas</b> del modelo que <b>no se aprenden</b> del dataset durante el entrenamiento. Los <b>parámetros</b> (p. ej., pesos), en cambio, sí se ajustan durante el entrenamiento.</li>
+      <li>Afectan a cómo se entrena el modelo y a cómo <b>generaliza</b> a datos nuevos.</li>
+      <li>Ejemplos habituales en DL: número de capas ocultas, neuronas por capa, <b>learning rate</b>, <b>batch size</b>, optimizador, funciones de activación, regularización con <b>dropout</b> e inicialización de pesos.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Hiperparametrización</h4>
+    <ul>
+      <li>Proceso para encontrar los <b>valores óptimos</b> de los hiperparámetros, mejorando el rendimiento y la generalización. Es crucial en ML y DL.</li>
+      <li>Suele implicar <b>buscar en un espacio de hiperparámetros</b> (Grid Search, Random Search…) y evaluar cada configuración con métricas (Precision, Recall, F1, MSE…) para elegir la mejor.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">2. Técnicas de hiperparametrización</h2>
+  <div class="bloque">
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Técnica</th><th>Descripción</th></tr>
+      <tr><td><b>Manual</b></td><td>Ajuste por <b>ensayo y error</b> (todavía común; los expertos «adivinan» buenos valores) o con <b>bucles for anidados</b> en un rango delimitado por el experto. Se buscan métodos más rápidos y automáticos.</td></tr>
+      <tr><td><b>Grid Search</b></td><td>Se define un conjunto de valores por hiperparámetro y se evalúa <b>todas las combinaciones</b>; se elige la mejor. Fácil de implementar, pero <b>costosa</b> en espacios grandes. Posiblemente el método más básico.</td></tr>
+      <tr><td><b>Random Search</b></td><td>Elige combinaciones <b>aleatorias</b> dentro de rangos definidos. Más eficiente que la cuadrícula y a menudo igual o mejor; la aleatoriedad puede dar con una combinación que mejore la actual.</td></tr>
+      <tr><td><b>Optimización Bayesiana</b></td><td>Usa un <b>modelo probabilístico</b> para estimar qué combinaciones darán mejor rendimiento; lo actualiza con cada evaluación y guía la búsqueda hacia regiones prometedoras. Explora de forma más inteligente y reduce el tiempo.</td></tr>
+      <tr><td><b>Optimización Evolutiva</b></td><td>Inspirada en la <b>evolución biológica</b>: se generan poblaciones de configuraciones, se evalúan, las mejores se <b>combinan y mutan</b> para formar la siguiente generación, y se repite. No suele hallar el óptimo absoluto, pero sí uno de los mejores de forma eficiente.</td></tr>
+      <tr><td><b>Optimización por Gradiente</b></td><td>Trata la búsqueda como un problema de optimización y calcula el gradiente respecto a los hiperparámetros con <b>descenso de gradiente</b>. Se usa sobre todo en redes neuronales.</td></tr>
+      <tr><td><b>AutoML</b></td><td>Herramientas y librerías que <b>automatizan</b> gran parte de la selección de hiperparámetros: <b>Auto-Sklearn, AutoKeras, Google's AutoML</b>.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Por qué la optimización por gradiente no es buena idea</h4>
+    <ul>
+      <li>La optimización de hiperparámetros es en general <b>no suave</b>: el descenso de gradiente prefiere funciones suaves (un gradiente cero no es útil) y los hiperparámetros definidos en conjuntos discretos introducen superficies no lisas.</li>
+      <li>Es generalmente <b>no convexa</b>: la teoría del descenso de gradiente asume convexidad. En el mejor caso se obtiene un mínimo local (puede ser arbitrariamente malo); en el peor, ni siquiera converge a un mínimo local.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="ic-tema-2-4.html">Hacer el test (28 preguntas)</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Resumen basado en «Tema 2.4 – Hiperparametrización de los modelos de IA» (Ingeniería del Conocimiento).
+</footer>
+</main>
+</body>
+</html>

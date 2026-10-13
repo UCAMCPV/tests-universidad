@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test IC Tema 2.4 · Hiperparametrización de modelos de IA</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Tema 2.4 · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Tema 2.4</span>
+    <h1>Test: Hiperparametrización de modelos de IA</h1>
+    <p class="lead">28 preguntas. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="ic-tema-2-4-resumen.html">Ver el resumen del tema</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en los apuntes «Tema 2.4 – Hiperparametrización de los modelos de IA» (Ingeniería del Conocimiento).</footer>
+</main>
+
+<script>
+/* La opción correcta es SIEMPRE la primera de cada lista; el motor las baraja al mostrarlas. */
+window.TEST = {
+  id: "ic-tema-2-4",
+  cats: [
+    "1. Hiperparámetros e hiperparametrización",
+    "2. Técnicas de hiperparametrización"
+  ],
+  qs: [
+  {cat:0, t:"¿Qué son los hiperparámetros de un modelo?",
+   o:["Configuraciones externas que no se aprenden del dataset durante el entrenamiento","Valores que se ajustan automáticamente durante el entrenamiento","Las predicciones del modelo","Las métricas de evaluación"],
+   e:"A diferencia de los parámetros, que sí se ajustan durante el entrenamiento."},
+  {cat:0, t:"¿Cuál de estos es un parámetro (no un hiperparámetro) de una red neuronal?",
+   o:["Los pesos","El learning rate","El batch size","El número de capas"],
+   e:"Los pesos se aprenden durante el entrenamiento."},
+  {cat:0, t:"Los hiperparámetros afectan a:",
+   o:["Cómo se entrena el modelo y cómo generaliza a nuevos datos","Solo a la velocidad de la CPU","Únicamente a la fase de despliegue","Solo a la recogida de datos"],
+   e:"Por eso interesa encontrar sus valores óptimos."},
+  {cat:0, t:"¿Cuál de estos es un hiperparámetro habitual en DL?",
+   o:["La tasa de aprendizaje (learning rate)","Los pesos de las conexiones","El bias aprendido","La salida de la red"],
+   e:"Otros: capas ocultas, neuronas por capa, batch size, optimizador, activaciones, dropout e inicialización de pesos."},
+  {cat:0, t:"¿Cuál de estos NO es un hiperparámetro típico de DL?",
+   o:["Los pesos aprendidos","El número de capas ocultas","El optimizador","La regularización dropout"],
+   e:"Los pesos son parámetros del modelo."},
+  {cat:0, t:"La hiperparametrización es:",
+   o:["El proceso de encontrar los valores óptimos de los hiperparámetros para mejorar el rendimiento y la generalización","El entrenamiento de los pesos","La recogida de datos","La normalización de datos"],
+   e:"Es crucial en el desarrollo y afinación de modelos de ML y DL."},
+  {cat:0, t:"Para elegir la mejor configuración de hiperparámetros se utilizan:",
+   o:["Métricas de rendimiento como Precision, Recall, F1 o MSE","Solo el tiempo de entrenamiento","El número de capas","El tamaño del dataset"],
+   e:"Se evalúa cada configuración y se selecciona la mejor."},
+  {cat:0, t:"La hiperparametrización suele implicar:",
+   o:["Buscar en un espacio de hiperparámetros","Eliminar variables","Reducir dimensiones","Aumentar el dataset"],
+   e:"Con técnicas como Grid Search o Random Search."},
+
+  {cat:1, t:"¿Cuál de estas es una técnica de hiperparametrización?",
+   o:["Grid Search","Holdout","Bootstrap","One-Hot"],
+   e:"Holdout y bootstrap son técnicas de evaluación."},
+  {cat:1, t:"El ajuste manual de hiperparámetros se hace mediante:",
+   o:["Ensayo y error o bucles for anidados en un rango delimitado por el experto","Gradientes","Algoritmos genéticos","Modelos probabilísticos"],
+   e:"Los ingenieros experimentados pueden «adivinar» buenos valores."},
+  {cat:1, t:"Grid Search:",
+   o:["Evalúa el modelo en todas las combinaciones posibles de los valores definidos para cada hiperparámetro","Elige combinaciones aleatorias","Usa un modelo probabilístico","Usa mutaciones y cruces"],
+   e:"Es fácil de implementar, pero costosa en espacios grandes."},
+  {cat:1, t:"La principal desventaja de Grid Search es:",
+   o:["Su coste computacional en espacios de hiperparámetros grandes","Su dificultad de implementación","No explora todas las combinaciones","Usa aleatoriedad"],
+   e:"El número de combinaciones crece rápidamente."},
+  {cat:1, t:"Random Search:",
+   o:["Elige valores aleatorios para los hiperparámetros dentro de un rango definido y evalúa esas combinaciones","Evalúa todas las combinaciones","Calcula gradientes","Combina configuraciones mediante mutación"],
+   e:"Suele ser más eficiente que la cuadrícula."},
+  {cat:1, t:"Respecto a Grid Search, Random Search:",
+   o:["Puede ser más eficiente y a menudo funciona igual o mejor","Siempre es peor","Es siempre más costosa","Garantiza el óptimo global"],
+   e:"La aleatoriedad puede dar con alguna combinación que mejore la actual."},
+  {cat:1, t:"La optimización bayesiana utiliza:",
+   o:["Un modelo probabilístico para estimar qué combinaciones darán mejor rendimiento","Una cuadrícula completa","Poblaciones de configuraciones","El descenso de gradiente"],
+   e:"Se actualiza con cada combinación evaluada."},
+  {cat:1, t:"En la optimización bayesiana, el modelo probabilístico se actualiza:",
+   o:["Con las observaciones anteriores, guiando la búsqueda hacia regiones prometedoras","Solo al inicio","Al azar","Con las etiquetas de test"],
+   e:"Explora el espacio de forma más inteligente y reduce el tiempo."},
+  {cat:1, t:"La optimización evolutiva se inspira en:",
+   o:["La teoría de la evolución biológica","La física de partículas","La teoría de la información","La estadística bayesiana"],
+   e:"Genera poblaciones de configuraciones."},
+  {cat:1, t:"En la optimización evolutiva, las mejores configuraciones:",
+   o:["Se combinan y mutan para crear la siguiente generación","Se eliminan","Se evalúan una sola vez","Se promedian con las peores"],
+   e:"El proceso se repite durante varias generaciones."},
+  {cat:1, t:"La optimización evolutiva normalmente encuentra:",
+   o:["Una solución de las más óptimas de forma eficiente, aunque no necesariamente la mejor","Siempre el óptimo global","Una solución aleatoria","Ninguna solución"],
+   e:"Es una buena relación entre calidad y coste."},
+  {cat:1, t:"La optimización por gradiente de hiperparámetros:",
+   o:["Calcula el gradiente respecto a los hiperparámetros y los optimiza con descenso de gradiente","Evalúa una cuadrícula","Usa mutaciones","Usa bucles for anidados"],
+   e:"Se utiliza especialmente en redes neuronales."},
+  {cat:1, t:"¿Por qué no es buena idea la optimización por gradiente de hiperparámetros?",
+   o:["Porque el problema es no suave y no convexo","Porque es demasiado simple","Porque solo funciona en regresión","Porque requiere más datos"],
+   e:"Los hiperparámetros discretos introducen superficies no lisas."},
+  {cat:1, t:"Que la optimización de hiperparámetros sea «no suave» perjudica al descenso de gradiente porque:",
+   o:["Este prefiere funciones suaves, y un gradiente cero no es útil","Necesita funciones discretas","Solo converge en funciones no suaves","No usa derivadas"],
+   e:"Los hiperparámetros definidos en conjuntos discretos producen superficies no lisas."},
+  {cat:1, t:"Que el problema sea «no convexo» implica que el descenso de gradiente:",
+   o:["En el mejor caso llega a un mínimo local (puede ser arbitrariamente malo) y en el peor ni converge","Siempre encuentra el mínimo global","Converge más rápido","Es más preciso"],
+   e:"La teoría del descenso de gradiente asume un problema convexo."},
+  {cat:1, t:"AutoML son:",
+   o:["Herramientas y librerías que automatizan gran parte de la selección de hiperparámetros","Un tipo de red neuronal","Una métrica de evaluación","Una técnica de muestreo"],
+   e:"Emplean técnicas avanzadas para buscar y ajustar hiperparámetros con eficiencia."},
+  {cat:1, t:"¿Cuál de estos es un ejemplo de librería AutoML?",
+   o:["Auto-Sklearn","Kaggle","Holdout","Bootstrap"],
+   e:"También AutoKeras y Google's AutoML."},
+  {cat:1, t:"¿Qué técnica usa un modelo probabilístico para reducir el tiempo de búsqueda?",
+   o:["Optimización bayesiana","Grid Search","Ajuste manual","Random Search"],
+   e:"Guía la búsqueda hacia regiones prometedoras."},
+  {cat:1, t:"¿Qué técnica prueba todas las combinaciones de los valores definidos?",
+   o:["Grid Search","Random Search","Optimización evolutiva","Optimización bayesiana"],
+   e:"Por eso es el método más básico y costoso."},
+  {cat:1, t:"¿Qué técnica combina y muta configuraciones a lo largo de generaciones?",
+   o:["Optimización evolutiva","Optimización bayesiana","Grid Search","Optimización por gradiente"],
+   e:"Se inspira en la evolución biológica."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>
