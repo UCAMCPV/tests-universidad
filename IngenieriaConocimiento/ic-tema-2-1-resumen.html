@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen IC Tema 2.1 · Adquisición y procesamiento de datos</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Tema 2.1 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Ingeniería del Conocimiento · Tema 2.1</span>
+  <h1>Resumen: Adquisición y procesamiento de datos</h1>
+  <p class="lead">Pipeline de ML, datos-información-conocimiento, tipos de datos, fuentes (libres, internas y de pago), análisis exploratorio (EDA) y tareas de preprocesamiento: limpieza, transformación, discretización, codificación, reducción y limpieza de texto.</p>
+  <div class="actions-row"><a class="btn primary" href="ic-tema-2-1.html">Hacer el test (70 preguntas)</a><a class="btn" href="ic-tema-2-resumen.html">Tema 2</a></div>
+</div>
+
+<nav class="toc" aria-label="Secciones">
+  <a href="#sec1">1. Introducción</a>
+  <a href="#sec2">2. Adquisición de datos</a>
+  <a href="#sec3">3. Análisis exploratorio (EDA)</a>
+  <a href="#sec4">4. Preprocesamiento</a>
+</nav>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">1. Introducción</h2>
+  <div class="bloque">
+    <h4>Pipeline</h4>
+    <p>Análisis exploratorio (visualización, estadística, correlación) → <b>preprocesamiento</b> (normalización, reducción de dimensionalidad, combinación de variables) → algoritmo de ML → optimización del modelo → predicción / clustering.</p>
+  </div>
+  <div class="bloque">
+    <h4>Datos, información y conocimiento</h4>
+    <ul>
+      <li><b>Datos:</b> hechos recogidos en la organización, todavía sin procesar.</li>
+      <li><b>Información:</b> resultado de procesar, agregar y presentar los datos de forma que sean útiles a alguien.</li>
+      <li><b>Conocimiento:</b> mezcla de experiencia, valores, información y <i>know-how</i> que sirve de marco para incorporar nuevas experiencias e información y es útil para la acción.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Tipos de datos</h4>
+    <ul>
+      <li><b>Texto:</b> estructurado (bases de datos, hojas de cálculo, formularios…) o no estructurado (encuestas, documentos manuscritos, correos, comentarios de redes sociales).</li>
+      <li><b>Audio:</b> chatbots, asistentes virtuales, comprensión de acentos y pronunciaciones.</li>
+      <li><b>Imagen:</b> vehículos autónomos, Google Lens, reconocimiento facial.</li>
+      <li><b>Vídeo:</b> conjuntos más detallados, procedentes de visión por computador e imágenes digitales.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>La importancia de los datos</h4>
+    <ul>
+      <li>Las máquinas no tienen mente propia: necesitan <b>algoritmos y, sobre todo, datos</b> relevantes, contextuales y recientes.</li>
+      <li>La <b>recopilación de datos de IA</b> es el paso preliminar del desarrollo y determina desde el principio lo efectivo y eficiente que será el modelo.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">2. Adquisición de datos</h2>
+  <div class="bloque">
+    <h4>Introducción</h4>
+    <ul>
+      <li>El primer paso de cualquier proyecto de IA es la recogida de datos.</li>
+      <li>Hacen falta datos de <b>entrenamiento</b> (para aprender) y de <b>validación</b> (para probar resultados y optimizar algoritmos).</li>
+      <li>Tres tipos de fuentes: <b>libres, recursos internos y de pago</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Fuentes libres</h4>
+    <ul>
+      <li>Conjuntos de datos gratuitos: foros públicos, buscadores, bases de datos, directorios y portales gubernamentales.</li>
+      <li>Ejemplos: <b>Kaggle, Google Datasets, AWS Datasets, bases de datos UCI</b>.</li>
+      <li><b>Limitaciones:</b> puede que no haya datasets que encajen con los requisitos, que estén desactualizados, o que el segmento de mercado sea nuevo y haya pocas categorías relevantes. Hay que compilar, curar, formatear y anotar manualmente, y vigilar licencias y cumplimiento.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Recursos internos</h4>
+    <ul>
+      <li>CRM, formularios, leads de email marketing, puntos de contacto de producto/servicio, datos de usuario, wearables, web, mapas de calor, redes sociales…</li>
+      <li>El propio administrador los define, configura y mantiene → <b>credibilidad, relevancia y actualidad</b> aseguradas; datos personalizados a las necesidades.</li>
+      <li><b>Limitaciones:</b> absorben gran parte del talento (optimizar los puntos de contacto), exigen coordinación impecable entre equipos y son arriesgados con poco tiempo de salida al mercado.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Fuentes de pago</h4>
+    <ul>
+      <li>Proveedores que ofrecen los datasets más útiles y contextuales y garantizan su entrega continua.</li>
+      <li>Parecen caras, pero son <b>baratas a largo plazo</b> (no a corto ni medio plazo).</li>
+      <li>Datasets <b>listos para ML</b>: anotados y con garantía de calidad; se definen plazos de entrega.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Comparativa</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th></th><th>Libres</th><th>Internos</th><th>De pago</th></tr>
+      <tr><td><b>Coste</b></td><td>Gratuitos</td><td>Pueden ser gratuitos, según gastos operativos</td><td>Se paga al proveedor</td></tr>
+      <tr><td><b>Adecuación</b></td><td>Muchos disponibles, pero genéricos</td><td>Personalizados al entrenamiento</td><td>Definidos a medida y de forma coherente en el tiempo</td></tr>
+      <tr><td><b>Preparación</b></td><td>Manual: compilación, curación, formato, anotación</td><td>Se pueden modificar los puntos de contacto</td><td>Anotados, con garantía de calidad</td></tr>
+      <tr><td><b>Riesgo / plazos</b></td><td>Licencias y cumplimiento</td><td>Riesgosos si hay poco tiempo</td><td>Se definen los plazos de entrega</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">3. Análisis exploratorio de datos (EDA)</h2>
+  <div class="bloque">
+    <h4>Concepto e importancia</h4>
+    <ul>
+      <li>Técnicas de los científicos de datos para analizar conjuntos de datos y <b>resumir sus características principales</b>, a menudo con visualización.</li>
+      <li>Proceso de investigación con estadísticas de resumen y herramientas gráficas para descubrir patrones, detectar anomalías, probar hipótesis o comprobar supuestos.</li>
+      <li>Objetivo principal: <b>consultar los datos antes de hacer suposiciones</b>; identificar errores obvios, patrones, valores atípicos y relaciones entre variables.</li>
+      <li>Garantiza que los resultados son válidos y confirma a las partes interesadas que se hacen las preguntas correctas (desviaciones estándar, variables categóricas, intervalos de confianza).</li>
+      <li>Sus resultados alimentan análisis o modelado más complejo (ML, DL).</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Herramientas de EDA</h4>
+    <ul>
+      <li><b>Univariante:</b> cada campo del dataset en bruto, con estadísticas de resumen.</li>
+      <li><b>Bivariante:</b> relación entre cada variable y la variable objetivo.</li>
+      <li><b>Multivariante:</b> correlaciones e interacciones entre varios campos.</li>
+      <li><b>Clustering:</b> reconocimiento de patrones y compresión de imágenes.</li>
+      <li><b>Reducción de dimensiones:</b> visualizar datos de alta dimensión con muchas variables.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Tipos de EDA</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Criterio</th><th>Tipo</th><th>Qué hace</th></tr>
+      <tr><td rowspan="2"><b>Tipo de estudio</b></td><td>Estadístico</td><td>Nº de muestras, máximos/mínimos, cuartiles, valores faltantes/nulos…</td></tr>
+      <tr><td>Gráfico</td><td>Distribuciones, histogramas, diagramas de cajas y bigotes…</td></tr>
+      <tr><td rowspan="3"><b>Nº de variables</b></td><td>Univariante</td><td>Una variable (o una a una) para entender su comportamiento.</td></tr>
+      <tr><td>Bivariante</td><td>Dos variables (o de dos en dos): relaciones entre cada par.</td></tr>
+      <tr><td>Multivariante</td><td>Todas a la vez: relaciones e influencia de unas sobre otras.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Preguntas frecuentes que responde un EDA</h4>
+    <ul>
+      <li><b>Registros:</b> ¿cuántos? ¿demasiado pocos? ¿demasiados para la CPU+RAM disponible?</li>
+      <li><b>Nulos:</b> ¿filas completas? Si hay demasiados nulos, ¿queda inútil el resto de la información?</li>
+      <li><b>Tipos:</b> ¿discretos o continuos? (texto, int, double, float).</li>
+      <li><b>Supervisado:</b> ¿cuál es la columna de salida (binaria, multiclase)? ¿Está <b>balanceada</b>?</li>
+      <li><b>Features:</b> ¿cuáles son importantes y cuáles se pueden descartar? ¿Siguen alguna distribución? ¿Hay correlación entre ellas?</li>
+      <li><b>NLP:</b> categorías repetidas o mal tipeadas, mayúsculas/minúsculas, singular/plural.</li>
+      <li><b>Series temporales:</b> ¿depende del tiempo?</li>
+      <li><b>Visión artificial:</b> ¿hay muestras suficientes de cada clase y variedad para generalizar?</li>
+      <li><b>Outliers:</b> pocos datos aislados que difieren drásticamente y desvían las distribuciones. ¿Se pueden eliminar? ¿Son errores de carga o son reales?</li>
+      <li><b>Sesgo:</b> p. ej., perjudicar a clases minoritarias por no incluirlas, de modo que el modelo discrimine.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">4. Preprocesamiento de datos</h2>
+  <div class="bloque">
+    <h4>Concepto y necesidad</h4>
+    <ul>
+      <li>Conjunto de técnicas de minería de datos que transforman datos sin procesar en un formato comprensible por los modelos de IA.</li>
+      <li>Los datos en bruto suelen ser ruidosos, poco fiables y con valores faltantes; usarlos tal cual puede dar <b>resultados engañosos</b>.</li>
+      <li>Problemas de calidad más habituales: <b>incompletos</b> (faltan atributos o valores), <b>ruidosos</b> (registros erróneos o atípicos) e <b>incoherentes</b> (discrepancias o registros en conflicto).</li>
+      <li>Datos de calidad son requisito previo de modelos predictivos de calidad.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Tareas principales</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Tarea</th><th>Objetivo</th></tr>
+      <tr><td><b>Limpieza de datos</b></td><td>Rellenar valores faltantes, detectar y quitar atípicos y ruido.</td></tr>
+      <tr><td><b>Transformación</b></td><td>Normalizar datos para reducir ruido y dimensiones.</td></tr>
+      <tr><td><b>Discretización</b></td><td>Convertir atributos continuos en discretos.</td></tr>
+      <tr><td><b>Codificación categórica</b></td><td>Convertir atributos categóricos en numéricos.</td></tr>
+      <tr><td><b>Reducción de datos</b></td><td>Muestrear atributos o registros para manejar los datos con más facilidad.</td></tr>
+      <tr><td><b>Limpieza de texto</b></td><td>Quitar caracteres incrustados que causen errores de alineación.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Limpieza: tratamiento de valores faltantes</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Técnica</th><th>Descripción</th></tr>
+      <tr><td><b>Eliminación</b></td><td>Quitar los registros con valores faltantes.</td></tr>
+      <tr><td><b>Sustitución ficticia</b></td><td>Reemplazar por un valor ficticio: «Desconocido» (categorías) o 0 (numéricos).</td></tr>
+      <tr><td><b>Media / mediana / moda</b></td><td>Para datos numéricos.</td></tr>
+      <tr><td><b>Sustitución frecuente</b></td><td>Para datos categóricos: el elemento más frecuente.</td></tr>
+      <tr><td><b>Regresión</b></td><td>Predecir el valor faltante con un modelo de regresión.</td></tr>
+      <tr><td><b>Interpolación</b></td><td>Numéricos y series temporales: lineal, cuadrática, polinomial…</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Transformación: normalización</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Técnica</th><th>Descripción</th></tr>
+      <tr><td><b>Mínima-máxima (min-max)</b></td><td>Transformación lineal a un intervalo, p. ej. [0, 1]: el mínimo pasa a 0 y el máximo a 1.<br><code>x' = (x − mín) / (máx − mín)</code></td></tr>
+      <tr><td><b>Puntuación Z (Z-score)</b></td><td>Resta la media y divide por la desviación estándar.<br><code>z = (x − μ) / σ</code></td></tr>
+      <tr><td><b>Escalado decimal</b></td><td>Se mueve la coma decimal del valor del atributo.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Discretización</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Técnica</th><th>Descripción</th></tr>
+      <tr><td><b>Mismo ancho</b></td><td>Divide el rango de valores en N intervalos <b>del mismo tamaño</b> y asigna a cada valor el número de su intervalo.</td></tr>
+      <tr><td><b>Igual alto (igual frecuencia)</b></td><td>Divide en N grupos con <b>el mismo número de instancias</b> cada uno y asigna el número del grupo.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Codificación categórica</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Técnica</th><th>Descripción</th><th>Uso habitual</th></tr>
+      <tr><td><b>Label encoding</b></td><td>Asigna un valor numérico a cada categoría y sustituye el texto por su número.</td><td>Variable <b>target</b></td></tr>
+      <tr><td><b>One-Hot</b></td><td>Crea tantas columnas como categorías; 1 en la de su categoría y 0 en el resto.</td><td>Variables <b>features</b></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Reducción de datos y limpieza de texto</h4>
+    <ul>
+      <li><b>Muestreo de registros:</b> quedarse con un subconjunto representativo de los registros.</li>
+      <li><b>Muestreo de atributos:</b> seleccionar solo los atributos más importantes.</li>
+      <li><b>Agregación:</b> agrupar y almacenar cifras por grupo (p. ej., datos diarios de muchos años → mensuales).</li>
+      <li><b>Limpieza de texto / exploración de datos:</b> edición y análisis cuidadosos para limpiar campos de texto, alinearlos o extraer datos estructurados de texto semiestructurado o no estructurado.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="ic-tema-2-1.html">Hacer el test (70 preguntas)</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Resumen basado en «Tema 2.1 – Adquisición y procesamiento de datos» (Ingeniería del Conocimiento).
+</footer>
+</main>
+</body>
+</html>
