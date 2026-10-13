@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro de examen parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro parcial">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Simulacro</span>
+    <h1>Simulacro del examen parcial</h1>
+    <p class="lead">30 preguntas nuevas con el mismo estilo que el examen parcial: casos con personajes y situaciones, en orden fijo y con opciones como «A y B» o «todas las anteriores». Cada pregunta se corrige al responder y trae su explicación.</p>
+    <div class="note">Es un examen inventado a partir de los apuntes (Temas 1 a 2.4), no un examen oficial. Si te atascas, repasa la guía del simulacro.</div>
+    <div class="actions-row"><a class="btn primary" href="ic-simulacro-parcial-resumen.html">Guía para entender el simulacro</a><a class="btn" href="ic-examen-parcial.html">Examen parcial real</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Simulacro basado en el examen parcial de Ingeniería del Conocimiento y en los apuntes de los Temas 1 a 2.4.</footer>
+</main>
+
+<script>
+/* Opciones en orden fijo (shuffle:false) y respuesta correcta indicada con c (0 = a, 1 = b, 2 = c, 3 = d). */
+window.TEST = {
+  id: "ic-simulacro-parcial",
+  shuffle: false,
+  cats: ["Simulacro parcial"],
+  qs: [
+  {cat:0, c:2, t:"Un autoencoder se entrena para reconstruir su propia entrada pasando por una capa intermedia mucho más pequeña. ¿Para qué se puede utilizar el codificador una vez entrenado?",
+   o:["Para aumentar el número de variables del dataset","Para clasificar imágenes en varias clases","Para reducir la dimensionalidad de los datos","Para imputar valores faltantes con la media"],
+   e:"La capa intermedia (latente) comprime la información: el codificador sirve para reducir dimensionalidad. Otras técnicas con el mismo fin son PCA, t-SNE y NMF."},
+  {cat:0, c:0, t:"La startup Zumbaflix quiere reconocer, a partir de fotos de sus clientes, si llevan gafas o no, y dispone de 2 millones de imágenes etiquetadas. ¿Qué tipo de algoritmo recomiendas?",
+   o:["Uno de Deep Learning (una CNN)","Una regresión lineal","K-Means","Ninguno de los anteriores"],
+   e:"Imágenes y gran volumen de datos etiquetados → Deep Learning, en concreto una red convolucional."},
+  {cat:0, c:3, t:"Doña Venancia, directora de la cooperativa «Tomates Felices», tiene el histórico de los kilos recolectados cada día junto con la temperatura y la lluvia, y quiere predecir la cosecha de mañana. ¿Qué tipo de aprendizaje debe utilizar?",
+   o:["Aprendizaje por refuerzo","Aprendizaje no supervisado","Aprendizaje por transferencia","Aprendizaje supervisado"],
+   e:"Dispone de datos históricos con la variable a predecir (kilos recolectados): es una regresión, es decir, aprendizaje supervisado."},
+  {cat:0, c:2, t:"Un robot aspirador aprende a recorrer una casa: gana puntos cuando limpia y los pierde cuando choca contra un mueble, sin disponer de ningún dato histórico etiquetado. ¿Qué tipo de aprendizaje es?",
+   o:["Supervisado","No supervisado","Por refuerzo","Semi-supervisado"],
+   e:"Aprende interactuando con el entorno mediante recompensas y penalizaciones: aprendizaje por refuerzo."},
+  {cat:0, c:1, t:"Una empresa de ropa dispone de 500 000 fotos de prendas pero solo 2 000 tienen etiqueta. ¿Qué tipo de aprendizaje encaja mejor?",
+   o:["Por refuerzo","Semi-supervisado","Supervisado puro","Por transferencia únicamente"],
+   e:"Pocos datos etiquetados y muchos sin etiquetar: aprendizaje semi-supervisado."},
+  {cat:0, c:0, t:"El equipo del profesor Gutiérrez ha aprovechado una red entrenada con millones de imágenes para reentrenarla con 300 fotos de hojas enfermas de olivo. ¿Qué tipo de aprendizaje han usado?",
+   o:["Aprendizaje por transferencia","Aprendizaje por refuerzo","Aprendizaje no supervisado","Aprendizaje semi-supervisado"],
+   e:"Reutilizar el conocimiento de un modelo ya entrenado en otra tarea es aprendizaje por transferencia."},
+  {cat:0, c:3, t:"En el entrenamiento de una red neuronal, el descenso de gradiente se utiliza para:",
+   o:["Aumentar el error de salida para evitar el sobreajuste","Eliminar neuronas de las capas intermedias","Normalizar los datos de entrada","Actualizar los pesos en la dirección que disminuye la función de costo"],
+   e:"Con el gradiente de la función de costo (calculado por backpropagation), los pesos se ajustan en el sentido que reduce el error, con pasos controlados por el learning rate."},
+  {cat:0, c:1, t:"La bióloga Ana Lisis tiene una columna «color» con los valores rojo, verde y azul y necesita que un modelo la pueda procesar. ¿Qué proceso debe realizar?",
+   o:["Discretización","Codificación categórica","Reducción de dimensionalidad","Normalización min-max"],
+   e:"De categorías a números: codificación categórica (One-Hot para features, label encoding para el target)."},
+  {cat:0, c:0, t:"El analista Paco Metro quiere transformar la variable continua «ingresos» en tres tramos: bajo, medio y alto. ¿Qué proceso realiza?",
+   o:["Discretización","Codificación categórica","Imputación","Limpieza de texto"],
+   e:"Convertir un atributo continuo en discreto es discretizar (por mismo ancho o por igual frecuencia)."},
+  {cat:0, c:2, t:"Una variable «edad» en un dataset tiene valores entre 0 y 100 y otra «salario» entre 0 y 200 000. Para que ambas tengan una escala comparable se puede utilizar:",
+   o:["Una codificación One-Hot","Una discretización de las dos variables en 100 grupos","Una normalización min-max o Z-score","Una eliminación de todos los registros"],
+   e:"Escalar variables a rangos parecidos es normalizar: min-max lleva al intervalo [0, 1]; Z-score centra en la media y divide por la desviación."},
+  {cat:0, c:3, t:"Ana Lisis descubre que la columna «peso» tiene un 5 % de valores nulos. ¿Qué puede hacer?",
+   o:["Abandonar el estudio porque los datos no existen","Rellenarlos siempre con el valor 9999","Eliminar toda la columna sin mirar nada más","Imputarlos con la media, la mediana o la moda, o eliminar esos registros"],
+   e:"Tratamientos habituales de valores faltantes: eliminación, sustitución (media/mediana/moda) o regresión / interpolación."},
+  {cat:0, c:0, t:"Un modelo para predecir la demanda eléctrica muestra un error muy bajo en entrenamiento y un error mucho mayor en validación. ¿Qué problema tiene?",
+   o:["Sobreajuste (overfitting)","Bajo ajuste (underfitting)","Está entrenando perfectamente","Desvanecimiento de gradiente exclusivamente"],
+   e:"El modelo memoriza el entrenamiento y no generaliza: sobreajuste. Se combate con regularización, dropout, más datos o menor complejidad."},
+  {cat:0, c:1, t:"Un modelo muestra un error alto tanto en entrenamiento como en validación. ¿Qué podría hacer para mejorarlo?",
+   o:["Reducir el número de neuronas y añadir regularización","Aumentar la complejidad del modelo (más capas o neuronas) o entrenar más tiempo","Reducir el conjunto de entrenamiento","Nada, es imposible tener errores altos en ambos"],
+   e:"Error alto en ambos conjuntos = underfitting: el modelo es demasiado simple. Hay que darle más capacidad o más entrenamiento."},
+  {cat:0, c:2, t:"El hospital «Santa Pelota» quiere predecir si un paciente tendrá o no una complicación (sí/no) a partir de su historial. Un residente propone una regresión logística. ¿Ha hecho bien?",
+   o:["No, la regresión logística solo sirve para regresión","No, debería usar K-Means","Sí, es un problema de clasificación binaria y la regresión logística es un clasificador","Sí, pero solo si utiliza una CNN"],
+   e:"A pesar del nombre, la regresión logística estima probabilidades y clasifica en dos clases. K-Means es clustering."},
+  {cat:0, c:0, t:"Si ese mismo hospital utiliza una red neuronal para predecir la complicación (sí/no), ¿qué función de activación pondrías en la neurona de salida?",
+   o:["Sigmoide","Softmax","Lineal","ReLU"],
+   e:"Clasificación binaria → una neurona de salida con sigmoide (probabilidad entre 0 y 1)."},
+  {cat:0, c:3, t:"La aseguradora «Siniestros Hermanos» quiere clasificar los partes de coche en cinco categorías excluyentes (leve, moderado, grave, total, fraude) con una red neuronal. ¿Qué combinación de activación de salida y función de costo es la más adecuada?",
+   o:["Sigmoide y Binary Cross-Entropy","Lineal y MSE","Softmax y MAE","Softmax y Multiclass Cross-Entropy"],
+   e:"Clasificación multiclase: cinco neuronas con softmax y entropía cruzada multiclase."},
+  {cat:0, c:1, t:"El mismo equipo de la aseguradora tiene las categorías codificadas como números enteros (0, 1, 2, 3, 4) sin one-hot encoding. ¿Qué función de costo conviene?",
+   o:["Binary Cross-Entropy","Sparse Multiclass Cross-Entropy","Hinge Loss","Mean Squared Error"],
+   e:"Con objetivos enteros (sin one-hot) se utiliza la versión sparse de la entropía cruzada multiclase."},
+  {cat:0, c:2, t:"El meteorólogo Don Nubarrón quiere predecir la temperatura de mañana (un valor numérico) con un MLP. ¿Qué activación en la neurona de salida y qué función de costo son las más adecuadas?",
+   o:["Sigmoide y Binary Cross-Entropy","Softmax y Multiclass Cross-Entropy","Lineal y MSE","ReLU y Hinge Loss"],
+   e:"Regresión: activación lineal y MSE (o MAE si hay muchos outliers)."},
+  {cat:0, c:1, t:"Don Nubarrón tiene ahora los datos de las últimas 24 horas (temperatura, humedad y presión cada hora) para predecir la temperatura de la siguiente hora. ¿Qué tipo de red le recomiendas?",
+   o:["Una red convolucional (CNN)","Una LSTM","Una regresión logística","K-Means"],
+   e:"Datos secuenciales en el tiempo → red recurrente: LSTM (o GRU). Las CNN se usan para datos con estructura de cuadrícula, como imágenes."},
+  {cat:0, c:0, t:"El laboratorio «Radiografías Express» quiere detectar a partir de una radiografía si hay fractura o no. ¿Qué modelo, qué función de costo y qué métrica son más adecuados?",
+   o:["CNN, Binary Cross-Entropy y Recall","LSTM, MSE y R²","K-Means, Binary Cross-Entropy y silueta","MLP, Hinge Loss y MAE"],
+   e:"Imagen → CNN; fractura sí/no → Binary Cross-Entropy; en diagnóstico interesa no dejar escapar casos positivos → Recall (sensibilidad)."},
+  {cat:0, c:3, t:"El científico de datos Cosme Fulanito ha repartido su dataset en un 10 % para entrenamiento, 10 % para validación y 80 % para test. ¿Ha cometido algún error?",
+   o:["No, son porcentajes aceptables","Sí, debería usar siempre solo validación cruzada","Sí, debería usar siempre bootstrap","Sí, el conjunto de entrenamiento debe ser, normalmente, el mayor"],
+   e:"Con un 10 % de datos no se puede entrenar bien. Porcentajes habituales: 60:20:20, 50:20:30 o 40:20:40. Ninguna técnica (holdout, validación cruzada o bootstrap) es obligatoria «siempre»."},
+  {cat:0, c:2, t:"Cosme tiene solo 150 registros y clases desbalanceadas. ¿Qué técnica de evaluación es la más adecuada?",
+   o:["Un holdout 90:5:5 sin estratificar","Entrenar y evaluar con los mismos datos","Una validación cruzada k-fold estratificada","No evaluar nada"],
+   e:"Con pocos datos, la validación cruzada aprovecha todos los datos; estratificada para respetar las proporciones de clase."},
+  {cat:0, c:3, t:"Cosme entrena un modelo que predice las ventas de una tienda y quiere evaluarlo. ¿Qué métricas son adecuadas?",
+   o:["Accuracy y Recall","Silueta y ARI","F1 Score y AUC-ROC","R², MSE, RMSE o MAE"],
+   e:"Predecir ventas es regresión: R², MSE, RMSE, MAE o MAPE. Accuracy, recall, F1 y AUC son de clasificación; silueta y ARI, de clustering."},
+  {cat:0, c:0, t:"Señala la respuesta falsa relacionada con una LSTM:",
+   o:["No tiene memoria: procesa cada elemento de la secuencia de forma independiente","Tiene tres puertas: olvido, entrada y salida","Es una variante de las redes neuronales recurrentes","Es adecuada para series temporales y procesamiento de lenguaje natural"],
+   e:"Es falsa la a: la LSTM tiene una celda de memoria precisamente para capturar dependencias a largo plazo. El resto es cierto."},
+  {cat:0, c:1, t:"La inmobiliaria «Casas del Pino» quiere agrupar a sus clientes en perfiles parecidos sin disponer de ninguna etiqueta previa. ¿Qué algoritmos podría utilizar?",
+   o:["SVM o Regresión Logística","K-Means, DBSCAN o clustering jerárquico","LSTM o GRU","Random Forest o KNN"],
+   e:"Agrupar sin etiquetas es clustering (aprendizaje no supervisado): K-Means, DBSCAN o jerárquico."},
+  {cat:0, c:2, t:"Casas del Pino ha obtenido dos agrupamientos con K-Means: uno con silueta 0,72 y otro con silueta 0,31. ¿Con cuál debería quedarse?",
+   o:["Con el de 0,31, porque un valor menor es mejor","Con cualquiera, la silueta no sirve para comparar","Con el de 0,72, porque los clústeres están más cohesionados y mejor separados","Con ninguno, la silueta solo se usa en regresión"],
+   e:"El coeficiente de silueta va de −1 a 1: cuanto más alto, más densos y separados están los clústeres."},
+  {cat:0, c:3, t:"Los analistas del banco «Cajarrota» quieren encontrar los mejores hiperparámetros para un Random Forest. ¿Qué métodos pueden utilizar?",
+   o:["Solo Grid Search","Solo Random Search","Solo el método manual","Grid Search, Random Search, un método manual o incluso optimización bayesiana, entre otros"],
+   e:"Existen varias técnicas: manual, Grid Search, Random Search, optimización bayesiana, evolutiva, por gradiente y AutoML."},
+  {cat:0, c:0, t:"Cajarrota quiere detectar fraudes, pero solo el 1 % de las operaciones son fraudulentas. Un modelo que dice siempre «no fraude» tiene un 99 % de accuracy. ¿Qué conclusión es correcta?",
+   o:["La accuracy no es adecuada con clases desbalanceadas; conviene usar F1, recall o precision, y balancear los datos","La accuracy es perfecta, el modelo es excelente","Hay que usar R² para evaluarlo","Hay que usar la silueta para evaluarlo"],
+   e:"Con clases desbalanceadas la accuracy engaña. Se pueden usar F1, recall o precision, y balancear con oversampling, undersampling o SMOTE."},
+  {cat:0, c:1, t:"Para el modelo de fraude, el director prefiere no dejar escapar ningún fraude aunque salten algunas falsas alarmas. ¿Qué métrica debe priorizar?",
+   o:["Precision","Recall","Accuracy","MAE"],
+   e:"No dejar escapar fraudes es minimizar los falsos negativos: recall. La precision minimiza los falsos positivos."},
+  {cat:0, c:2, t:"Un modelo de clasificación obtiene esta matriz de confusión: TP = 40, FP = 10, FN = 20, TN = 30. ¿Cuál es su precision y su recall (en este orden)?",
+   o:["0,50 y 0,80","0,70 y 0,60","0,80 y 0,67","0,60 y 0,70"],
+   e:"Precision = TP/(TP+FP) = 40/50 = 0,80. Recall = TP/(TP+FN) = 40/60 ≈ 0,67. (La accuracy sería (40+30)/100 = 0,70.)"}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>
