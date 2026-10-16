@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apuntes DAD1</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+
+<style>
+.ex .ex-text p { margin: 0 0 10px; }
+.ex .ex-text pre, .sol pre { margin: 10px 0; }
+.sol { border-top: 1px dashed var(--border); padding-top: 12px; }
+.sol p, .sol ul, .sol ol { margin: 0 0 10px; }
+.sol ul, .sol ol { padding-left: 22px; }
+.ex table.tbl { margin: 8px 0; }
+</style>
+
+</head>
+<body data-crumb="DAD1 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Desarrollo de Aplicaciones Distribuidas I · Primer parcial</span>
+  <h1>Apuntes - Desarrollo de Aplicaciones Distribuidas I</h1>
+  <p class="lead">Primer parcial: computación distribuida, IPC, hilos, sockets y protocolos (HTTP y FTP).</p>
+  <div class="actions-row"><a class="btn" href="dad1-primer-parcial.html">Primer parcial</a><a class="btn" href="dad1-talleres.html">Talleres</a><a class="btn" href="dad1-examen-ejemplo.html">Examen de ejemplo</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc"><a href="#s1">1. Distribuida</a><a href="#s2">2. IPC</a><a href="#s3">3. Hilos</a><a href="#s4">4. Sockets</a><a href="#s5">5. HTTP / FTP</a><a href="#s6">6. Plantillas examen</a><a href="#s7">7. Preguntas teoría</a></nav>
+
+<section class="cat" id="s1"><h2 class="cat-title">1. Computación distribuida (Tema 1.1)</h2><div class="bloque"><h4>Concepto de sistema distribuido</h4><p><b>Sistema distribuido</b>: conjunto de computadores <b>independientes</b>, interconectados a través de una <b>red</b>, que son capaces de <b>colaborar</b> para realizar una tarea.</p><ul><li><b>Computadores independientes</b>: no comparten memoria ni espacio de ejecución.</li><li><b>Monoprocesador</b>: una única unidad central de proceso (el modelo anterior).</li><li><b>Computación distribuida</b>: la computación que se lleva a cabo en un sistema distribuido.</li><li><b>Servicio de red</b>: lo proporciona un tipo especial de programa (<b>servidor</b>) en la red. Ej.: WWW, FTP, POP3.</li><li><b>Aplicación de red</b>: aplicación para usuarios finales ejecutada en ordenadores conectados por red.</li></ul></div><div class="bloque"><h4>Un poco de historia</h4><ul><li>Años 60: primera conexión para compartir ficheros.</li><li>1972: primer correo electrónico en ARPANET.</li><li>1985: File Transfer Protocol (FTP).</li><li>Finales de los 80: World Wide Web.</li><li>Los protocolos se documentan en <b>RFC</b> (Request For Comments).</li></ul></div><div class="bloque"><h4>Ventajas e inconvenientes</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Ventajas</th><th>Inconvenientes</th></tr><tr><td>Los computadores y el acceso a red son económicos</td><td><b>Múltiples puntos de fallo</b></td></tr><tr><td><b>Compartición de recursos</b></td><td><b>Aspectos de seguridad</b></td></tr><tr><td><b>Escalabilidad</b></td><td></td></tr><tr><td><b>Tolerancia a fallos</b></td><td></td></tr></table></div></div><div class="bloque"><h4>Formas de computación</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Forma</th><th>Descripción</th></tr><tr><td><b>Monolítica</b></td><td>Un único computador sin conexión y un solo usuario. (<i>Mainframe</i>: varios usuarios en un único ordenador, cada uno con su sesión.)</td></tr><tr><td><b>Distribuida</b></td><td>Múltiples computadores conectados por red.</td></tr><tr><td><b>Paralela</b></td><td>Más de un procesador simultáneamente para ejecutar un programa. Es difícil dividir un programa en porciones. Ej.: biología, aeronáutica, IA.</td></tr><tr><td><b>Cooperativa</b></td><td>Dividir la computación entre ordenadores conectados para aprovechar los ciclos de CPU excedentes.</td></tr></table></div><div class="key">Dicho por el profe: <b>distribuida = muchos computadores</b>; <b>paralela = uso de varios procesadores</b>.</div></div></section><section class="cat" id="s2"><h2 class="cat-title">2. Comunicación entre procesos - IPC (Tema 1.2)</h2><div class="bloque"><h4>Conceptos básicos</h4><ul><li><b>Sistema distribuido = comunicación entre procesos (IPC)</b>: procesos separados e independientes se comunican para colaborar en una tarea (emisor → datos → receptor).</li><li>Es necesario un <b>protocolo</b>: ¿quién es el emisor? ¿quién el receptor?</li><li><b>Unicast</b>: de un proceso a otro. <b>Multicast</b>: de un proceso a varios.</li><li>El SO ofrece <b>colas de mensajes, semáforos y regiones de memoria compartida</b>; suele haber un <b>nivel de abstracción</b> sobre el SO.</li></ul></div><div class="bloque"><h4>Operaciones primitivas (interfaz básica)</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Operación</th><th>Qué hace</th></tr><tr><td><b>Enviar</b></td><td>En el emisor: transmite datos hacia el receptor.</td></tr><tr><td><b>Recibir</b></td><td>En el receptor.</td></tr><tr><td><b>Conectar</b></td><td>Un proceso invoca <i>solicitar-conexión</i> y el otro <i>aceptar-conexión</i>.</td></tr><tr><td><b>Desconectar</b></td><td>Libera ambos extremos.</td></tr></table></div><p>Los procesos invocan estas operaciones de forma <b>independiente</b>; cada invocación implica la ocurrencia de un <b>evento</b>.</p></div><div class="bloque"><h4>Sincronización de eventos</h4><ul><li>Los extremos son independientes: ¿cómo saber que ha terminado? Lo más sencillo: <b>peticiones bloqueantes</b>.</li><li>Operaciones <b>bloqueantes = síncronas</b>; <b>no bloqueantes = asíncronas</b>. Ej.: petición web = síncrona; respuesta del servidor = asíncrona.</li><li>Si no se produce el desbloqueo → <b>bloqueo indefinido</b>.</li></ul><div class="tbl-wrap"><table class="tbl"><tr><th>Combinación</th><th>Comportamiento</th></tr><tr><td>Enviar síncrono + recibir síncrono</td><td>Ambos se bloquean; la librería IPC da un asentimiento transparente. Termina enviar cuando llega el dato y termina recibir.</td></tr><tr><td>Enviar asíncrono + recibir síncrono</td><td>El emisor sigue sin esperar; el receptor se bloquea hasta que llegan los datos.</td></tr><tr><td>Enviar síncrono + recibir asíncrono</td><td>Escenario 1: recibir lanzado antes y datos ya disponibles → asentimiento. <b>Escenario 2: el recibir ya retornó vacío y el envío bloqueante nunca se desbloquea → bloqueo indefinido</b>. Escenario 3: se notifica al proceso la llegada de datos.</td></tr><tr><td>Enviar asíncrono + recibir asíncrono</td><td>Nadie se bloquea; al receptor se le notifica la llegada de los datos.</td></tr></table></div></div><div class="bloque"><h4>Bloqueo indefinido: dos soluciones</h4><ol><li><b>Temporizadores (timers)</b>: límite de tiempo de espera de una operación; evitan quedarse bloqueado si la respuesta no llega.</li><li><b>Proceso hijo o hilo de ejecución</b>: el programa realiza varias tareas a la vez; útil para tareas lentas (conexiones de red, grabar en disco).</li></ol></div></section><section class="cat" id="s3"><h2 class="cat-title">3. Hilos de ejecución en Java</h2><div class="bloque"><h4>Qué es un hilo y para qué sirve</h4><div class="key"><b>Hilo</b>: secuencia única de control de flujo dentro de un programa; la unidad de código más pequeña que se puede ejecutar.</div><p><b>Ventajas / usos</b>:</p><ul><li>Ejecución de <b>tareas lentas</b>.</li><li><b>No paralizar el programa principal</b> mientras se ejecutan otras tareas.</li><li><b>Evitar bloqueos inaceptables</b> (un bloqueo indefinido se mitiga con hilos).</li><li><b>Manejo de múltiples tareas</b> a la vez.</li></ul></div><div class="bloque"><h4>Dos formas de crear un hilo</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Forma</th><th>Pasos</th></tr><tr><td><b>Heredar de <code>Thread</code></b></td><td>Clase que <code>extends Thread</code> → implementar <code>run()</code> → crear el objeto y llamar a <code>start()</code>.</td></tr><tr><td><b>Implementar <code>Runnable</code></b></td><td>Clase que <code>implements Runnable</code> → implementar <code>run()</code> → <code>new Thread(objeto).start()</code>.</td></tr></table></div><pre><code>// 1) Heredando de Thread
+public class MiHilo extends Thread {
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 5; i++) {
+            System.out.println("Ejecución: " + i);
+            try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
+        }
+    }
+}
+// uso:  MiHilo h = new MiHilo(); h.start();
+
+// 2) Implementando Runnable
+public class MiHilo implements Runnable { /* mismo run() */ }
+// uso:  Thread t = new Thread(new MiHilo()); t.start();</code></pre><div class="warn"><b>Errores clásicos de examen</b>: <ul><li><code>run()</code> en vez de <code>start()</code> → se ejecuta en el hilo actual, <b>no</b> se crea un hilo nuevo.</li><li>Llamar <code>start()</code> dos veces sobre el <b>mismo objeto</b> → <code>IllegalThreadStateException</code>. Hay que crear un objeto nuevo por hilo.</li><li><code>new Thread().start()</code> con un <code>Runnable</code> sin pasárselo → el hilo no hace nada: hay que hacer <code>new Thread(miRunnable)</code>.</li><li><b>No puedes crear objetos de interfaces</b> (<code>new Runnable()</code> sin implementarla no vale).</li></ul></div></div><div class="bloque"><h4>Métodos útiles</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Método</th><th>Para qué</th></tr><tr><td><code>start()</code></td><td>Lanza el hilo (ejecuta <code>run()</code> en paralelo).</td></tr><tr><td><code>Thread.sleep(ms)</code></td><td>Duerme el hilo actual; lanza <code>InterruptedException</code>.</td></tr><tr><td><code>join()</code> / <code>join(ms)</code></td><td>El hilo que lo llama espera a que termine el otro (o a que pase el tiempo indicado).</td></tr><tr><td><code>interrupt()</code></td><td>Interrumpe el hilo: si duerme/espera salta <code>InterruptedException</code>.</td></tr></table></div><pre><code>UnHilo unHilo = new UnHilo();
+unHilo.start();
+unHilo.join(5000);      // main espera como máximo 5 s
+// unHilo.interrupt();  // para forzar la parada si sigue dormido</code></pre></div><div class="bloque"><h4>Condición de carrera y <code>synchronized</code></h4><p>Si varios hilos modifican la <b>misma variable compartida</b> (<code>contador++</code> no es atómico: leer-sumar-escribir), se pisan y el resultado es <b>menor y variable</b> en cada ejecución (p. ej. 5 hilos × 1000 ≠ 5000).</p><pre><code>public class Contador {
+    private int total = 0;
+    public synchronized void sumaUno() {   // solo un hilo a la vez
+        this.total = this.total + 1;
+    }
+    public int getTotal() { return this.total; }
+}</code></pre><div class="note">Alternativas: <code>AtomicInteger</code>, o un bloque <code>synchronized(objeto) { ... }</code>.</div></div><div class="bloque"><h4>Parar un hilo desde una interfaz Swing (taller)</h4><ul><li>El hilo (<code>HiloContador extends Thread</code>) tiene un atributo <code>running</code> que comprueba en el bucle; un método lo pone a <code>false</code> para pararlo.</li><li>Un <code>JComboBox comboHilos</code> guarda los hilos lanzados; <code>ActionLanzarHilo</code> crea y arranca uno; <code>ActionPararHilo</code> toma <code>getSelectedItem()</code> y lo para.</li><li>Para quitarlo de la lista: <code>comboHilos.removeItem(comboHilos.getSelectedItem())</code>.</li><li><code>porDondeVoy</code>: contador <code>static</code> para dar un id único a cada hilo.</li></ul></div></section><section class="cat" id="s4"><h2 class="cat-title">4. Sockets (Tema 2.2)</h2><div class="bloque"><h4>Concepto</h4><div class="key"><b>Socket</b>: punto de conexión entre dos procesos, identificado por una <b>IP y un puerto</b>.</div><p>Para comunicarse hace falta un objeto de la clase <code>Socket</code> en cada extremo. Los <b>dos puertos</b> (servidor y cliente) identifican la comunicación. <b>Tiene que haber un protocolo.</b></p></div><div class="bloque"><h4>Proceso de conexión</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Servidor</th><th>Cliente</th></tr><tr><td><code>socket()</code>: crear socket</td><td><code>socket()</code>: crear socket</td></tr><tr><td><code>bind()</code>: asocia el socket a un puerto del SO (lo especificamos nosotros)</td><td><code>bind()</code>: se le asigna un puerto (aleatorio, lo genera el programa)</td></tr><tr><td><code>listen()</code>: permite que se conecten a nuestra máquina</td><td></td></tr><tr><td><code>accept()</code>: acepta la petición entrante (<b>se bloquea hasta que llega un cliente</b>)</td><td>(se conecta)</td></tr><tr><td><code>leer()</code> / <code>escribir()</code></td><td><code>escribir()</code> / <code>leer()</code></td></tr></table></div><div class="key"><b>¿Cómo se activa un socket? → con <code>accept()</code></b> (el servidor se queda esperando y continúa cuando el cliente se conecta).</div></div><div class="bloque"><h4>Clases en Java</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Clase</th><th>Métodos clave</th></tr><tr><td><code>Socket</code></td><td><code>Socket(String host, int puerto)</code>, <code>getInputStream()</code>, <code>getOutputStream()</code>, <code>close()</code></td></tr><tr><td><code>ServerSocket</code></td><td><code>ServerSocket(int puerto)</code>, <code>accept()</code> (devuelve un <code>Socket</code> con ese cliente)</td></tr></table></div><ul><li>El <b>servidor no necesita IP</b> (la máquina es él); el <b>puerto debe ser el mismo</b> en cliente y servidor, si no no hay conexión.</li><li><code>BufferedReader</code> (<code>readLine()</code>) = <b>leer</b>; <code>PrintWriter</code> (<code>println()</code> + <code>flush()</code>) = <b>escribir</b>.</li><li><code>InputStreamReader</code> convierte bytes a caracteres; <code>OutputStreamWriter</code> caracteres a bytes.</li><li>Ojo con el <b>orden</b>: <code>ServerSocket</code> → <code>accept()</code> → buffers.</li></ul></div><div class="bloque"><h4>Primer ejemplo: cliente y servidor</h4><p><b>Servidor</b></p><pre><code>package edu.ucam.sockets.primersocket;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+
+    public void ejecutar() {
+        
+        try {
+            ServerSocket serverSocket = new ServerSocket(5000);
+            
+            System.out.println("Servidor lanzado esperando cliente...");
+            
+            Socket socket = serverSocket.accept();
+            
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
+            
+            String linea = br.readLine();
+            
+            System.out.println("Linea recibida en servidor: " + linea);
+            
+            pw.println("Te la devuelvo " + linea);
+            pw.flush();
+                
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        
+    }
+    
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+
+    }
+
+}</code></pre><p><b>Cliente</b></p><pre><code>package edu.ucam.sockets.primersocket;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class Cliente {
+    public void ejecutar() {        
+        Socket socket;
+        try {
+            socket = new Socket("127.0.0.1",5000);
+            
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
+            pw.println("Hola!!"); pw.flush();
+            
+            System.out.println(br.readLine());            
+            
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }    
+        
+    }
+    
+    public static void main(String[] args) {
+        (new Cliente()).ejecutar();
+
+    }
+
+}</code></pre></div><div class="bloque"><h4>Servidor multihilo (varios clientes a la vez)</h4><p>Con un único hilo, el servidor queda atrapado atendiendo al primer cliente. Solución: <b>el main solo hace <code>accept()</code> y por cada cliente lanza un hilo</b> (<code>HiloServidor extends Thread</code>) que recibe el socket y lleva la conversación en su <code>run()</code>.</p><pre><code>// Servidor.java
+while (true) {
+    Socket socket = serverSocket.accept();      // espera cliente
+    new HiloServidor(socket).start();           // un hilo por cliente
+}</code></pre></div><div class="note"><b>BindException: Address already in use</b> → ya hay otro proceso (normalmente <b>una ejecución anterior del servidor que sigue viva</b>) usando ese puerto. Párala o cambia de puerto. <b>En macOS el puerto 5000 lo ocupa AirPlay</b> (Control Center): usa 5050, 8000…</div></section><section class="cat" id="s5"><h2 class="cat-title">5. Protocolos de comunicación (Tema 2.3)</h2><div class="bloque"><h4>Tipos de protocolos</h4><ul><li><b>Basados en texto</b>: se envían cadenas de caracteres (representación tipo ASCII).</li><li><b>De solicitud-respuesta</b>: un lado invoca una petición y espera una respuesta.</li></ul></div><div class="bloque"><h4>HTTP - características</h4><ul><li><b>Hyper Text Transfer Protocol</b> (RFC 1945). Basado en la definición de <b>URL</b>. <b>No es lo mismo que HTML.</b></li><li>El cliente pide una acción al servidor y éste le envía el resultado.</li><li>Versiones: HTTP 0.9 (texto sin formato) → 1.0 (formatos MIME) → 1.1 (nuevos servicios, reinicio de comunicaciones).</li><li>Utilizado por el <b>100 % de usuarios y servidores</b>.</li><li><b>URL</b> = objeto al que se le puede pedir la ejecución de un método y obtener resultados según los parámetros.</li><li>Protocolo tan <b>genérico</b> que permite definir tus propios comportamientos.</li><li><b>Sin estado</b>: no recuerda peticiones de clientes. Primera solución: <b>cookies</b>.</li></ul><div class="key"><b>Estado</b> de la comunicación: si guardo información de comunicaciones anteriores, la conexión tiene estado. Si HTTP no tuviera estado, en cada visita tendrías que hacer login de nuevo; con <b>cookies</b> el servidor te envía un identificador aleatorio que tu navegador devuelve para reconocerte. <i>(Importa más en DAD II.)</i></div></div><div class="bloque"><h4>HTTP - estructura de un mensaje</h4><p>Un mensaje (petición <b>o</b> respuesta) tiene: <b>primera línea</b> · <b>cabeceras</b> (pares <code>field-name:field-value&lt;CRLF&gt;</code>; metainformación, p. ej. el tamaño del cuerpo) · <b>línea en blanco (CRLF)</b> · <b>cuerpo (entity body)</b>.</p><div class="tbl-wrap"><table class="tbl"><tr><th>Tipo</th><th>Primera línea</th><th>Ejemplo</th></tr><tr><td><b>Petición (request)</b></td><td><b>Método</b> + <b>recurso</b> (URL) + <b>versión</b> de HTTP</td><td><code>GET http://www.w3.org/pub/WWW/TheProject.html HTTP/1.0</code></td></tr><tr><td><b>Respuesta (response)</b></td><td><b>Versión</b> + <b>código de estado</b> (3 dígitos) + <b>frase descriptiva</b></td><td><code>HTTP/1.0 404 Not Found</code></td></tr></table></div><p>Cabeceras: General Header, Request/Response Header y Entity Header. El cuerpo de la petición lleva info extra/parámetros para el método; el de la respuesta, info para el cliente.</p></div><div class="bloque"><h4>HTTP - métodos</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Método</th><th>Función</th><th>Versión</th></tr><tr><td><b>GET</b></td><td>Recupera la URL especificada</td><td>1.0</td></tr><tr><td><b>POST</b></td><td>Envía datos a la URL especificada</td><td>1.0</td></tr><tr><td>HEAD</td><td>Como GET pero sólo devuelve las cabeceras</td><td>1.0</td></tr><tr><td><b>PUT</b></td><td>Guarda los datos en la URL</td><td>1.1</td></tr><tr><td><b>DELETE</b></td><td>Borra el recurso especificado</td><td>1.1</td></tr><tr><td>PATCH / COPY / MOVE / LINK / UNLINK / TRACE / OPTIONS / WRAPPED</td><td>Diferencias · copiar · mover · ligaduras · eco de la petición · opciones de comunicación · agrupar y encriptar</td><td>1.1</td></tr></table></div><div class="key">El profe: <b>no hay que aprender todos</b>. Los 4 importantes: <b>GET, POST, PUT, DELETE</b>.</div></div><div class="bloque"><h4>FTP - File Transfer Protocol (RFC 959)</h4><ul><li>Permite <b>compartir ficheros</b> (binarios o de datos), facilita el uso de ordenadores remotos, protege al usuario de las variaciones del sistema de ficheros de cada host y transfiere ficheros real y eficientemente. Diseñado para ser usado por <b>programas</b>.</li><li><b>Dos conexiones</b>: <b>control</b> (User-PI ↔ Server-PI; comandos y respuestas; puerto <b>21</b>, <i>well-known port</i>) y <b>datos</b> (User-DTP ↔ Server-DTP; transferencia de ficheros; puerto <b>20</b>).</li><li><b>PI</b> = Protocol Interpreter (intercambia comandos y parámetros). <b>DTP</b> = Data Transfer Process.</li></ul><div class="tbl-wrap"><table class="tbl"><tr><th>Aspecto</th><th>Opciones</th></tr><tr><td>Representación (<code>TYPE</code>)</td><td><b>ASCII</b> (defecto, texto, A) · EBCDIC (E) · <b>IMAGE</b> (I, binarios, grupos de 8 bits) · LOCAL (byte lógico definido por el emisor)</td></tr><tr><td>Control de formato (ASCII/EBCDIC)</td><td>NON PRINT (defecto) · TELNET FORMAT CONTROLS · CARRIAGE CONTROL (ASA)</td></tr><tr><td>Estructura (<code>STRU</code>)</td><td><b>File</b> (defecto, bytes sin estructura) · Record · Page</td></tr><tr><td>Modo de transmisión (<code>MODE</code>)</td><td><b>Stream</b> (flujo de bytes) · Block (bloques con cabecera) · Compressed</td></tr></table></div></div><div class="bloque"><h4>FTP - comandos (texto acabado en CRLF)</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Grupo</th><th>Comandos</th></tr><tr><td>Control de acceso</td><td><code>USER</code> nombre · <code>PASS</code> contraseña · <code>ACCT</code> · <code>CWD</code> cambiar directorio · <code>CDUP</code> subir · <code>SMNT</code> · <code>REIN</code> (cierra sesión, no la conexión de control) · <code>QUIT</code> (cierra sesión y conexión de control)</td></tr><tr><td>Parámetros de transferencia</td><td><code>PORT h1,h2,h3,h4,p1,p2</code> · <code>PASV</code> (Server-DTP en escucha) · <code>TYPE</code> · <code>STRU</code> · <code>MODE</code></td></tr><tr><td>Servicio</td><td><code>RETR</code> descargar · <code>STOR</code> subir · <code>STOU</code> subir con nombre único · <code>APPE</code> añadir al final · <code>REST</code> reanudar · <code>RNFR</code>/<code>RNTO</code> renombrar · <code>ABOR</code> · <code>DELE</code> borrar fichero · <code>RMD</code>/<code>MKD</code> borrar/crear directorio · <code>PWD</code> · <code>LIST</code>/<code>NLST</code> listar · <code>SITE</code> · <code>SYST</code> · <code>STAT</code> · <code>HELP</code> · <code>NOOP</code></td></tr></table></div><div class="key"><b>PORT</b>: IP = h1.h2.h3.h4. Puerto = número de 16 bits con <b>p1 = 8 bits de más peso</b> y <b>p2 = 8 de menos peso</b> → puerto = p1·256 + p2. Ej.: 4096 = 2<sup>12</sup> → p1 = 16, p2 = 0 → <code>PORT 127,0,0,1,16,0</code>.</div><p><b>Implementación mínima</b>: ASCII Non-print, modo stream, estructura File y Record, comandos <code>user, quit, port, type, mode, stru, retr, stor, noop</code>.</p></div><div class="bloque"><h4>FTP - respuestas</h4><p>Cada respuesta = <b>código numérico de 3 dígitos</b> + <b>texto descriptivo</b> (no estándar). Multilínea: <code>123-línea…</code> y la última <code>123 última línea</code>.</p><div class="tbl-wrap"><table class="tbl"><tr><th>Primer dígito</th><th>Significado</th><th>Ejemplo</th></tr><tr><td>1yz</td><td>Respuesta preliminar positiva</td><td>150 Opening ASCII mode data connection</td></tr><tr><td>2yz</td><td>Comando ejecutado correctamente</td><td>200 Command okay</td></tr><tr><td>3yz</td><td>Respuesta intermedia positiva</td><td>331 User name okay, need password</td></tr><tr><td>4yz</td><td>Negativa «temporal»</td><td>421 Service not available, closing control connection</td></tr><tr><td>5yz</td><td>Negativa definitiva</td><td>501 Syntax error in parameters or arguments</td></tr></table></div><p>Segundo dígito (subgrupo): x0z sintaxis · x1z información · x2z conexiones · x3z autenticación · x4z sin especificar · x5z sistema de ficheros.</p><pre><code>220 SIA FTP service ... Please enter your user name.
+USER sia01          -&gt;  331 User name okay, Need password
+PASS knock          -&gt;  230 User logged in.
+pwd                 -&gt;  257 "/" is current directory.
+cd pub              -&gt;  500 'cd pub': command not understood.   (el comando FTP es CWD)
+CWD pub             -&gt;  250 "/pub" is current directory
+RETR prueba.txt     -&gt;  550 Access denied
+QUIT                -&gt;  221 Goodbye. Control connection closed.</code></pre></div></section><section class="cat" id="s6"><h2 class="cat-title">6. Plantillas para el examen de programación</h2><div class="bloque"><h4>Estructura base (siempre igual)</h4><p>El examen pide un <b>servidor multihilo con un protocolo de comandos de texto</b>. Se parte siempre de estas tres clases; lo que cambia es el <code>switch</code> de comandos del hilo.</p><p><b>Servidor</b>: <code>ServerSocket</code> + bucle <code>accept()</code> + un hilo por cliente (puerto el que diga el enunciado; si no, uno cualquiera).</p><pre><code>import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+    public static final int PUERTO = 5050;
+
+    public void ejecutar() {
+        try {
+            ServerSocket serverSocket = new ServerSocket(Servidor.PUERTO);
+            System.out.println("Servidor lanzado esperando clientes...");
+            while (true) {
+                Socket socket = serverSocket.accept();     // se bloquea hasta que llega un cliente
+                HiloServidor hilo = new HiloServidor(socket);
+                hilo.start();                              // el main vuelve al accept() enseguida
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+    }
+}</code></pre><p><b>Hilo</b> (aquí está <b>todo lo que cambia</b>): lee línea → <code>split(" ")</code> → <code>switch(partes[0])</code> → responde y <code>flush()</code>.</p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class HiloServidor extends Thread {
+    private Socket socket;
+
+    public HiloServidor(Socket socket) {
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            boolean salir = false;
+            while (!salir) {
+                String linea = br.readLine();
+                if (linea == null) break;                  // el cliente cerro la conexion
+                String[] partes = linea.split(" ");
+                String respuesta = "";
+                switch (partes[0].toUpperCase()) {
+                case "SUMA":
+                    respuesta = "" + (Integer.parseInt(partes[1]) + Integer.parseInt(partes[2]));
+                    break;
+                case "RESTA":
+                    respuesta = "" + (Integer.parseInt(partes[1]) - Integer.parseInt(partes[2]));
+                    break;
+                case "MULTIPLICA":
+                    respuesta = "" + (Integer.parseInt(partes[1]) * Integer.parseInt(partes[2]));
+                    break;
+                case "EXIT":
+                    respuesta = "Adios";
+                    salir = true;
+                    break;
+                default:
+                    respuesta = "Comando no reconocido";
+                }
+                pw.println(respuesta);
+                pw.flush();
+            }
+            socket.close();
+        } catch (IOException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Conexion finalizada: " + e);
+        }
+    }
+}</code></pre><p><b>Cliente</b> (lectura por teclado; da puntos y se hace rápido; el host debe coincidir con el del servidor; termina al escribir <code>EXIT</code>).</p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Cliente {
+    public void ejecutar() {
+        try (Socket socket = new Socket("127.0.0.1", Servidor.PUERTO)) {
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Scanner teclado = new Scanner(System.in);
+            String linea = "";
+            System.out.println("Comandos: SUMA a b | RESTA a b | MULTIPLICA a b | EXIT");
+            while (!linea.equalsIgnoreCase("EXIT")) {
+                linea = teclado.nextLine();
+                pw.println(linea);
+                pw.flush();
+                System.out.println(br.readLine());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Cliente()).ejecutar();
+    }
+}</code></pre></div><div class="bloque"><h4>Truquitos que se repiten</h4><ul><li><code>partes = linea.split(" ")</code> corta por espacios; <code>partes[0]</code> es el comando.</li><li><code>Integer.parseInt(partes[1])</code>: de String a entero (puede lanzar <code>NumberFormatException</code>).</li><li>Si un parámetro puede llevar espacios (nombre completo, descripción): <code>split(" ", 3)</code> o <code>substring</code> + <code>indexOf</code>.</li><li><b>Siempre comprobar</b> el nº de partes (<code>partes.length</code>) y que el elemento exista antes de operar.</li><li>El estado compartido entre clientes (<code>Hashtable</code>) vive en el <b>Servidor</b> (o en un atributo <code>static</code>) y se pasa a cada hilo: <code>new HiloServidor(socket, this)</code>.</li><li><code>Hashtable</code> es thread-safe; para operaciones compuestas (comprobar + insertar) usa <code>synchronized</code>.</li><li><code>EXIT</code>: sale del bucle, cierra el socket (<code>cerrarSocket()</code>); en la variante con <code>ArrayList</code> de hilos, <code>servidor.matarHilo(id)</code>.</li><li>Siempre <code>pw.flush()</code> tras <code>println</code>, o el cliente se queda esperando (bloqueo indefinido).</li></ul></div><div class="bloque"><h4>Ejercicios de exámenes de años anteriores (con HashTable)</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Ejercicio</th><th>Clase de datos</th><th>Qué hay que añadir</th></tr><tr><td><b>Multas</b></td><td><code>Matricula</code> con <code>ArrayList&lt;Integer&gt;</code> de multas: <code>getCuantiaMultas()</code>, <code>addMulta()</code>, <code>addPago()</code>, <code>getPendiente()</code></td><td><code>Hashtable</code> de matrículas en el Servidor + <code>getMatricula</code>/<code>addMatricula</code>/<code>removeMatricula</code></td></tr><tr><td><b>Materiales</b></td><td><code>Material</code> con <code>toString()</code> y <code>addReserva()</code> (resta unidades)</td><td>Además un <code>ArrayList</code> de hilos con id + <code>matarHilo(id)</code> que llama a <code>cerrarSocket()</code></td></tr><tr><td><b>Congresos</b></td><td><code>Congreso</code> con <code>toString()</code></td><td><code>listar</code>: el servidor devuelve la tabla y el hilo la recorre; <code>borrar</code> por id</td></tr></table></div><p>Los tres ejercicios resueltos y probados están en la página de <b>Talleres</b>.</p></div></section><section class="cat" id="s7"><h2 class="cat-title">7. Preguntas de teoría que han caído / pueden caer</h2><div class="bloque"><h4>Chuleta Q&amp;A</h4><div class="tbl-wrap"><table class="tbl"><tr><th>Pregunta</th><th>Respuesta corta</th></tr><tr><td>¿Qué es un hilo? ¿Para qué se usa?</td><td>Secuencia única de control de flujo dentro de un programa (unidad de código más pequeña ejecutable). Tareas lentas, no paralizar el programa, evitar bloqueos y varias tareas a la vez.</td></tr><tr><td>¿De qué clase se hereda / cómo se lanza?</td><td><code>extends Thread</code> (o <code>implements Runnable</code>); se lanza con <code>start()</code>.</td></tr><tr><td>Ventajas de la computación distribuida</td><td>Económica, compartición de recursos, escalabilidad, tolerancia a fallos. (Inconvenientes: múltiples puntos de fallo y seguridad.)</td></tr><tr><td>¿Qué es un socket?</td><td>Punto de conexión entre dos procesos, identificado por IP y puerto.</td></tr><tr><td>¿Cómo se activa un socket (servidor)?</td><td>Con <code>accept()</code>.</td></tr><tr><td>¿Qué es HTTP?</td><td>Protocolo de Transferencia de Hipertexto: permite la transferencia de información en la web entre navegadores y servidores.</td></tr><tr><td>Características de HTTP</td><td>URL, 100 % de usuarios/servidores, sin estado (cookies), no es HTML, genérico y extensible.</td></tr><tr><td>Estructura de un paquete HTTP</td><td>Primera línea · cabeceras (campo:valor) · línea en blanco CRLF · cuerpo. Petición: método+recurso+versión. Respuesta: versión+código+frase.</td></tr><tr><td>Tipos de mensajes HTTP</td><td>Petición (request) y respuesta (response).</td></tr><tr><td>Métodos HTTP importantes</td><td>GET (recuperar), POST (enviar), PUT (guardar), DELETE (borrar).</td></tr><tr><td>Unicast vs multicast</td><td>De un proceso a otro / de un proceso a varios.</td></tr><tr><td>Bloqueo indefinido y soluciones</td><td>Petición bloqueante que nunca se desbloquea. Soluciones: temporizadores e hilos/procesos hijo.</td></tr><tr><td>¿Por qué 5 hilos × 1000 no da 5000?</td><td>Condición de carrera sobre variable compartida: <code>contador++</code> no es atómico. Solución: <code>synchronized</code> / <code>AtomicInteger</code>.</td></tr><tr><td><code>BindException: Address already in use</code></td><td>El puerto ya está ocupado (ejecución anterior viva).</td></tr><tr><td><code>IllegalThreadStateException</code> en <code>start()</code></td><td>Se llama <code>start()</code> más de una vez sobre el mismo objeto Thread.</td></tr></table></div></div></section>
+<footer class="page-foot">Basado en los temas 1.1, 1.2, 2.1, 2.2 y 2.3, el taller, los apuntes de clase y los proyectos de hilos y sockets de DAD I.</footer>
+</main>
+
+</body>
+</html>

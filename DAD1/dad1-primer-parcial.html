@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primer parcial DAD1</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+
+<style>
+.ex .ex-text p { margin: 0 0 10px; }
+.ex .ex-text pre, .sol pre { margin: 10px 0; }
+.sol { border-top: 1px dashed var(--border); padding-top: 12px; }
+.sol p, .sol ul, .sol ol { margin: 0 0 10px; }
+.sol ul, .sol ol { padding-left: 22px; }
+.ex table.tbl { margin: 8px 0; }
+</style>
+
+</head>
+<body data-crumb="DAD1 · Primer parcial">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Desarrollo de Aplicaciones Distribuidas I · Primer parcial</span>
+  <h1>Primer parcial - DAD I (examen real)</h1>
+  <p class="lead">Reconstruido a partir de las fotos del examen, con la solución de cada pregunta.</p>
+  <div class="actions-row"><a class="btn" href="dad1-resumen.html">Apuntes</a><a class="btn" href="dad1-talleres.html">Talleres</a><a class="btn" href="dad1-examen-ejemplo.html">Examen de ejemplo</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc"><a href="#cortas">Preguntas cortas</a><a href="#prog">Programación</a><a href="#desarrollo">Desarrollo (5 pts)</a></nav>
+<div class="toolbar"><button class="btn" type="button" onclick="toggleAll(true)">Mostrar todas las soluciones</button><button class="btn" type="button" onclick="toggleAll(false)">Ocultar todas</button></div>
+<div class="note"><b>Primer parcial DAD I</b> (reconstruido a partir de las fotos del examen real). Puntuación total: <b>10 puntos</b> — preguntas cortas (3 puntos), programación (2 puntos) y desarrollo (5 puntos). Intenta resolverlo en papel antes de abrir cada solución.</div><section class="cat" id="cortas"><h2 class="cat-title">Preguntas cortas</h2><div class="ex"><div class="num">Pregunta 1 · 0,5 puntos</div><div class="ex-text">¿Qué es un hilo? ¿Para qué se suele utilizar?</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol1" onclick="toggleSol(1, this)">Ver solución</button></div><div class="sol" id="sol1"><p><b>Hilo</b>: secuencia única de control de flujo dentro de un programa; es la unidad de código más pequeña que se puede ejecutar.</p><p><b>Para qué se utiliza</b>:</p><ul><li>Ejecutar <b>tareas lentas</b> (conexiones de red, grabación en disco).</li><li><b>No paralizar el programa principal</b> mientras se ejecutan otras tareas.</li><li><b>Evitar bloqueos</b> inaceptables o indefinidos de un proceso.</li><li>Realizar <b>múltiples tareas</b> a la vez (p. ej. un servidor atendiendo a varios clientes).</li></ul></div></div><div class="ex"><div class="num">Pregunta 2 · 1 punto</div><div class="ex-text">Ventajas de la computación distribuida.</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol2" onclick="toggleSol(2, this)">Ver solución</button></div><div class="sol" id="sol2"><p>Un sistema distribuido es un conjunto de computadores independientes, conectados por red, que colaboran en una tarea (no comparten memoria ni espacio de ejecución). Ventajas:</p><ul><li><b>Económica</b>: los computadores y el acceso a red son baratos.</li><li><b>Compartición de recursos</b>.</li><li><b>Escalabilidad</b>: se añaden máquinas según crece la carga.</li><li><b>Tolerancia a fallos</b>: si un nodo cae, otros pueden seguir.</li></ul><p>Como contrapunto (suma si lo mencionas): múltiples puntos de fallo y aspectos de seguridad.</p></div></div><div class="ex"><div class="num">Pregunta 3 · 1,5 puntos</div><div class="ex-text">Características del protocolo HTTP. ¿Cuál es la estructura de un paquete HTTP?</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol3" onclick="toggleSol(3, this)">Ver solución</button></div><div class="sol" id="sol3"><p><b>Características</b>:</p><ul><li>Hyper Text Transfer Protocol (RFC 1945), basado en <b>URL</b>: objeto al que se le pide la ejecución de un método y se obtiene un resultado según los parámetros.</li><li>Protocolo de <b>solicitud-respuesta</b> basado en texto: el cliente pide una acción y el servidor envía el resultado.</li><li>Utilizado por el 100 % de usuarios y servidores. <b>No es lo mismo que HTML.</b></li><li><b>Sin estado</b>: no recuerda peticiones anteriores (solución: <b>cookies</b>).</li><li>Muy <b>genérico</b>: permite definir tus propios comportamientos. Métodos: GET, POST, PUT, DELETE…</li></ul><p><b>Estructura del mensaje</b> (petición o respuesta):</p><ol><li><b>Primera línea</b>: en la petición, método + recurso (URL) + versión (<code>GET /index.html HTTP/1.0</code>); en la respuesta, versión + código de estado + frase (<code>HTTP/1.0 404 Not Found</code>).</li><li><b>Cabeceras</b>: pares <code>campo:valor</code> acabados en CRLF (metainformación, p. ej. el tamaño del cuerpo).</li><li><b>Línea en blanco</b> (CRLF) que separa cabecera y cuerpo.</li><li><b>Cuerpo</b> (entity body): información extra / datos.</li></ol></div></div></section><section class="cat" id="prog"><h2 class="cat-title">Preguntas de programación</h2><div class="ex"><div class="num">Pregunta 4 · 0,5 puntos</div><div class="ex-text"><p>Dada la siguiente clase:</p><pre><code>public class Servidor {
+    public static final int PUERTO = 8000;
+
+    public void ejecutar() {
+        try {
+            ServerSocket serverSocket = new ServerSocket(Servidor.PUERTO);
+            System.out.println("Esperando cliente...");
+            Socket socket = serverSocket.accept();
+
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(socket.getInputStream()));
+
+            while (true) {
+                System.out.println(br.readLine());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            System.out.println("Fin de servidor");
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+    }
+}</code></pre><p>¿Cuál es el motivo para que salte la siguiente excepción al ejecutar dos veces seguidas el programa?</p><pre><code>java.net.BindException: Address already in use
+    at java.base/sun.nio.ch.Net.bind0(Native Method)
+    at java.base/sun.nio.ch.Net.bind(Net.java:565)</code></pre></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol4" onclick="toggleSol(4, this)">Ver solución</button></div><div class="sol" id="sol4"><p>La primera ejecución <b>sigue viva</b> y mantiene ocupado el puerto 8000: el servidor nunca termina porque está en un <code>while(true)</code> y nunca cierra el <code>ServerSocket</code>. Al lanzar la segunda, <code>new ServerSocket(8000)</code> no puede hacer el <code>bind()</code> a un puerto que ya está en uso → <code>BindException: Address already in use</code>.</p><p><b>Solución</b>: parar la primera ejecución antes de lanzar la segunda, usar otro puerto, o cerrar el <code>ServerSocket</code> (try-with-resources).</p><div class="note">Extra: cuando el cliente se desconecta, <code>readLine()</code> devuelve <code>null</code> y el bucle <code>while(true)</code> imprimiría «null» sin parar. Mejor: <code>while ((linea = br.readLine()) != null)</code>.</div></div></div><div class="ex"><div class="num">Pregunta 5 · 0,5 puntos</div><div class="ex-text"><p>Dadas las dos clases:</p><pre><code>public class Main {
+    public static void main(String[] args) {
+        MiHilo miHilo = new MiHilo();
+
+        System.out.println("Lanzamos hilos");
+        for (int i = 0; i &lt; 10; i++) {
+            (new Thread()).start();
+        }
+        System.out.println("Hecho");
+    }
+}
+
+public class MiHilo implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("Hola Mundo");
+    }
+}</code></pre><p>¿Cuál es el motivo para que por consola salga lo siguiente y no aparezca el texto «Hola Mundo» repetido diez veces?</p><pre><code>Lanzamos hilos
+Hecho</code></pre></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol5" onclick="toggleSol(5, this)">Ver solución</button></div><div class="sol" id="sol5"><p>Porque se crean hilos con <code>new Thread()</code> <b>sin pasarles el <code>Runnable</code></b>. Un <code>Thread</code> sin Runnable tiene un <code>run()</code> vacío, así que <code>start()</code> lanza hilos que no hacen nada. El objeto <code>miHilo</code> se crea pero nunca se ejecuta.</p><pre><code>// Corrección
+for (int i = 0; i &lt; 10; i++) {
+    (new Thread(miHilo)).start();   // le pasamos el Runnable
+}</code></pre><p>Nota: <code>MiHilo implements Runnable</code> no extiende <code>Thread</code>, por eso no puede hacerse <code>miHilo.start()</code>: hay que envolverlo en un <code>Thread</code>.</p></div></div><div class="ex"><div class="num">Pregunta 6 · 0,5 puntos</div><div class="ex-text"><p>Dadas las siguientes clases:</p><pre><code>public class HiloContador implements Runnable {
+    private int contador = 0;
+
+    @Override
+    public void run() {
+        for (int i = 0; i &lt; 1000; i++) {
+            contador++;
+            System.out.println("Contador: " + contador);
+        }
+    }
+}
+
+public class Principal {
+    public static void main(String[] args) {
+        HiloContador hc = new HiloContador();
+        for (int i = 0; i &lt; 5; i++) {
+            new Thread(hc).start();
+        }
+    }
+}</code></pre><p>¿Por qué el valor mostrado del contador no es 5000, sino un número menor y variable en cada ejecución?</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol6" onclick="toggleSol(6, this)">Ver solución</button></div><div class="sol" id="sol6"><p>Los 5 hilos comparten <b>el mismo objeto</b> <code>hc</code> y por tanto la misma variable <code>contador</code>. <code>contador++</code> <b>no es atómico</b> (leer → sumar → escribir): dos hilos pueden leer el mismo valor y escribir ambos el mismo resultado, perdiéndose incrementos. Es una <b>condición de carrera</b>, y por eso el resultado es menor que 5000 y distinto en cada ejecución (depende de cómo planifique el SO los hilos).</p><pre><code>// Solución: acceso exclusivo al incremento
+private synchronized void incrementa() { contador++; }
+// o bien: private AtomicInteger contador = new AtomicInteger();   // contador.incrementAndGet()</code></pre><p>(El <code>println</code> dentro del bucle además mezcla la salida de los hilos, pero la causa del fallo es la falta de sincronización.)</p></div></div><div class="ex"><div class="num">Pregunta 7 · 0,5 puntos</div><div class="ex-text"><p>Dada la siguiente clase (paquete <code>ucam.examen.daduno</code>):</p><pre><code>public class Main {
+    public static void main(String[] args) {
+        MiHilo miHilo = new MiHilo();
+
+        // Lanzamos diez hilos
+        for (int i = 0; i &lt; 10; i++) {
+            miHilo.start();
+        }
+        // Mostramos mensaje de fin
+        System.out.println("Fin del programa");
+    }
+}</code></pre><p>¿Por qué salta la siguiente excepción?</p><pre><code>Exception in thread "main" java.lang.IllegalThreadStateException
+    at java.base/java.lang.Thread.start(Thread.java:800)
+    at src/ucam.examen.daduno.Main.main(Main.java:11)</code></pre></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol7" onclick="toggleSol(7, this)">Ver solución</button></div><div class="sol" id="sol7"><p>Porque se llama a <code>start()</code> <b>varias veces sobre el mismo objeto</b> (<code>miHilo</code>). Un hilo solo se puede arrancar <b>una vez</b>; en la segunda iteración el hilo ya está arrancado (o terminado) y <code>start()</code> lanza <code>IllegalThreadStateException</code>.</p><pre><code>// Corrección: un objeto hilo nuevo por cada lanzamiento
+for (int i = 0; i &lt; 10; i++) {
+    MiHilo miHilo = new MiHilo();
+    miHilo.start();
+}</code></pre></div></div></section><section class="cat" id="desarrollo"><h2 class="cat-title">Pregunta de desarrollo</h2><div class="ex"><div class="num">Pregunta 8 · 5 puntos</div><div class="ex-text">
+<p>El equipo de desarrollo de nuestra empresa está trabajando en un sistema de gestión de <u>fichaje de empleados</u> al que se pueden conectar los clientes mediante el uso de <b>Sockets</b>. El jefe de equipo nos ha pedido que implementemos, dentro del servidor, el hilo de ejecución que gestiona los comandos recibidos. En concreto se trata de <u>implementar solamente la clase <code>HiloGestionFichaje</code></u> para que al recibir el comando y procesarlo devuelva el resultado correspondiente. Esta clase tiene un atributo, <code>Socket</code>, que representa el canal de comunicación con el cliente. Habrá que crear los <i>buffers</i> correspondientes y leer/escribir de los mismos.</p>
+<p><b>Los comandos que implementará el servidor serán los siguientes:</b></p>
+<table class="tbl"><tr><th>Función</th><th>Descripción</th></tr>
+<tr><td><b>ALTAEMPLEADO</b><br><code>ALTAEMPLEADO idEmpleado nombreCompleto</code></td><td>Añade un empleado al sistema con ese identificador y nombre. Devuelve una cadena de texto indicando si se ha introducido correctamente el empleado o si se ha producido un error.<br>Ej.: <code>ALTAEMPLEADO 1234 Juan Martínez</code><br>→ <code>Ok. Empleado insertado</code><br>→ <code>Error. El empleado ya existe</code></td></tr>
+<tr><td><b>ENTRADA</b><br><code>ENTRADA idEmpleado</code></td><td>Registra la entrada del empleado usando la hora del servidor. Devuelve una cadena con el resultado de la operación.<br>Ej.: <code>ENTRADA 1234</code><br>→ <code>Ok. Entrada registrada. 2025-11-11T17:05</code><br>→ <code>Error. El empleado ya ha registrado la entrada</code></td></tr>
+<tr><td><b>SALIDA</b><br><code>SALIDA idEmpleado</code></td><td>Registra la salida del empleado usando la hora del servidor. Devuelve una cadena con el resultado de la operación: ok o error.<br>Ej.: <code>SALIDA 1234</code><br>→ <code>Ok. Salida registrada. 2025-11-11T19:05</code><br>→ <code>Error. El empleado no tiene registrada entrada</code></td></tr>
+<tr><td><b>HORAS</b><br><code>HORAS idEmpleado</code></td><td>Devuelve el total de horas trabajadas acumuladas por el empleado.<br>Ej.: <code>HORAS 1234</code><br>→ <code>Ok. Juan tiene trabajadas 2 horas.</code></td></tr>
+<tr><td><b>ESTADO</b><br><code>ESTADO idEmpleado</code></td><td>Informa del estado actual del empleado: si tiene o no una entrada abierta y, en su caso, desde cuándo.<br>Ej.: <code>ESTADO 1234</code><br>→ <code>El empleado ha registrado entrada: 2025-11-11T17:05</code><br>→ <code>El empleado no ha registrado entrada</code></td></tr></table>
+<p><b>Condiciones</b>: para cada envío el sistema debe comprobar si el empleado ya existe. Para simplificar la gestión, el listado de <u>empleados</u> se podrá almacenar como atributo en la clase implementada. Se recomienda la creación de una clase <u>Empleado</u> que almacene la información del mismo. <b>No se puede FICHAR_ENTRADA si ya hay entrada abierta. No se puede FICHAR_SALIDA si no hay entrada abierta.</b></p>
+<p>Se supone que existe una clase <code>GestionFechas</code> que tiene los siguientes métodos estáticos:</p>
+<ul><li><code>getHoraActual()</code> → devuelve un objeto de la clase <code>Timestamp</code> con la fecha y hora actual.</li>
+<li><code>getHorasEntre(Timestamp fechaInicio, Timestamp fechaFin)</code> → devuelve un número con un decimal (<code>float</code>) que representa las horas que han pasado entre las dos fechas que se pasan como parámetro.</li>
+<li><code>getTexto(Timestamp fecha)</code> → devuelve la cadena de texto que representa a la fecha que recibe por parámetro.</li></ul>
+</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol8" onclick="toggleSol(8, this)">Ver solución</button></div><div class="sol" id="sol8"><p><b>Plan</b>: (1) clase <code>Empleado</code> con id, nombre, <code>Timestamp</code> de la entrada abierta (null si no hay) y horas acumuladas; (2) <code>HiloGestionFichaje extends Thread</code> con el <code>Socket</code>, el listado de empleados, los buffers y un <code>switch</code> sobre el comando; (3) un método por comando, comprobando siempre las condiciones del enunciado.</p><p><b>Clase Empleado</b></p><pre><code>import java.sql.Timestamp;
+
+public class Empleado {
+    private String id;
+    private String nombre;
+    private Timestamp entrada;      // null si no hay entrada abierta
+    private float horasAcumuladas = 0;
+
+    public Empleado(String id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+    }
+    public String getId() { return id; }
+    public String getNombre() { return nombre; }
+    public Timestamp getEntrada() { return entrada; }
+    public void setEntrada(Timestamp entrada) { this.entrada = entrada; }
+    public boolean tieneEntradaAbierta() { return entrada != null; }
+    public float getHorasAcumuladas() { return horasAcumuladas; }
+    public void sumaHoras(float horas) { this.horasAcumuladas += horas; }
+}</code></pre><p><b>Clase HiloGestionFichaje</b> (la que se pide)</p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.sql.Timestamp;
+import java.util.Hashtable;
+
+public class HiloGestionFichaje extends Thread {
+    // Listado de empleados (compartido por todos los hilos -&gt; accesos synchronized)
+    private static Hashtable&lt;String, Empleado&gt; empleados = new Hashtable&lt;String, Empleado&gt;();
+
+    private Socket socket;
+    private BufferedReader br;
+    private PrintWriter pw;
+
+    public HiloGestionFichaje(Socket socket) {
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
+        try {
+            // Buffers de comunicacion con el cliente
+            this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+
+            String linea;
+            while ((linea = this.br.readLine()) != null) {
+                String respuesta = this.procesar(linea);
+                this.pw.println(respuesta);
+                this.pw.flush();
+            }
+        } catch (IOException e) {
+            System.out.println("Conexion finalizada");
+        } finally {
+            try { this.socket.close(); } catch (IOException e) { }
+        }
+    }
+
+    private String procesar(String linea) {
+        String[] partes = linea.trim().split(" ", 3);   // 3: el nombre completo puede llevar espacios
+        String comando = partes[0].toUpperCase();
+
+        switch (comando) {
+        case "ALTAEMPLEADO":
+            if (partes.length &lt; 3) return "Error. Uso: ALTAEMPLEADO idEmpleado nombreCompleto";
+            return this.altaEmpleado(partes[1], partes[2]);
+        case "ENTRADA":
+            if (partes.length &lt; 2) return "Error. Uso: ENTRADA idEmpleado";
+            return this.entrada(partes[1]);
+        case "SALIDA":
+            if (partes.length &lt; 2) return "Error. Uso: SALIDA idEmpleado";
+            return this.salida(partes[1]);
+        case "HORAS":
+            if (partes.length &lt; 2) return "Error. Uso: HORAS idEmpleado";
+            return this.horas(partes[1]);
+        case "ESTADO":
+            if (partes.length &lt; 2) return "Error. Uso: ESTADO idEmpleado";
+            return this.estado(partes[1]);
+        default:
+            return "Error. Comando no reconocido";
+        }
+    }
+
+    private synchronized String altaEmpleado(String id, String nombre) {
+        if (empleados.containsKey(id)) {
+            return "Error. El empleado ya existe";
+        }
+        empleados.put(id, new Empleado(id, nombre));
+        return "Ok. Empleado insertado";
+    }
+
+    private synchronized String entrada(String id) {
+        Empleado e = empleados.get(id);
+        if (e == null) return "Error. El empleado no existe";
+        if (e.tieneEntradaAbierta()) {
+            return "Error. El empleado ya ha registrado la entrada";
+        }
+        Timestamp ahora = GestionFechas.getHoraActual();
+        e.setEntrada(ahora);
+        return "Ok. Entrada registrada. " + GestionFechas.getTexto(ahora);
+    }
+
+    private synchronized String salida(String id) {
+        Empleado e = empleados.get(id);
+        if (e == null) return "Error. El empleado no existe";
+        if (!e.tieneEntradaAbierta()) {
+            return "Error. El empleado no tiene registrada entrada";
+        }
+        Timestamp ahora = GestionFechas.getHoraActual();
+        e.sumaHoras(GestionFechas.getHorasEntre(e.getEntrada(), ahora));
+        e.setEntrada(null);                              // cierra la entrada abierta
+        return "Ok. Salida registrada. " + GestionFechas.getTexto(ahora);
+    }
+
+    private synchronized String horas(String id) {
+        Empleado e = empleados.get(id);
+        if (e == null) return "Error. El empleado no existe";
+        return "Ok. " + e.getNombre() + " tiene trabajadas " + e.getHorasAcumuladas() + " horas.";
+    }
+
+    private synchronized String estado(String id) {
+        Empleado e = empleados.get(id);
+        if (e == null) return "Error. El empleado no existe";
+        if (e.tieneEntradaAbierta()) {
+            return "El empleado ha registrado entrada: " + GestionFechas.getTexto(e.getEntrada());
+        }
+        return "El empleado no ha registrado entrada";
+    }
+}</code></pre><p><b>Servidor</b> (no se pedía; sirve para probarlo): <code>accept()</code> + un hilo por cliente.</p><pre><code>import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+    public static final int PUERTO = 8000;
+
+    public void ejecutar() {
+        try (ServerSocket serverSocket = new ServerSocket(PUERTO)) {
+            System.out.println("Esperando clientes...");
+            while (true) {
+                Socket socket = serverSocket.accept();
+                new HiloGestionFichaje(socket).start();   // un hilo por cliente
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+    }
+}</code></pre><div class="key"><b>Qué mira el corrector</b>: buffers bien creados (<code>BufferedReader</code>/<code>PrintWriter</code> + <code>flush()</code>) · bucle de lectura · <code>split</code> y <code>switch</code> · alta rechaza duplicados · ENTRADA rechazada si ya hay entrada · SALIDA rechazada si no hay entrada y suma horas con <code>getHorasEntre</code> · HORAS · ESTADO con <code>getTexto</code> · mensajes exactamente como el enunciado.</div><div class="note">Detalles: <code>split(" ", 3)</code> porque el nombre completo lleva espacios; el listado es <code>static</code> + <code>synchronized</code> porque lo comparten todos los hilos (varios clientes); se añade «El empleado no existe» para ENTRADA/SALIDA/HORAS/ESTADO de un id desconocido (el enunciado dice que se debe comprobar si existe). Solución compilada y probada con un cliente real.</div></div></div></section>
+<footer class="page-foot">Reconstrucción del primer parcial de DAD I. Las soluciones de programación han sido compiladas y probadas.</footer>
+</main>
+
+<script>
+function toggleSol(n, btn){
+  var el = document.getElementById('sol'+n);
+  var open = el.classList.toggle('show');
+  if (btn) { btn.textContent = open ? 'Ocultar solución' : 'Ver solución'; btn.setAttribute('aria-expanded', open); }
+}
+function toggleAll(show){
+  document.querySelectorAll('.sol').forEach(function(d){ d.classList.toggle('show', show); });
+  document.querySelectorAll('[aria-controls^="sol"]').forEach(function(b){ b.textContent = show ? 'Ocultar solución' : 'Ver solución'; b.setAttribute('aria-expanded', show); });
+}
+</script>
+
+</body>
+</html>

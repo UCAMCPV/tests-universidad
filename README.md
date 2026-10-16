@@ -13,6 +13,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 | Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1, 2, 2.1, 2.2, 2.3 y 2.4, más un examen parcial de 30 preguntas y un simulacro de 30 preguntas con su guía de estudio. |
 | Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5). |
 | Administración de Sistemas | Resúmenes y tests de los temas 1 (sistemas de información) y 2 (virtualización). |
+| Desarrollo de Aplicaciones Distribuidas I | Apuntes del primer parcial (hilos, sockets, HTTP y FTP), el primer parcial real resuelto, talleres con 12 ejercicios y un examen de ejemplo. No son tests de opción múltiple: cada pregunta se resuelve con «Ver solución». |
 
 Los materiales se basan en los apuntes de las asignaturas. Conviene contrastar las respuestas con los apuntes oficiales; el examen parcial de Ingeniería del Conocimiento contiene respuestas interpretadas a partir de los apuntes, no un solucionario oficial.
 
@@ -74,7 +75,8 @@ El progreso depende del navegador y del origen utilizado: cambiar de dominio, pu
 ├── Moviles/                    # Kotlin: resumen, test y ejercicios
 ├── IngenieriaConocimiento/     # Resúmenes, tests y examen parcial
 ├── CalidadSoftware/            # Resúmenes y tests de calidad del software
-└── Sistemas/                   # Resúmenes, tests y apuntes en Unidad1/*.md
+├── Sistemas/                   # Resúmenes, tests y apuntes en Unidad1/*.md
+└── DAD1/                       # Apuntes, primer parcial, talleres y examen de ejemplo
 ```
 
 Los archivos Markdown de `Sistemas/Unidad1/` son apuntes adicionales; no hay un proceso automático que los convierta en las páginas HTML.

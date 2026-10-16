@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Examen de ejemplo DAD1</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+
+<style>
+.ex .ex-text p { margin: 0 0 10px; }
+.ex .ex-text pre, .sol pre { margin: 10px 0; }
+.sol { border-top: 1px dashed var(--border); padding-top: 12px; }
+.sol p, .sol ul, .sol ol { margin: 0 0 10px; }
+.sol ul, .sol ol { padding-left: 22px; }
+.ex table.tbl { margin: 8px 0; }
+</style>
+
+</head>
+<body data-crumb="DAD1 · Examen de ejemplo">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Desarrollo de Aplicaciones Distribuidas I · Primer parcial</span>
+  <h1>Examen de ejemplo - DAD I</h1>
+  <p class="lead">Examen nuevo con la estructura del primer parcial: preguntas cortas, programación y desarrollo con sockets.</p>
+  <div class="actions-row"><a class="btn" href="dad1-resumen.html">Apuntes</a><a class="btn" href="dad1-primer-parcial.html">Primer parcial</a><a class="btn" href="dad1-talleres.html">Talleres</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc"><a href="#cortas">Preguntas cortas</a><a href="#prog">Programación</a><a href="#desarrollo">Desarrollo (5 pts)</a></nav>
+<div class="toolbar"><button class="btn" type="button" onclick="toggleAll(true)">Mostrar todas las soluciones</button><button class="btn" type="button" onclick="toggleAll(false)">Ocultar todas</button></div>
+<div class="note"><b>Examen de ejemplo DAD I</b> — preparado con la misma estructura y puntuación que el primer parcial real (3 preguntas cortas, 4 de programación y 1 de desarrollo con sockets). Total: <b>10 puntos</b>. Hazlo en 1 h 30 min sin mirar los apuntes y luego contrasta con las soluciones.</div><section class="cat" id="cortas"><h2 class="cat-title">Preguntas cortas</h2><div class="ex"><div class="num">Pregunta 1 · 0,5 puntos</div><div class="ex-text">Explica la diferencia entre crear un hilo heredando de <code>Thread</code> e implementando <code>Runnable</code>. ¿Cómo se lanza en cada caso?</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol1" onclick="toggleSol(1, this)">Ver solución</button></div><div class="sol" id="sol1"><ul><li><b>Heredando de <code>Thread</code></b>: <code>class MiHilo extends Thread</code>, se sobrescribe <code>run()</code> y se lanza con <code>new MiHilo().start()</code>.</li><li><b>Implementando <code>Runnable</code></b>: <code>class MiHilo implements Runnable</code>, se implementa <code>run()</code> y se lanza con <code>new Thread(new MiHilo()).start()</code>.</li></ul><p>Con <code>Runnable</code> la clase aún puede heredar de otra (Java no tiene herencia múltiple). En ambos casos se lanza con <code>start()</code>, <b>nunca con <code>run()</code></b> (que ejecutaría el código en el hilo actual).</p></div></div><div class="ex"><div class="num">Pregunta 2 · 1 punto</div><div class="ex-text">¿Qué es un socket? Describe los pasos que sigue un servidor y un cliente para establecer una comunicación y qué método activa al servidor.</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol2" onclick="toggleSol(2, this)">Ver solución</button></div><div class="sol" id="sol2"><p><b>Socket</b>: punto de conexión entre dos procesos, identificado por una IP y un puerto.</p><table class="tbl"><tr><th>Servidor</th><th>Cliente</th></tr><tr><td>1. Crear socket (<code>new ServerSocket(puerto)</code>: socket + bind + listen)</td><td>1. Crear socket (<code>new Socket(ip, puerto)</code>); el SO le asigna un puerto aleatorio</td></tr><tr><td>2. <code>accept()</code>: espera (bloqueante) y acepta la conexión entrante → devuelve un <code>Socket</code></td><td>2. Se conecta al servidor</td></tr><tr><td>3. <code>leer()</code> con <code>BufferedReader</code> / <code>escribir()</code> con <code>PrintWriter</code></td><td>3. <code>escribir()</code> / <code>leer()</code></td></tr></table><p>Lo que <b>activa</b> al servidor es <code>accept()</code>. El puerto del cliente y del servidor deben coincidir en la conexión y debe haber un <b>protocolo</b> acordado.</p></div></div><div class="ex"><div class="num">Pregunta 3 · 1,5 puntos</div><div class="ex-text">Protocolo FTP: ¿cuántas conexiones utiliza y para qué? Explica el comando <code>PORT 192,168,1,10,19,136</code> y qué significan los códigos de respuesta 2yz, 3yz y 5yz.</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol3" onclick="toggleSol(3, this)">Ver solución</button></div><div class="sol" id="sol3"><ul><li><b>Dos conexiones</b>: <b>control</b> (puerto 21; comandos y respuestas entre los Protocol Interpreter) y <b>datos</b> (puerto 20; transferencia de ficheros entre los Data Transfer Process).</li><li><code>PORT h1,h2,h3,h4,p1,p2</code> indica al servidor a qué IP y puerto debe conectarse para los datos. Aquí: IP <b>192.168.1.10</b> y puerto = p1·256 + p2 = 19·256 + 136 = <b>5000</b>.</li><li><b>2yz</b>: comando ejecutado correctamente (200 Command okay). <b>3yz</b>: respuesta intermedia positiva, se espera más información (331 User name okay, need password). <b>5yz</b>: negativa definitiva (550 Access denied).</li><li>Comandos básicos: <code>USER/PASS</code> acceso, <code>CWD</code> cambiar directorio, <code>RETR</code> descargar, <code>STOR</code> subir, <code>QUIT</code> salir.</li></ul></div></div></section><section class="cat" id="prog"><h2 class="cat-title">Preguntas de programación</h2><div class="ex"><div class="num">Pregunta 4 · 0,5 puntos</div><div class="ex-text"><p>El siguiente servidor atiende bien al primer cliente que se conecta, pero un segundo cliente conecta y nunca recibe respuesta. ¿Por qué? ¿Cómo se soluciona?</p><pre><code>public void ejecutar() {
+    try {
+        ServerSocket serverSocket = new ServerSocket(5050);
+        while (true) {
+            Socket socket = serverSocket.accept();
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                pw.println("Recibido: " + linea);
+                pw.flush();
+            }
+        }
+    } catch (IOException e) { e.printStackTrace(); }
+}</code></pre></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol4" onclick="toggleSol(4, this)">Ver solución</button></div><div class="sol" id="sol4"><p>El servidor tiene un <b>único hilo</b>: mientras atiende al primer cliente está dentro del bucle interno de <code>readLine()</code> y <b>no vuelve a <code>accept()</code></b> hasta que ese cliente se desconecta. El segundo cliente conecta (el SO lo deja en la cola) pero nadie lo atiende.</p><p><b>Solución</b>: servidor multihilo. El hilo principal solo hace <code>accept()</code> y por cada cliente lanza un hilo que lleva la conversación:</p><pre><code>while (true) {
+    Socket socket = serverSocket.accept();
+    new HiloServidor(socket).start();   // el bucle de lectura va dentro del run() del hilo
+}</code></pre></div></div><div class="ex"><div class="num">Pregunta 5 · 0,5 puntos</div><div class="ex-text"><p>¿Qué salida produce el siguiente programa? Explica por qué no es concurrente.</p><pre><code>public class Main {
+    public static void main(String[] args) {
+        Thread t = new Thread(new Tarea());
+        System.out.println("A");
+        t.run();
+        System.out.println("B");
+    }
+}
+class Tarea implements Runnable {
+    public void run() {
+        System.out.println(Thread.currentThread().getName());
+    }
+}</code></pre></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol5" onclick="toggleSol(5, this)">Ver solución</button></div><div class="sol" id="sol5"><p>Salida: <code>A</code>, <code>main</code>, <code>B</code> (siempre en ese orden).</p><p>Se ha llamado a <code>run()</code> en lugar de <code>start()</code>: <code>run()</code> es un método normal y se ejecuta <b>en el hilo actual (<code>main</code>)</b>, secuencialmente; no se crea ningún hilo nuevo. Con <code>t.start()</code> se ejecutaría en <code>Thread-0</code> y el orden entre su mensaje y «B» no estaría garantizado.</p></div></div><div class="ex"><div class="num">Pregunta 6 · 0,5 puntos</div><div class="ex-text"><p>¿Cuál es la salida de este programa? ¿Y si se elimina la línea <code>h.join();</code>?</p><pre><code>public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Thread h = new Thread(() -&gt; {
+            try { Thread.sleep(500); } catch (InterruptedException e) { }
+            System.out.println("A");
+        });
+        h.start();
+        System.out.println("B");
+        h.join();
+        System.out.println("C");
+    }
+}</code></pre></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol6" onclick="toggleSol(6, this)">Ver solución</button></div><div class="sol" id="sol6"><ul><li><b>Con <code>join()</code></b>: <code>B</code>, <code>A</code>, <code>C</code>. El main imprime «B» enseguida y con <code>join()</code> espera a que el hilo (que duerme 500 ms) termine e imprima «A»; solo entonces imprime «C».</li><li><b>Sin <code>join()</code></b>: <code>B</code>, <code>C</code>, <code>A</code>. El main no espera al hilo secundario, que tarda 500 ms.</li></ul></div></div><div class="ex"><div class="num">Pregunta 7 · 0,5 puntos</div><div class="ex-text"><p>Al ejecutar el cliente aparece la siguiente excepción. Indica dos posibles causas.</p><pre><code>java.net.ConnectException: Connection refused
+    at java.base/sun.nio.ch.Net.connect0(Native Method)
+    at java.base/java.net.Socket.&lt;init&gt;(Socket.java:...)</code></pre></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol7" onclick="toggleSol(7, this)">Ver solución</button></div><div class="sol" id="sol7"><p>El cliente no ha podido establecer la conexión con el servidor:</p><ol><li>El <b>servidor no está arrancado</b> (nadie hace <code>accept()</code> en ese puerto) — hay que lanzar primero el servidor.</li><li>El <b>puerto o la IP del cliente no coinciden</b> con los del servidor (<code>new Socket("127.0.0.1", 5050)</code> vs. <code>new ServerSocket(8000)</code>).</li></ol><p>También: un firewall que bloquea el puerto, o un servidor que ha terminado/caído.</p></div></div></section><section class="cat" id="desarrollo"><h2 class="cat-title">Pregunta de desarrollo</h2><div class="ex"><div class="num">Pregunta 8 · 5 puntos</div><div class="ex-text">
+<p>La biblioteca de la universidad quiere un sistema de <u>gestión de préstamos de libros</u> al que se conecten los clientes mediante <b>Sockets</b>. El servidor ya está implementado: mantiene una <code>Hashtable&lt;String, Libro&gt;</code> compartida (clave: ISBN) con los métodos <code>boolean addLibro(String isbn, String titulo)</code> (devuelve <code>false</code> si ya existe) y <code>Libro getLibro(String isbn)</code> (devuelve <code>null</code> si no existe), y por cada cliente lanza un <code>HiloGestionBiblioteca</code> pasándole el <code>Socket</code> y el <code>Servidor</code>. Se pide implementar <u>solamente la clase <code>HiloGestionBiblioteca</code></u> (y la clase <code>Libro</code> que necesite): crear los <i>buffers</i>, leer los comandos línea a línea y escribir la respuesta. Si el cliente envía <code>EXIT</code> o se desconecta, el hilo cierra el socket y termina.</p>
+<table class="tbl"><tr><th>Comando</th><th>Descripción y respuestas</th></tr>
+<tr><td><code>ALTALIBRO isbn titulo</code></td><td>Da de alta un libro (el título puede tener espacios).<br>→ <code>Ok. Libro insertado</code><br>→ <code>Error. El libro ya existe</code></td></tr>
+<tr><td><code>PRESTAR isbn</code></td><td>Registra el préstamo con la hora del servidor.<br>→ <code>Ok. Libro prestado. 2025-11-11T17:05</code><br>→ <code>Error. El libro ya esta prestado</code><br>→ <code>Error. El libro no existe</code></td></tr>
+<tr><td><code>DEVOLVER isbn</code></td><td>Registra la devolución y calcula los días de préstamo.<br>→ <code>Ok. Libro devuelto. Dias de prestamo: 3</code><br>→ <code>Error. El libro no esta prestado</code></td></tr>
+<tr><td><code>ESTADO isbn</code></td><td>→ <code>El libro Titulo esta disponible</code><br>→ <code>El libro Titulo esta prestado desde: 2025-11-11T17:05</code></td></tr>
+<tr><td><code>PRESTAMOS isbn</code></td><td>Número total de veces que se ha prestado el libro.<br>→ <code>Ok. El libro se ha prestado 4 veces</code></td></tr></table>
+<p><b>Condiciones</b>: no se puede prestar un libro ya prestado ni devolver uno que no lo está. Dos clientes no pueden prestar a la vez el mismo libro. Se supone que existe la clase <code>GestionFechas</code> con los métodos estáticos: <code>Timestamp getHoraActual()</code>, <code>int getDiasEntre(Timestamp inicio, Timestamp fin)</code> y <code>String getTexto(Timestamp fecha)</code>.</p>
+</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol8" onclick="toggleSol(8, this)">Ver solución</button></div><div class="sol" id="sol8"><p><b>Plan</b>: (1) <code>Libro</code> con isbn, título, fecha de préstamo (null = disponible) y contador de préstamos; (2) el hilo crea los buffers, lee en bucle, hace <code>split(" ", 3)</code> y despacha con un <code>switch</code>; (3) las operaciones sobre un libro concreto se hacen dentro de <code>synchronized(libro)</code> para que dos clientes no presten a la vez el mismo.</p><p><b>Clase Libro</b></p><pre><code>import java.sql.Timestamp;
+
+public class Libro {
+    private String isbn;
+    private String titulo;
+    private Timestamp fechaPrestamo;   // null si esta disponible
+    private int vecesPrestado = 0;
+
+    public Libro(String isbn, String titulo) {
+        this.isbn = isbn;
+        this.titulo = titulo;
+    }
+    public String getIsbn() { return isbn; }
+    public String getTitulo() { return titulo; }
+    public boolean estaPrestado() { return fechaPrestamo != null; }
+    public Timestamp getFechaPrestamo() { return fechaPrestamo; }
+
+    public void prestar(Timestamp fecha) {
+        this.fechaPrestamo = fecha;
+        this.vecesPrestado++;
+    }
+    public void devolver() { this.fechaPrestamo = null; }
+    public int getVecesPrestado() { return vecesPrestado; }
+}</code></pre><p><b>Clase HiloGestionBiblioteca</b> (la que se pide)</p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.sql.Timestamp;
+
+public class HiloGestionBiblioteca extends Thread {
+    private Socket socket;
+    private Servidor servidor;
+    private BufferedReader br;
+    private PrintWriter pw;
+
+    public HiloGestionBiblioteca(Socket socket, Servidor servidor) {
+        this.socket = socket;
+        this.servidor = servidor;
+    }
+
+    @Override
+    public void run() {
+        try {
+            this.br = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
+            this.pw = new PrintWriter(new OutputStreamWriter(this.socket.getOutputStream()));
+
+            String linea;
+            while ((linea = this.br.readLine()) != null) {
+                if (linea.trim().equalsIgnoreCase("EXIT")) break;
+                this.pw.println(this.procesar(linea));
+                this.pw.flush();
+            }
+        } catch (IOException e) {
+            System.out.println("Conexion finalizada");
+        } finally {
+            try { this.socket.close(); } catch (IOException e) { }
+        }
+    }
+
+    private String procesar(String linea) {
+        String[] partes = linea.trim().split(" ", 3);
+        switch (partes[0].toUpperCase()) {
+        case "ALTALIBRO":
+            if (partes.length &lt; 3) return "Error. Uso: ALTALIBRO isbn titulo";
+            return this.servidor.addLibro(partes[1], partes[2])
+                    ? "Ok. Libro insertado" : "Error. El libro ya existe";
+        case "PRESTAR":
+            return this.prestar(partes);
+        case "DEVOLVER":
+            return this.devolver(partes);
+        case "ESTADO":
+            return this.estado(partes);
+        case "PRESTAMOS":
+            return this.prestamos(partes);
+        default:
+            return "Error. Comando no reconocido";
+        }
+    }
+
+    private String prestar(String[] partes) {
+        if (partes.length &lt; 2) return "Error. Uso: PRESTAR isbn";
+        Libro libro = this.servidor.getLibro(partes[1]);
+        if (libro == null) return "Error. El libro no existe";
+        synchronized (libro) {                       // dos clientes no pueden prestar a la vez el mismo libro
+            if (libro.estaPrestado()) return "Error. El libro ya esta prestado";
+            libro.prestar(GestionFechas.getHoraActual());
+            return "Ok. Libro prestado. " + GestionFechas.getTexto(libro.getFechaPrestamo());
+        }
+    }
+
+    private String devolver(String[] partes) {
+        if (partes.length &lt; 2) return "Error. Uso: DEVOLVER isbn";
+        Libro libro = this.servidor.getLibro(partes[1]);
+        if (libro == null) return "Error. El libro no existe";
+        synchronized (libro) {
+            if (!libro.estaPrestado()) return "Error. El libro no esta prestado";
+            int dias = GestionFechas.getDiasEntre(libro.getFechaPrestamo(), GestionFechas.getHoraActual());
+            libro.devolver();
+            return "Ok. Libro devuelto. Dias de prestamo: " + dias;
+        }
+    }
+
+    private String estado(String[] partes) {
+        if (partes.length &lt; 2) return "Error. Uso: ESTADO isbn";
+        Libro libro = this.servidor.getLibro(partes[1]);
+        if (libro == null) return "Error. El libro no existe";
+        synchronized (libro) {
+            if (libro.estaPrestado())
+                return "El libro " + libro.getTitulo() + " esta prestado desde: " + GestionFechas.getTexto(libro.getFechaPrestamo());
+            return "El libro " + libro.getTitulo() + " esta disponible";
+        }
+    }
+
+    private String prestamos(String[] partes) {
+        if (partes.length &lt; 2) return "Error. Uso: PRESTAMOS isbn";
+        Libro libro = this.servidor.getLibro(partes[1]);
+        if (libro == null) return "Error. El libro no existe";
+        return "Ok. El libro se ha prestado " + libro.getVecesPrestado() + " veces";
+    }
+}</code></pre><p><b>Servidor</b> (ya implementado en el enunciado; se incluye para poder probarlo)</p><pre><code>import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Hashtable;
+
+public class Servidor {
+    public static final int PUERTO = 9000;
+    private Hashtable&lt;String, Libro&gt; libros = new Hashtable&lt;String, Libro&gt;();
+
+    public synchronized boolean addLibro(String isbn, String titulo) {
+        if (libros.containsKey(isbn)) return false;
+        libros.put(isbn, new Libro(isbn, titulo));
+        return true;
+    }
+    public synchronized Libro getLibro(String isbn) {
+        return libros.get(isbn);
+    }
+
+    public void ejecutar() {
+        try (ServerSocket serverSocket = new ServerSocket(PUERTO)) {
+            System.out.println("Servidor de biblioteca esperando clientes...");
+            while (true) {
+                Socket socket = serverSocket.accept();
+                new HiloGestionBiblioteca(socket, this).start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+    }
+}</code></pre><div class="key"><b>Criterios típicos</b>: buffers y <code>flush()</code> · bucle con <code>readLine()</code> y salida por <code>EXIT</code>/<code>null</code> · cierre del socket · cada comando con sus dos o tres respuestas exactas · comprobar que el libro existe antes de operar · <code>synchronized</code> para la concurrencia · uso correcto de <code>GestionFechas</code>.</div><div class="note">Solución compilada y probada con un cliente real (alta, doble alta, préstamo duplicado, devolución, contador…).</div></div></div></section>
+<footer class="page-foot">Examen de práctica generado a partir de los apuntes y del primer parcial de DAD I. Solución del desarrollo compilada y probada.</footer>
+</main>
+
+<script>
+function toggleSol(n, btn){
+  var el = document.getElementById('sol'+n);
+  var open = el.classList.toggle('show');
+  if (btn) { btn.textContent = open ? 'Ocultar solución' : 'Ver solución'; btn.setAttribute('aria-expanded', open); }
+}
+function toggleAll(show){
+  document.querySelectorAll('.sol').forEach(function(d){ d.classList.toggle('show', show); });
+  document.querySelectorAll('[aria-controls^="sol"]').forEach(function(b){ b.textContent = show ? 'Ocultar solución' : 'Ver solución'; b.setAttribute('aria-expanded', show); });
+}
+</script>
+
+</body>
+</html>

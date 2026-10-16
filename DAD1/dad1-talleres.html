@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talleres DAD1</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+
+<style>
+.ex .ex-text p { margin: 0 0 10px; }
+.ex .ex-text pre, .sol pre { margin: 10px 0; }
+.sol { border-top: 1px dashed var(--border); padding-top: 12px; }
+.sol p, .sol ul, .sol ol { margin: 0 0 10px; }
+.sol ul, .sol ol { padding-left: 22px; }
+.ex table.tbl { margin: 8px 0; }
+</style>
+
+</head>
+<body data-crumb="DAD1 · Talleres">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Desarrollo de Aplicaciones Distribuidas I · Primer parcial</span>
+  <h1>Talleres - DAD I</h1>
+  <p class="lead">Taller de teoría + prácticas guiadas de hilos, sockets y ejercicios tipo examen, con soluciones.</p>
+  <div class="actions-row"><a class="btn" href="dad1-resumen.html">Apuntes</a><a class="btn" href="dad1-primer-parcial.html">Primer parcial</a><a class="btn" href="dad1-examen-ejemplo.html">Examen de ejemplo</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc"><a href="#teoria">Teoría del taller</a><a href="#hilos">Hilos</a><a href="#sockets">Sockets</a><a href="#hash">Tipo examen (Hashtable)</a></nav>
+<div class="toolbar"><button class="btn" type="button" onclick="toggleAll(true)">Mostrar todas las soluciones</button><button class="btn" type="button" onclick="toggleAll(false)">Ocultar todas</button></div>
+<section class="cat" id="teoria"><h2 class="cat-title">Taller DAD I - Parte teórica</h2><div class="ex"><div class="num">Teoría 1</div><div class="ex-text">¿Qué es un hilo y qué ventajas tiene?</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol1" onclick="toggleSol(1, this)">Ver solución</button></div><div class="sol" id="sol1"><p>Un hilo de ejecución es la <b>secuencia única de control de flujo</b> dentro de un programa; la unidad de código más pequeña que se puede ejecutar.</p><ul><li><b>Ejecución de tareas lentas</b>.</li><li><b>No paralizar el programa principal</b> mientras se ejecutan otras tareas.</li><li><b>Evitar bloqueos inaceptables</b>: un bloqueo indefinido de un proceso se mitiga usando hilos.</li><li><b>Manejo de múltiples tareas</b>: un proceso puede dividirse para hacer varias tareas a la vez.</li></ul></div></div><div class="ex"><div class="num">Teoría 2</div><div class="ex-text">Esquema FTP (el taller incluye el diagrama): ¿qué componentes y conexiones intervienen?</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol2" onclick="toggleSol(2, this)">Ver solución</button></div><div class="sol" id="sol2"><p>Cliente (User) y servidor, cada uno con:</p><ul><li><b>Interfaz de usuario</b> (User Interface) y <b>User-PI</b> / <b>Server-PI</b> (Protocol Interpreter) → <b>conexión de control</b> (comandos/respuestas), servidor escuchando en el puerto <b>21</b>.</li><li><b>User-DTP</b> / <b>Server-DTP</b> (Data Transfer Process) → <b>conexión de datos</b> (puerto 20) que transporta los ficheros.</li><li>Cada lado accede a su propio <b>sistema de ficheros</b>.</li></ul><p>Variante (esquema II): un <b>cliente controla dos servidores</b>: con <code>PASV</code> a A (que responde <code>227 Entering Passive Mode A1,A2,A3,A4,a1,a2</code>) y <code>PORT</code> a B con esos valores; luego <code>STOR</code> en A y <code>RETR</code> en B, y B se conecta directamente a A para los datos.</p></div></div><div class="ex"><div class="num">Teoría 3</div><div class="ex-text">Programación distribuida: sistema distribuido, IPC y operaciones primitivas.</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol3" onclick="toggleSol(3, this)">Ver solución</button></div><div class="sol" id="sol3"><ul><li><b>Programación distribuida</b>: varios computadores interconectados que colaboran para realizar una tarea.</li><li><b>Sistema distribuido</b>: computadores independientes conectados por red que trabajan juntos; <b>no comparten memoria ni espacio de ejecución</b>. <b>Computación distribuida</b> = la que se hace en él.</li><li><b>IPC</b> (comunicación entre procesos): fundamental; procesos independientes se comunican para colaborar. Requiere un <b>protocolo</b>. Tipos: <b>unicast</b> y <b>multicast</b>. El SO proporciona mecanismos.</li><li><b>Operaciones primitivas</b>: enviar, recibir, conectar, desconectar; los procesos las invocan de forma independiente.</li></ul></div></div><div class="ex"><div class="num">Teoría 4</div><div class="ex-text">Inicializar hilos: ¿de qué dos formas se hace?</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol4" onclick="toggleSol(4, this)">Ver solución</button></div><div class="sol" id="sol4"><ol><li><b>Heredando de <code>Thread</code></b>: nueva clase que extiende <code>Thread</code>, se implementa <code>run()</code> y se lanza con <code>start()</code>.</li><li><b>Implementando <code>Runnable</code></b>: clase que implementa la interfaz, se implementa <code>run()</code> y se lanza con <code>new Thread(obj).start()</code>.</li></ol></div></div><div class="ex"><div class="num">Teoría 5</div><div class="ex-text">Bloqueo de acceso: ¿qué es y cuáles son las dos soluciones?</div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol5" onclick="toggleSol(5, this)">Ver solución</button></div><div class="sol" id="sol5"><p>Se produce cuando una petición que espera la finalización de una operación <b>no se desbloquea</b>, lo que puede llevar a un <b>bloqueo indefinido</b>.</p><ol><li><b>Temporizadores (timers)</b>: límite de tiempo de espera para que el proceso no quede bloqueado si la respuesta no llega.</li><li><b>Proceso hijo o hilo de ejecución</b>: el programa realiza varias tareas simultáneamente; útil para tareas lentas como conexiones de red o grabación en disco.</li></ol></div></div></section><section class="cat" id="hilos"><h2 class="cat-title">Taller - Parte práctica I: hilos</h2><div class="ex"><div class="num">Ejercicio 1 · Primer hilo (<code>extends Thread</code>)</div><div class="ex-text"><p>Crea un hilo que imprima 5 veces «Ejecución: i» durmiendo 500 ms entre cada una. Lánzalo desde el main, que espera 1,2 s y escribe «Lanzado...». ¿En qué orden salen los mensajes?</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol6" onclick="toggleSol(6, this)">Ver solución</button></div><div class="sol" id="sol6"><p><b>MiHilo</b></p><pre><code>package edu.ucam.hilos.primerhilo;
+
+import java.util.Iterator;
+
+public class MiHilo extends Thread{
+    
+    @Override
+    public void run() {
+        for (int i = 0 ; i&lt; 5 ; i++) {
+            System.out.println("Ejecución: " + i);
+            
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+        }
+    }
+
+}</code></pre><p><b>Root</b></p><pre><code>package edu.ucam.hilos.primerhilo;
+
+public class Root {
+
+    public static void main(String[] args) {
+        MiHilo miHilo = new MiHilo();
+        miHilo.start();
+        
+        try {
+            Thread.sleep(1200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println("Lanzado...");
+    }
+}</code></pre><p><b>Salida</b>: Ejecución 0 (t=0), Ejecución 1 (0,5 s), Ejecución 2 (1,0 s), <b>Lanzado...</b> (1,2 s), Ejecución 3 (1,5 s), Ejecución 4 (2,0 s). El main y el hilo avanzan <b>en paralelo</b>.</p></div></div><div class="ex"><div class="num">Ejercicio 2 · Primer hilo con interfaz (<code>Runnable</code>)</div><div class="ex-text"><p>Repite el ejercicio 1 pero implementando <code>Runnable</code>.</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol7" onclick="toggleSol(7, this)">Ver solución</button></div><div class="sol" id="sol7"><p><b>MiHilo</b></p><pre><code>package edu.ucam.hilos.primerhilointerfaz;
+
+public class MiHilo implements Runnable{
+    
+    @Override
+    public void run() {
+        for (int i = 0 ; i&lt; 5 ; i++) {
+            System.out.println("Ejecución: " + i);
+            
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            
+        }
+    }
+
+}</code></pre><p><b>Root</b> (hay que envolverlo en un <code>Thread</code>)</p><pre><code>package edu.ucam.hilos.primerhilointerfaz;
+
+public class Root {
+
+    public static void main(String[] args) {
+        MiHilo miHilo = new MiHilo();
+            
+        Thread thread = new Thread(miHilo);
+        thread.start();
+        try {
+            Thread.sleep(1200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        System.out.println("Lanzado...");
+    }
+}</code></pre></div></div><div class="ex"><div class="num">Ejercicio 3 · Esperar y parar un hilo (<code>join</code> / <code>interrupt</code>)</div><div class="ex-text"><p>Un hilo duerme 10 s. El main lo lanza y lo espera como máximo 5 s con <code>join(5000)</code>. ¿Qué pasa? ¿Y si descomentamos <code>interrupt()</code>?</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol8" onclick="toggleSol(8, this)">Ver solución</button></div><div class="sol" id="sol8"><pre><code>package edu.ucam.hilos.pararhilo;
+
+public class UnHilo extends Thread {
+    
+    public void run() {        
+        try {
+            
+            System.out.println("[Hilo secundario]: Estoy ejecutándome...");
+        
+            Thread.sleep(10000);
+            
+            System.out.println("[Hilo secundario]: Finalizo hilo");
+        
+        } catch (InterruptedException e) {
+            System.out.println("Excepción en hilo: se ha interrumpido");
+        }
+            
+        }
+
+}</code></pre><pre><code>package edu.ucam.hilos.pararhilo;
+
+public class Root {
+
+    public void ejecutar() {        
+        try {
+            
+            UnHilo unHilo = new UnHilo();
+            
+            unHilo.start();
+            
+            System.out.println("[Main]: Me paro antes del join");
+            unHilo.join(5000);                    
+            
+            //unHilo.interrupt();
+            
+            System.out.println("[Main]: Fin en Root");
+            
+        } catch (InterruptedException e) {
+            
+            e.printStackTrace();
+        }
+        
+        
+        
+    }
+    
+    public static void main(String[] args) {
+        (new Root()).ejecutar();
+    }
+
+}</code></pre><p>Sin <code>interrupt()</code>: tras 5 s el main imprime «Fin en Root» pero el hilo secundario <b>sigue vivo</b> y a los 10 s imprime «Finalizo hilo». Con <code>interrupt()</code> tras el <code>join</code>: el <code>sleep</code> del hilo lanza <code>InterruptedException</code> y se imprime «Excepción en hilo: se ha interrumpido», terminando antes.</p></div></div><div class="ex"><div class="num">Ejercicio 4 · Contador compartido y <code>synchronized</code></div><div class="ex-text"><p>200 hilos incrementan 100 veces un <code>Contador</code> compartido. ¿Qué total esperas (20000)? ¿Qué pasa si <code>sumaUno()</code> no es <code>synchronized</code>?</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol9" onclick="toggleSol(9, this)">Ver solución</button></div><div class="sol" id="sol9"><pre><code>package edu.ucam.hilos.contador;
+
+//Nombre de clase debe ser Camel Sense. No válidos: contador o cONTADOR...
+public class Contador {
+
+    private int total = 0;
+    
+    public synchronized void sumaUno() {
+        this.total = this.total + 1;
+    }
+    
+    public int getTotal() {
+        return this.total;
+    }
+}</code></pre><pre><code>package edu.ucam.hilos.contador;
+
+public class HiloContador extends Thread {
+    
+    private Contador contador;
+    
+    public HiloContador (Contador contador) {
+        this.contador = contador;
+    }
+    
+    public Contador getContador() {
+        return contador;
+    }
+
+    public void setContador(Contador contador) {
+        this.contador = contador;
+    }
+    
+    public void run() {
+        
+        for(int i = 0 ; i &lt; 100; i++) {
+            this.contador.sumaUno();
+        }
+        
+        try {
+            Thread.sleep(200);
+            
+            System.out.println("Total contador: " + this.contador.getTotal());
+            
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre><pre><code>package edu.ucam.hilos.contador;
+
+public class Root {
+
+    public void ejecutar() {
+        
+        Contador contador = new Contador();
+        
+        for (int i = 0; i &lt; 200; i++) {
+            (new HiloContador(contador)).start();
+        }
+    }
+    
+    
+    public static void main(String[] args) {
+        
+        Root root = new Root();
+        root.ejecutar();
+    }
+}</code></pre><p>Con <code>synchronized</code>, cada hilo ve el total correcto (20000) al terminar. <b>Sin él</b>, <code>this.total = this.total + 1</code> no es atómico y se pierden incrementos: el total sale <b>menor y distinto en cada ejecución</b> (condición de carrera). El <code>sleep(200)</code> da tiempo a que el resto de hilos acabe antes de imprimir.</p></div></div><div class="ex"><div class="num">Ejercicio 5 · Lanzar y parar hilos desde una interfaz Swing</div><div class="ex-text"><p>Ventana con botones «Lanzar hilo» y «Parar hilo», un <code>JTextArea</code> y un <code>JComboBox</code> con los hilos activos. Cada hilo escribe cada segundo en el área de texto hasta que se le pida parar.</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol10" onclick="toggleSol(10, this)">Ver solución</button></div><div class="sol" id="sol10"><ul><li><b>Hilo</b> (clase main/ventana): atributos <code>textArea</code> y <code>comboHilos</code>; métodos <code>getComboHilos()</code>, <code>escribir(String)</code> (añade al textArea) y <code>addHilo(HiloContador)</code> (añade al combo).</li><li><b>HiloContador extends Thread</b>: <code>static int porDondeVoy</code> (id único), <code>boolean running</code>, <code>run()</code> con bucle <code>while(running)</code> + <code>Thread.sleep(1000)</code>; si lo interrumpen, captura la excepción y escribe «Hilo finalizado»; método <code>parar()</code> que pone <code>running = false</code>.</li><li><b>ActionLanzarHilo</b> (<code>ActionListener</code>): guarda una referencia a la ventana; en <code>actionPerformed</code> crea un <code>HiloContador</code>, se la pasa, hace <code>start()</code> y lo añade al combo.</li><li><b>ActionPararHilo</b>: <code>HiloContador h = (HiloContador) mainHilos.getComboHilos().getSelectedItem(); h.parar();</code> y quita el hilo con <code>comboHilos.removeItem(comboHilos.getSelectedItem())</code>.</li></ul><pre><code>public class HiloContador extends Thread {
+    private static int porDondeVoy = 0;
+    private int id = ++porDondeVoy;
+    private volatile boolean running = true;
+    private Hilo ventana;
+
+    public HiloContador(Hilo ventana) { this.ventana = ventana; }
+
+    public void parar() { this.running = false; }
+
+    @Override
+    public void run() {
+        int i = 0;
+        try {
+            while (running) {
+                ventana.escribir("Hilo " + id + ": " + (i++));
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) { }
+        ventana.escribir("Hilo " + id + " finalizado");
+    }
+    @Override public String toString() { return "Hilo " + id; }   // así se ve en el combo
+}</code></pre><div class="note"><code>volatile</code> garantiza que el hilo vea el cambio de <code>running</code> hecho por el hilo de la interfaz. Los Swing no se modifican desde hilos propios en producción (<code>SwingUtilities.invokeLater</code>), pero para el taller basta con esto.</div></div></div></section><section class="cat" id="sockets"><h2 class="cat-title">Taller - Parte práctica II: sockets</h2><div class="ex"><div class="num">Ejercicio 6 · Primer socket (cliente → servidor → cliente)</div><div class="ex-text"><p>El cliente envía «Hola!!» y el servidor responde «Te la devuelvo Hola!!».</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol11" onclick="toggleSol(11, this)">Ver solución</button></div><div class="sol" id="sol11"><p><b>Servidor</b> (arrancar primero)</p><pre><code>package edu.ucam.sockets.primersocket;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+
+    public void ejecutar() {
+        
+        try {
+            ServerSocket serverSocket = new ServerSocket(5000);
+            
+            System.out.println("Servidor lanzado esperando cliente...");
+            
+            Socket socket = serverSocket.accept();
+            
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
+            
+            String linea = br.readLine();
+            
+            System.out.println("Linea recibida en servidor: " + linea);
+            
+            pw.println("Te la devuelvo " + linea);
+            pw.flush();
+                
+            
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        
+    }
+    
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+
+    }
+
+}</code></pre><p><b>Cliente</b></p><pre><code>package edu.ucam.sockets.primersocket;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
+public class Cliente {
+    public void ejecutar() {        
+        Socket socket;
+        try {
+            socket = new Socket("127.0.0.1",5000);
+            
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
+            pw.println("Hola!!"); pw.flush();
+            
+            System.out.println(br.readLine());            
+            
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }    
+        
+    }
+    
+    public static void main(String[] args) {
+        (new Cliente()).ejecutar();
+
+    }
+
+}</code></pre><div class="note">En macOS el puerto 5000 lo usa AirPlay (Control Center) y salta <code>BindException</code>: cambia a 5050 o 8000 en ambas clases.</div></div></div><div class="ex"><div class="num">Ejercicio 7 · Eco con teclado (ejercicio del profesor)</div><div class="ex-text"><p>El usuario escribe en consola en el Cliente y aparece en el Servidor; el Servidor devuelve la línea (eco). Sin interfaz: clases normales con <code>main</code>.</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol12" onclick="toggleSol(12, this)">Ver solución</button></div><div class="sol" id="sol12"><p><b>Servidor</b></p><pre><code>package edu.ucam.sockets.echo;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+
+    public void ejecutar() {
+        
+        try {
+            ServerSocket serverSocket = new ServerSocket(5000);
+            
+            System.out.println("Servidor lanzado esperando cliente...");
+            
+            Socket socket = serverSocket.accept();
+            
+            
+            while(true) {
+                
+                PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                
+                
+                String linea = br.readLine();
+                
+                System.out.println("Linea recibida en servidor: " + linea);
+                
+                pw.println(linea);
+                pw.flush();
+            }
+            
+        } catch (IOException e) {
+            System.out.println("Conexión finalizada");
+        }
+        
+        
+    }
+    
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+
+    }
+
+}</code></pre><p><b>Cliente</b> (lee con <code>Scanner</code>)</p><pre><code>package edu.ucam.sockets.echo;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Scanner;
+
+public class Cliente {
+    public void ejecutar() {        
+        Socket socket;
+        try {
+            socket = new Socket("127.0.0.1",5000);
+            
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
+            Scanner teclado = new Scanner(System.in);
+            String linea = "";
+            
+            while(true) {
+                linea = teclado.nextLine();
+                
+                pw.println(linea); pw.flush();
+                
+                System.out.println(br.readLine());
+            }
+            
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }    
+        
+    }
+    
+    public static void main(String[] args) {
+        (new Cliente()).ejecutar();
+
+    }
+
+}</code></pre><div class="warn">Limitación: este servidor atiende <b>un solo cliente</b> (un segundo cliente queda esperando). Se resuelve en el ejercicio 8. Además, cuando el cliente se cierra, <code>readLine()</code> da <code>null</code> y salta <code>IOException</code> al escribir: «Conexión finalizada».</div></div></div><div class="ex"><div class="num">Ejercicio 8 · Servidor multihilo (varios clientes a la vez)</div><div class="ex-text"><p>Cliente sin tocar. Modifica el servidor: por cada cliente que llega se lanza un nuevo hilo (<code>HiloServidor extends Thread</code>) que lee y responde a ese cliente de forma independiente.</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol13" onclick="toggleSol(13, this)">Ver solución</button></div><div class="sol" id="sol13"><p>Servidor: solo <code>accept()</code> + <code>new HiloServidor(socket).start()</code>. El hilo recibe el socket en el constructor y su <code>run()</code> contiene lo que antes estaba en el servidor. Ver <b>ejercicio 9</b> (misma estructura, ya con comandos).</p></div></div><div class="ex"><div class="num">Ejercicio 9 · Calculadora (servidor multihilo con comandos)</div><div class="ex-text"><p>El cliente muestra un menú y envía líneas como <code>SUMA 2 3</code>, <code>RESTA 9 1</code>, <code>MULTIPLICA 4 5</code> o <code>EXIT</code>. El servidor responde con el resultado.</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol14" onclick="toggleSol(14, this)">Ver solución</button></div><div class="sol" id="sol14"><p><b>Servidor</b></p><pre><code>import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+public class Servidor {
+    public static final int PUERTO = 5050;
+
+    public void ejecutar() {
+        try {
+            ServerSocket serverSocket = new ServerSocket(Servidor.PUERTO);
+            System.out.println("Servidor lanzado esperando clientes...");
+            while (true) {
+                Socket socket = serverSocket.accept();     // se bloquea hasta que llega un cliente
+                HiloServidor hilo = new HiloServidor(socket);
+                hilo.start();                              // el main vuelve al accept() enseguida
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+    }
+}</code></pre><p><b>HiloServidor</b> (aquí está el <code>split</code> + <code>switch</code>)</p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class HiloServidor extends Thread {
+    private Socket socket;
+
+    public HiloServidor(Socket socket) {
+        this.socket = socket;
+    }
+
+    @Override
+    public void run() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            boolean salir = false;
+            while (!salir) {
+                String linea = br.readLine();
+                if (linea == null) break;                  // el cliente cerro la conexion
+                String[] partes = linea.split(" ");
+                String respuesta = "";
+                switch (partes[0].toUpperCase()) {
+                case "SUMA":
+                    respuesta = "" + (Integer.parseInt(partes[1]) + Integer.parseInt(partes[2]));
+                    break;
+                case "RESTA":
+                    respuesta = "" + (Integer.parseInt(partes[1]) - Integer.parseInt(partes[2]));
+                    break;
+                case "MULTIPLICA":
+                    respuesta = "" + (Integer.parseInt(partes[1]) * Integer.parseInt(partes[2]));
+                    break;
+                case "EXIT":
+                    respuesta = "Adios";
+                    salir = true;
+                    break;
+                default:
+                    respuesta = "Comando no reconocido";
+                }
+                pw.println(respuesta);
+                pw.flush();
+            }
+            socket.close();
+        } catch (IOException | NumberFormatException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Conexion finalizada: " + e);
+        }
+    }
+}</code></pre><p><b>Cliente</b></p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class Cliente {
+    public void ejecutar() {
+        try (Socket socket = new Socket("127.0.0.1", Servidor.PUERTO)) {
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Scanner teclado = new Scanner(System.in);
+            String linea = "";
+            System.out.println("Comandos: SUMA a b | RESTA a b | MULTIPLICA a b | EXIT");
+            while (!linea.equalsIgnoreCase("EXIT")) {
+                linea = teclado.nextLine();
+                pw.println(linea);
+                pw.flush();
+                System.out.println(br.readLine());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Cliente()).ejecutar();
+    }
+}</code></pre><div class="key"><code>String[] partes = linea.split(" ")</code> → <code>partes[0]</code> es el comando y el resto los parámetros; <code>Integer.parseInt</code> convierte String → int. Probado con 2 clientes simultáneos.</div></div></div></section><section class="cat" id="hash"><h2 class="cat-title">Taller - Parte práctica III: ejercicios tipo examen con Hashtable</h2><div class="ex"><div class="num">Ejercicio 10 · Multas por matrícula</div><div class="ex-text"><p><i>Examen del año pasado.</i> Gestiona multas por matrícula con una <code>Hashtable</code> compartida por todos los hilos. Comandos: <code>ALTA matricula</code>, <code>MULTA matricula cuantia</code>, <code>PAGO matricula cantidad</code>, <code>PENDIENTE matricula</code>, <code>BORRAR matricula</code>, <code>EXIT</code>.</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol15" onclick="toggleSol(15, this)">Ver solución</button></div><div class="sol" id="sol15"><p><b>Matricula</b>: <code>ArrayList&lt;Integer&gt;</code> de multas, <code>getCuantiaMultas()</code> (suma), <code>addMulta()</code>, <code>addPago()</code>, <code>getPendiente()</code>.</p><pre><code>import java.util.ArrayList;
+
+public class Matricula {
+    private String numero;
+    private ArrayList&lt;Integer&gt; multas = new ArrayList&lt;Integer&gt;();
+    private int pagado = 0;
+
+    public Matricula(String numero) {
+        this.numero = numero;
+    }
+    public String getNumero() { return numero; }
+
+    public void addMulta(Integer cuantia) { multas.add(cuantia); }
+
+    public int getCuantiaMultas() {            // suma de todas las multas
+        int total = 0;
+        for (Integer m : multas) total += m;
+        return total;
+    }
+    public void addPago(int cantidad) { pagado += cantidad; }
+
+    public int getPendiente() { return getCuantiaMultas() - pagado; }
+}</code></pre><p><b>Servidor</b>: añade la <code>Hashtable</code> y los métodos de acceso; <b>se pasa a cada hilo</b> (<code>new HiloServidor(socket, this)</code>).</p><pre><code>import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Hashtable;
+
+public class Servidor {
+    public static final int PUERTO = 5050;
+    // Hashtable es thread-safe: todos los hilos comparten esta unica tabla
+    private Hashtable&lt;String, Matricula&gt; matriculas = new Hashtable&lt;String, Matricula&gt;();
+
+    public Matricula getMatricula(String numero) { return matriculas.get(numero); }
+
+    public String addMatricula(String numero) {
+        if (matriculas.containsKey(numero)) return "Error. La matricula ya existe";
+        matriculas.put(numero, new Matricula(numero));
+        return "Ok. Matricula insertada";
+    }
+
+    public String removeMatricula(Matricula matricula) {
+        if (matricula == null) return "Error. La matricula no existe";
+        matriculas.remove(matricula.getNumero());
+        return "Ok. Matricula borrada";
+    }
+
+    public void ejecutar() {
+        try (ServerSocket serverSocket = new ServerSocket(PUERTO)) {
+            while (true) {
+                Socket socket = serverSocket.accept();
+                new HiloServidor(socket, this).start();    // se pasa el servidor al hilo
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+    }
+}</code></pre><p><b>HiloServidor</b>: variable <code>salir</code>, bucle hasta EXIT, <code>split</code>, <code>switch</code>; <code>respuesta</code> con el mensaje.</p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class HiloServidor extends Thread {
+    private Socket socket;
+    private Servidor servidor;
+    private boolean salir = false;
+
+    public HiloServidor(Socket socket, Servidor servidor) {
+        this.socket = socket;
+        this.servidor = servidor;
+    }
+
+    @Override
+    public void run() {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()))) {
+            while (!salir) {
+                String lineaLeida = br.readLine();
+                if (lineaLeida == null) break;
+                String[] partes = lineaLeida.split(" ");
+                String respuesta = "";
+                Matricula matricula = null;
+                if (partes.length &gt; 1) matricula = servidor.getMatricula(partes[1]);
+
+                switch (partes[0].toUpperCase()) {
+                case "ALTA":
+                    respuesta = partes.length == 2 ? servidor.addMatricula(partes[1]) : "Error. Uso: ALTA matricula";
+                    break;
+                case "MULTA":
+                    if (partes.length == 3 &amp;&amp; matricula != null) {
+                        matricula.addMulta(Integer.parseInt(partes[2]));
+                        respuesta = "Ok. Multa anadida";
+                    } else respuesta = "Error. Uso: MULTA matricula cuantia (la matricula debe existir)";
+                    break;
+                case "PAGO":
+                    if (partes.length == 3 &amp;&amp; matricula != null) {
+                        matricula.addPago(Integer.parseInt(partes[2]));
+                        respuesta = "Ok. Pago registrado";
+                    } else respuesta = "Error. Uso: PAGO matricula cantidad (la matricula debe existir)";
+                    break;
+                case "PENDIENTE":
+                    respuesta = matricula != null ? "Pendiente: " + matricula.getPendiente() + " euros"
+                            : "Error. La matricula no existe";
+                    break;
+                case "BORRAR":
+                    respuesta = servidor.removeMatricula(matricula);
+                    break;
+                case "EXIT":
+                    respuesta = "Adios";
+                    salir = true;
+                    break;
+                default:
+                    respuesta = "Comando no reconocido";
+                }
+                pw.println(respuesta);
+                pw.flush();
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Conexion finalizada: " + e);
+        }
+    }
+}</code></pre><p>El cliente es el mismo de siempre, solo cambia el texto del menú. Probado: alta, duplicado, 2 multas (300 €), pago 120 → <i>Pendiente: 180 euros</i>, borrar.</p></div></div><div class="ex"><div class="num">Ejercicio 11 · Materiales (reserva de stock + matar hilos)</div><div class="ex-text"><p><i>Examen del año pasado.</i> Gestiona materiales con <code>Hashtable</code> y además un <code>ArrayList</code> de hilos con id para poder cerrarlos. Comandos: <code>ALTA id cantidad descripcion...</code>, <code>RESERVA id unidades</code>, <code>LISTAR</code>, <code>EXIT</code> (el hilo se mata a sí mismo con <code>matarHilo</code>).</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol16" onclick="toggleSol(16, this)">Ver solución</button></div><div class="sol" id="sol16"><p><b>Material</b>: <code>toString()</code> sobrescrito y <code>addReserva()</code> que resta unidades.</p><pre><code>public class Material {
+    private String id;
+    private String descripcion;
+    private int cantidad;
+
+    public Material(String id, String descripcion, int cantidad) {
+        this.id = id;
+        this.descripcion = descripcion;
+        this.cantidad = cantidad;
+    }
+    public String getId() { return id; }
+    public int getCantidad() { return cantidad; }
+
+    public boolean addReserva(int unidades) {      // resta unidades si hay stock
+        if (unidades &lt;= 0 || unidades &gt; cantidad) return false;
+        cantidad -= unidades;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return id + " - " + descripcion + " (" + cantidad + " uds)";
+    }
+}</code></pre><p><b>Servidor</b>: <code>Hashtable</code> de materiales, <code>ArrayList</code> de hilos, contador para dar id a cada hilo y <code>matarHilo(id)</code> (busca el hilo y llama a <code>cerrarSocket()</code>).</p><pre><code>import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Hashtable;
+
+public class Servidor {
+    public static final int PUERTO = 5050;
+    private Hashtable&lt;String, Material&gt; materiales = new Hashtable&lt;String, Material&gt;();
+    private ArrayList&lt;HiloServidor&gt; hilos = new ArrayList&lt;HiloServidor&gt;();   // para poder "matar" hilos
+    private int contadorHilos = 0;
+
+    public synchronized String addMaterial(String id, String descripcion, int cantidad) {
+        if (materiales.containsKey(id)) return "Error. El material ya existe";
+        materiales.put(id, new Material(id, descripcion, cantidad));
+        return "Ok. Material insertado";
+    }
+    public Material getMaterial(String id) { return materiales.get(id); }
+
+    public synchronized String listar() {
+        StringBuilder sb = new StringBuilder();
+        for (Material m : materiales.values()) sb.append(m).append(" | ");
+        return sb.length() == 0 ? "No hay materiales" : sb.toString();
+    }
+
+    public synchronized void matarHilo(int idHilo) {
+        for (HiloServidor h : hilos) {
+            if (h.getIdHilo() == idHilo) {
+                h.cerrarSocket();
+                hilos.remove(h);
+                break;
+            }
+        }
+    }
+
+    public void ejecutar() {
+        try (ServerSocket serverSocket = new ServerSocket(PUERTO)) {
+            while (true) {
+                Socket socket = serverSocket.accept();
+                HiloServidor hilo = new HiloServidor(socket, this, contadorHilos++);
+                synchronized (this) { hilos.add(hilo); }
+                hilo.start();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        (new Servidor()).ejecutar();
+    }
+}</code></pre><p><b>HiloServidor</b>: la descripción puede llevar espacios → <code>substring</code> + <code>indexOf</code> para quedarse con todo lo que va tras la cantidad.</p><pre><code>import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+
+public class HiloServidor extends Thread {
+    private Socket socket;
+    private Servidor servidor;
+    private int idHilo;
+    private boolean salir = false;
+
+    public HiloServidor(Socket socket, Servidor servidor, int idHilo) {
+        this.socket = socket;
+        this.servidor = servidor;
+        this.idHilo = idHilo;
+    }
+    public int getIdHilo() { return idHilo; }
+
+    public void cerrarSocket() {
+        try { socket.close(); } catch (IOException e) { }
+    }
+
+    @Override
+    public void run() {
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            while (!salir) {
+                String lineaLeida = br.readLine();
+                if (lineaLeida == null) break;
+                String[] partes = lineaLeida.split(" ");
+                String respuesta = "";
+                switch (partes[0].toUpperCase()) {
+                case "ALTA": {   // ALTA id cantidad descripcion con espacios...
+                    if (partes.length &lt; 4) { respuesta = "Error. Uso: ALTA id cantidad descripcion"; break; }
+                    // substring + indexOf: coge todo lo que hay tras el 3er espacio
+                    int inicio = lineaLeida.indexOf(partes[2]) + partes[2].length() + 1;
+                    String descripcion = lineaLeida.substring(inicio);
+                    respuesta = servidor.addMaterial(partes[1], descripcion, Integer.parseInt(partes[2]));
+                    break;
+                }
+                case "RESERVA": {
+                    Material m = partes.length == 3 ? servidor.getMaterial(partes[1]) : null;
+                    if (m == null) respuesta = "Error. Uso: RESERVA id unidades (el material debe existir)";
+                    else respuesta = m.addReserva(Integer.parseInt(partes[2])) ? "Ok. Reserva realizada" : "Error. Stock insuficiente";
+                    break;
+                }
+                case "LISTAR":
+                    respuesta = servidor.listar();
+                    break;
+                case "EXIT":
+                    respuesta = "Adios";
+                    salir = true;
+                    break;
+                default:
+                    respuesta = "Comando no reconocido";
+                }
+                pw.println(respuesta);
+                pw.flush();
+            }
+            servidor.matarHilo(this.idHilo);    // EXIT: el servidor cierra el socket y borra el hilo
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Conexion finalizada: " + e);
+        }
+    }
+}</code></pre></div></div><div class="ex"><div class="num">Ejercicio 12 · Congresos (listar + borrar por id)</div><div class="ex-text"><p><i>Examen del año pasado.</i> Mismo patrón que Materiales con una clase <code>Congreso</code> (con <code>toString()</code>). Lo único nuevo:</p></div><div class="btnrow"><button class="btn primary small" type="button" aria-expanded="false" aria-controls="sol17" onclick="toggleSol(17, this)">Ver solución</button></div><div class="sol" id="sol17"><ul><li>Comando <b>LISTAR</b>: el hilo llama a <code>servidor.listCongresos()</code>, que devuelve (o copia) la <code>Hashtable</code>; el hilo la recorre y concatena los <code>toString()</code> en la respuesta (si no hay ninguno, respuesta vacía por si acaso).</li><li>Comando <b>BORRAR id</b>: <code>servidor.removeCongreso(id)</code>.</li><li>Servidor: <code>Hashtable</code> para los congresos + <code>ArrayList</code> de hilos + contador de id de hilo; en el <code>main</code> se lanza el servidor.</li></ul><pre><code>// En HiloServidor, case "LISTAR":
+StringBuilder sb = new StringBuilder();
+for (Congreso c : servidor.listCongresos().values()) sb.append(c).append(" | ");
+respuesta = sb.length() == 0 ? "No hay congresos" : sb.toString();
+
+// En Servidor
+public synchronized Hashtable&lt;String, Congreso&gt; listCongresos() {
+    return new Hashtable&lt;String, Congreso&gt;(congresos);   // copia para recorrer sin interferencias
+}</code></pre></div></div></section>
+<footer class="page-foot">Basado en la presentación «Taller DAD I», los proyectos de hilos y sockets y los ejercicios de exámenes anteriores. Código compilado y probado.</footer>
+</main>
+
+<script>
+function toggleSol(n, btn){
+  var el = document.getElementById('sol'+n);
+  var open = el.classList.toggle('show');
+  if (btn) { btn.textContent = open ? 'Ocultar solución' : 'Ver solución'; btn.setAttribute('aria-expanded', open); }
+}
+function toggleAll(show){
+  document.querySelectorAll('.sol').forEach(function(d){ d.classList.toggle('show', show); });
+  document.querySelectorAll('[aria-controls^="sol"]').forEach(function(b){ b.textContent = show ? 'Ocultar solución' : 'Ver solución'; b.setAttribute('aria-expanded', show); });
+}
+</script>
+
+</body>
+</html>
