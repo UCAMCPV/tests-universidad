@@ -14,7 +14,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 | Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5). |
 | Administración de Sistemas | Resúmenes y tests de los temas 1 (sistemas de información) y 2 (virtualización). |
 | Desarrollo de Aplicaciones Distribuidas I | Apuntes del primer parcial (hilos, sockets, HTTP y FTP), el primer parcial real resuelto, talleres con 12 ejercicios y un examen de ejemplo. No son tests de opción múltiple: cada pregunta se resuelve con «Ver solución». |
-| Soluciones Informáticas para la Empresa | Resumen y test del tema 1 (software empresarial y comercio digital, secciones 1.1–1.9) con los requisitos de la Tarea 1. |
+| Soluciones Informáticas para la Empresa | Resúmenes y tests de los temas 1 (software empresarial y comercio digital, secciones 1.1–1.9, con los requisitos de la Tarea 1) y 2 (ERP, CRM e integración de sistemas empresariales, secciones 2.1–2.9). |
 
 Los materiales se basan en los apuntes de las asignaturas. Conviene contrastar las respuestas con los apuntes oficiales; el examen parcial de Ingeniería del Conocimiento contiene respuestas interpretadas a partir de los apuntes, no un solucionario oficial.
 
@@ -78,7 +78,7 @@ El progreso depende del navegador y del origen utilizado: cambiar de dominio, pu
 ├── CalidadSoftware/            # Resúmenes y tests de calidad del software
 ├── Sistemas/                   # Resúmenes, tests y apuntes en Unidad1/*.md
 ├── DAD1/                       # Apuntes, primer parcial, talleres y examen de ejemplo
-└── SIE/                        # Resumen y test del tema 1 de Soluciones Informáticas para la Empresa
+└── SIE/                        # Resúmenes y tests de Soluciones Informáticas para la Empresa
 ```
 
 Los archivos Markdown de `Sistemas/Unidad1/` son apuntes adicionales; no hay un proceso automático que los convierta en las páginas HTML.
