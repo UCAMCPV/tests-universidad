@@ -314,6 +314,7 @@ section.cat[hidden] { display: none; }
 /* ---------- Diagramas SVG en resúmenes ---------- */
 .figure { margin: 14px 0 4px; }
 .figure svg { display: block; width: 100%; height: auto; max-width: 640px; margin: 0 auto; }
+.figure img { display: block; max-width: 100%; height: auto; margin: 0 auto; border: 1px solid var(--border); border-radius: var(--radius); background: #fff; }
 .figure .box { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.5; }
 .figure .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1.5; }
 .figure .frame { fill: none; stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 5 4; }
