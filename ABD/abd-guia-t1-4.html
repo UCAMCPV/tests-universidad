@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía ABD Temas 1–4 · Banco guiado de 300 preguntas</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ABD · Guía de estudio Temas 1–4">
+
+<main class="wrap">
+  <div id="guia"></div>
+  <footer class="page-foot">Basado en la «Guía de estudio de los Temas 1 al 4 · Banco guiado de 300 preguntas» del Dr. Richard Avilés López (primer parcial de Administración de Bases de Datos). Incluye las 13 etapas, los 49 bloques, el solucionario comentado con sus 60 diagramas resueltos, el formulario y la tabla de autoevaluación.</footer>
+</main>
+
+<template id="tpl-intro">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Bases de Datos · Primer parcial · Temas 1 a 4</span>
+    <h1>Banco guiado de 300 preguntas</h1>
+    <p class="lead">Dr. Richard Avilés López · <i>Grado Ingeniería Informática</i></p>
+    <div class="actions-row">{{continuar}}<a class="btn" href="#formulario">Formulario</a><a class="btn" href="#repaso">Repaso final</a></div>
+  </div>
+
+  <div class="tbl-wrap"><table class="tbl g-ficha"><tbody>
+    <tr><th>Estudiante</th><td><input class="g-input" data-who="estudiante" aria-label="Estudiante"></td></tr>
+    <tr><th>Grupo</th><td><input class="g-input" data-who="grupo" aria-label="Grupo"></td></tr>
+    <tr><th>Profesor</th><td>Dr. Richard Avilés López</td></tr>
+    <tr><th>Inicio y fin del recorrido</th><td>{{start}} – {{end}}</td></tr>
+    <tr><th>Resultado global</th><td><b>{{global}}</b> / 300 <span class="g-muted">(primeras respuestas del último intento de cada etapa)</span></td></tr>
+  </tbody></table></div>
+
+  <section class="cat">
+    <h2 class="cat-title">Cómo usar este banco</h2>
+    <div class="bloque">
+      <p>Este banco recorre, en 13 etapas, los contenidos de los Temas 1 a 4 que entran en el primer parcial. No es una lista de preguntas sueltas: es un <b>tutorial</b>. Cada etapa empieza con un hilo conductor, cada bloque con una explicación breve («Antes de empezar») y las preguntas de cada bloque van de la definición a la aplicación. Todo lo que se pregunta está en las diapositivas de las unidades; los laboratorios no se evalúan aquí.</p>
+      <ol>
+        <li><b>Sigue el orden.</b> Cada etapa se apoya en la anterior. El Tema 3 explica cómo funciona cualquier SGBD por dentro y el Tema 4 lo aterriza en Oracle 26ai: no saltes al Tema 4 sin haber hecho el 3.</li>
+        <li><b>Lee el «Antes de empezar» de cada bloque</b> y, si algo no te suena, abre la diapositiva que indica la leyenda antes de responder.</li>
+        <li><b>Responde un bloque entero sin mirar.</b> Rodea la letra, escribe la letra de la palabra o de la definición en la tabla de respuesta. Si dudas, marca la pregunta con «?».</li>
+        <li><b>Corrige con el solucionario</b> del final. Cada bloque empieza con su idea clave: léela siempre, aciertes o falles. En los cálculos se explica qué fórmula se usa, por qué, y por qué la opción confusora está mal.</li>
+        <li><b>Anota tus aciertos</b> en la tabla de autoevaluación de la última página. Si en una etapa no llegas al 80 %, repasa sus ideas clave y vuelve a responderla dos o tres días después.</li>
+      </ol>
+      <div class="note"><b>En esta versión web:</b> elige la letra en cada desplegable y pulsa <b>Comprobar</b> (en test y cálculo basta con elegir la opción). Al corregir se muestran la respuesta y el porqué del solucionario y, en los diagramas, la figura resuelta. El botón <b>?</b> marca una pregunta como dudosa y el filtro «Dudosas» las reúne. La idea clave de cada bloque se abre sola al terminarlo. La tabla de autoevaluación se rellena sola: cuenta la primera respuesta de cada pregunta en cada intento.</div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">La leyenda de cada pregunta</h2>
+    <div class="bloque">
+      <p>Junto al número aparece, en gris: tipo · tema · sección · diapositiva · dificultad. Por ejemplo, «<i>P12 Cálculo · Tema 1 · 1.1.3 · Diap. 13 · fácil</i>». El color del número indica la dificultad: <b class="g-pn d0">azul = fácil</b>, <b class="g-pn d1">naranja = intermedia</b> y <b class="g-pn d2">rojo = difícil</b>.</p>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tema</th><th>Fuente de la numeración de diapositivas</th></tr></thead><tbody>
+        <tr><td>Tema 1 · Introducción a la Administración de Bases de Datos</td><td>Unidad 1 (PDF): nº de diapositiva = página del PDF</td></tr>
+        <tr><td>Tema 2 · Introducción a Oracle</td><td>Unidad 2 (PDF): nº de diapositiva = página del PDF</td></tr>
+        <tr><td>Tema 3 · Arquitectura de un SGBD</td><td>Unidad 3 (PDF): nº de diapositiva = página del PDF</td></tr>
+        <tr><td>Tema 4 · Arquitectura interna de Oracle 26ai</td><td>Unidad 4 (PPTX v1.0, 90 diapositivas) y Word revisado de la Unidad 4</td></tr>
+      </tbody></table></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Tipos de pregunta</h2>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tipo</th><th>Nº</th><th>Cómo se responde</th><th>Tiempo orientativo</th></tr></thead><tbody>
+      <tr><td>Test</td><td>90</td><td>Cuatro alternativas, una sola correcta. Rodea la letra.</td><td>1 min</td></tr>
+      <tr><td>Cálculo (caso breve)</td><td>45</td><td>Cuatro resultados: uno correcto, uno «confusor» (sale de aplicar una fórmula equivocada) y dos incorrectos. Haz la cuenta en el margen.</td><td>3–5 min</td></tr>
+      <tr><td>Rellenar huecos</td><td>45</td><td>Siete huecos y un banco de nueve palabras: sobran dos. Escribe la letra de cada palabra bajo el número del hueco.</td><td>2–3 min</td></tr>
+      <tr><td>Relacionar</td><td>39</td><td>Siete conceptos y nueve definiciones: sobran dos. Escribe la letra junto a cada concepto.</td><td>3 min</td></tr>
+      <tr><td>Completar diagrama</td><td>60</td><td>Casillas numeradas en una figura y un banco de palabras en el que sobran algunas. Las pistas en cursiva hacen que cada casilla tenga una única respuesta.</td><td>2–3 min</td></tr>
+      <tr><td>Ordenar</td><td>21</td><td>Pasos o etapas desordenados con letras. Escribe la letra que va en cada posición.</td><td>2 min</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Recorrido</h2>
+    {{recorrido}}
+    <p class="g-muted"><i>El tiempo incluye unos 10 minutos de lectura por etapa. Resolver las 300 preguntas lleva unas 11 h 30 min; corregir con el solucionario y releer las ideas clave, unas 3 horas más. Lo razonable es repartirlo en 13 sesiones (una por etapa) a lo largo de dos o tres semanas.</i></p>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Solucionario comentado</h2>
+    <div class="bloque"><p>{{solIntro}}</p><p class="g-muted">Aquí el solucionario aparece debajo de cada pregunta al corregirla, y la idea clave al final de cada bloque.</p></div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Autoevaluación</h2>
+    <p>Anota tus aciertos en cada intento. Objetivo: al menos un 80 % en todas las etapas antes del examen.</p>
+    {{autoeval}}
+    <div class="g-box practica"><div class="g-box-h">✓ Buena práctica — Antes del examen</div><p>Relee solo las ideas clave del solucionario y la sección «Lo que debes retener» de cada etapa. Si sabes explicar cada una con tus palabras y citar la diapositiva de la que sale, estás preparado.</p></div>
+  </section>
+
+  <div class="toolbar"><button class="btn" id="bResetAll">Borrar todo el progreso</button></div>
+</template>
+
+<script src="guia-t1-4/data.js"></script>
+<script>
+window.GUIA_CONF = {
+  id: "abd-guia-t1-4",
+  img: "guia-t1-4/img/",
+  totalTime: "13 h 40 min",
+  /* Objetivo del 80 % por etapa, tal como figura en la tabla de autoevaluación de la guía */
+  objetivos: [12, 12, 12, 18, 18, 22, 21, 19, 22, 23, 22, 19, 20],
+  buenaPractica: "Relee solo las ideas clave del solucionario y la sección «Lo que debes retener» de cada etapa. Si sabes explicar cada una con tus palabras y citar la diapositiva de la que sale, estás preparado."
+};
+</script>
+<script src="../assets/guia.js"></script>
+</body>
+</html>

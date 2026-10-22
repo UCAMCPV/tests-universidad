@@ -8,7 +8,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 
 | Asignatura | Material disponible |
 | --- | --- |
-| Administración de Bases de Datos | Resúmenes y tests de los temas 1 (fundamentos), 2 (Oracle y ecosistema de datos) y 3 (arquitectura de un SGBD, apartados 3.0–3.2). |
+| Administración de Bases de Datos | Resúmenes y tests de los temas 1 (fundamentos), 2 (Oracle y ecosistema de datos) y 3 (arquitectura de un SGBD, apartados 3.0–3.2), más la guía de estudio del primer parcial (temas 1–4): 300 preguntas guiadas de seis tipos en 13 etapas, con solucionario comentado, diagramas, formulario y autoevaluación. |
 | Aplicaciones para Dispositivos Móviles | Resumen y test del tema 2 (Kotlin), más 16 ejercicios resueltos. |
 | Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1, 2, 2.1, 2.2, 2.3 y 2.4, más un examen parcial de 30 preguntas y un simulacro de 30 preguntas con su guía de estudio. |
 | Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5). |
@@ -56,6 +56,7 @@ Los datos se guardan en el navegador, sin cuentas ni sincronización entre dispo
 | --- | --- | --- |
 | `localStorage` | `tu-test:<id>` | Respuestas, orden de opciones, orden de preguntas y filtro de cada test. |
 | `localStorage` | `tu-sum:<id>` | Resumen de progreso mostrado en la portada. |
+| `localStorage` | `tu-guia:<id>` | Respuestas de cada intento, primeros aciertos, preguntas dudosas y ficha de la guía guiada. |
 | `localStorage` | `tu-theme` | Preferencia de tema claro u oscuro. |
 | `localStorage` | `tu-open` | Asignaturas desplegadas en la portada. |
 | `sessionStorage` | `tu-gate` | Acceso concedido en la sesión de la pestaña. |
@@ -71,8 +72,10 @@ El progreso depende del navegador y del origen utilizado: cambiar de dominio, pu
 │   ├── app.js                  # Tema, barra superior y utilidades de almacenamiento
 │   ├── auth.js                 # Pantalla de acceso y bloqueo de sesión
 │   ├── test.js                 # Motor compartido de autoevaluación
+│   ├── guia.js                 # Motor de guías guiadas (huecos, relacionar, diagramas, ordenar…)
 │   └── styles.css              # Estilos comunes y diseño adaptable
 ├── ABD/                        # Administración de Bases de Datos
+│   └── guia-t1-4/              # Datos (data.js) e imágenes de la guía de los temas 1–4
 ├── Moviles/                    # Kotlin: resumen, test y ejercicios
 ├── IngenieriaConocimiento/     # Resúmenes, tests y examen parcial
 ├── CalidadSoftware/            # Resúmenes y tests de calidad del software
@@ -119,6 +122,12 @@ window.TEST = {
 Incluye también `styles.css`, `app.js` y `auth.js` en la cabecera, siguiendo las páginas existentes. `app.js` debe cargarse antes del motor para que el progreso se guarde. Ajusta las rutas relativas según la carpeta de la página.
 
 Los enunciados, opciones y explicaciones admiten HTML y se insertan directamente en la página: utiliza solo contenido de confianza. Si cambias el orden o el significado de las preguntas de un test existente, cambia su `id` para evitar reutilizar respuestas guardadas de la versión anterior. Actualiza también los contadores escritos en la portada y en la página del tema.
+
+### Guías guiadas
+
+`ABD/abd-guia-t1-4.html` usa `assets/guia.js` en lugar del motor de tests. Los datos están en `ABD/guia-t1-4/data.js` (`window.GUIA`), generados a partir del PDF de la guía, y las figuras en `ABD/guia-t1-4/img/` (`pNNN.webp` para el diagrama de la pregunta y `pNNN-sol.webp` para el resuelto). Cada pregunta tiene un tipo `t` (`test`, `calc`, `huecos`, `rel`, `diag` u `ord`), su respuesta en `a` y el texto del solucionario en `r` (respuesta) y `w` (por qué). La página define en `window.GUIA_CONF` el `id` de progreso, la carpeta de imágenes y los objetivos del 80 % por etapa.
+
+La guía se recorre por etapas con navegación por `#etapa-N`, `#formulario` y `#repaso`. Cada etapa admite dos intentos; la autoevaluación cuenta la primera respuesta de cada pregunta en cada intento, y «Repetir las falladas» permite practicar sin cambiar esa nota.
 
 ## Publicación
 
