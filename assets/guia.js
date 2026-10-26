@@ -1,6 +1,6 @@
 /* ==========================================================
    Motor de guías guiadas — Tests de Universidad
-   Uso: definir window.GUIA (datos) y window.GUIA_CONF = { id, img, objetivos }
+   Uso: definir window.GUIA (datos) y window.GUIA_CONF = { id, img, totalTime }
    antes de cargar este script. Soporta seis tipos de pregunta:
      test / calc  → cuatro opciones, una correcta (a = índice)
      huecos       → párrafo con {{n}} y banco de palabras (a = letras)
@@ -31,29 +31,42 @@
   /* ---------- Estado ----------
      st.att[e]  intento activo de la etapa (1 o 2)
      st.r[i][n] respuesta actual en el intento i: { v, ok, hits, rev (vista sin responder) }
-     st.f[i][n] acierto de la primera respuesta del intento: es lo que puntúa
+     st.f[i][n] opciones acertadas en la primera respuesta del intento: es lo que puntúa
      st.doubt[n] pregunta marcada con «?» */
   var st = store.get(KEY);
   function fresh(who) { return { v: 1, att: {}, r: { 1: {}, 2: {} }, f: { 1: {}, 2: {} }, doubt: {}, filter: "all", who: who || {}, start: null, end: null }; }
   if (!st || st.v !== 1) st = fresh();
 
+  /* Cada opción correcta vale un punto: test y cálculo valen 1; huecos, relacionar, diagrama y ordenar, uno por casilla */
+  function pts(q) { return q.t === "test" || q.t === "calc" ? 1 : q.a.length; }
+  /* Progreso antiguo: st.f guardaba true/false por pregunta */
+  [1, 2].forEach(function (i) {
+    Object.keys(st.f[i]).forEach(function (n) {
+      var f = st.f[i][n], r = st.r[i][n];
+      if (typeof f === "boolean") st.f[i][n] = f ? pts(Q(+n)) : r && !r.rev ? r.hits : 0;
+    });
+  });
+
   function att(e) { return st.att[e] || 1; }
   function rec(n) { return st.r[att(etapaOf[n])][n]; }
 
   function counts(e, i) {
-    var qs = etapaQs(e), done = 0, ok = 0;
+    var qs = etapaQs(e), done = 0, ok = 0, max = 0;
     i = i || att(e.n);
     qs.forEach(function (n) {
       var f = st.f[i][n];
-      if (f !== undefined) { done++; if (f) ok++; }
+      max += pts(Q(n));
+      if (f !== undefined) { done++; ok += f; }
     });
-    return { total: qs.length, done: done, ok: ok };
+    /* total y done cuentan preguntas; ok y max, opciones */
+    return { total: qs.length, done: done, ok: ok, max: max };
   }
+  function objetivo(e) { return Math.ceil(counts(e, 1).max * 0.8); }
   function globalCounts() {
-    var done = 0, ok = 0;
+    var done = 0, ok = 0, max = 0;
     /* De cada etapa cuenta su último intento con respuestas */
-    G.etapas.forEach(function (e) { var c = counts(e, 2); if (!c.done) c = counts(e, 1); done += c.done; ok += c.ok; });
-    return { done: done, ok: ok };
+    G.etapas.forEach(function (e) { var c = counts(e, 2); if (!c.done) c = counts(e, 1); done += c.done; ok += c.ok; max += c.max; });
+    return { done: done, ok: ok, max: max };
   }
   function save() {
     var g = globalCounts();
@@ -210,7 +223,7 @@
       r.ok = r.hits === q.a.length;
     }
     /* El acierto que puntúa es el de la primera respuesta del intento */
-    if (st.f[i][n] === undefined) st.f[i][n] = r.ok;
+    if (st.f[i][n] === undefined) st.f[i][n] = r.hits;
     st.r[i][n] = r;
     save(); paint(n); update();
   }
@@ -262,19 +275,19 @@
   }
 
   function autoevalHtml() {
-    var h = '<div class="tbl-wrap"><table class="tbl g-auto"><thead><tr><th>Etapa</th><th>Preguntas</th><th>Objetivo (80 %)</th><th>Aciertos 1.er intento</th><th>Aciertos 2.º intento</th><th>Temas</th></tr></thead><tbody>';
-    var t = { q: 0, obj: 0, a1: 0, a2: 0, d1: 0, d2: 0 };
-    G.etapas.forEach(function (e, k) {
-      var c1 = counts(e, 1), c2 = counts(e, 2), obj = C.objetivos[k], m = parseMeta(e.meta);
-      t.q += c1.total; t.obj += obj; t.a1 += c1.ok; t.a2 += c2.ok; t.d1 += c1.done; t.d2 += c2.done;
+    var h = '<div class="tbl-wrap"><table class="tbl g-auto"><thead><tr><th>Etapa</th><th>Preguntas</th><th>Opciones</th><th>Objetivo (80 %)</th><th>Aciertos 1.er intento</th><th>Aciertos 2.º intento</th><th>Temas</th></tr></thead><tbody>';
+    var t = { q: 0, max: 0, obj: 0, a1: 0, a2: 0, d1: 0, d2: 0 };
+    G.etapas.forEach(function (e) {
+      var c1 = counts(e, 1), c2 = counts(e, 2), obj = objetivo(e), m = parseMeta(e.meta);
+      t.q += c1.total; t.max += c1.max; t.obj += obj; t.a1 += c1.ok; t.a2 += c2.ok; t.d1 += c1.done; t.d2 += c2.done;
       function cell(c) {
         if (!c.done) return '<td class="g-muted">—</td>';
         var cls = c.done === c.total ? (c.ok >= obj ? "g-pass" : "g-fail") : "";
         return '<td class="' + cls + '"><b>' + c.ok + "</b>" + (c.done < c.total ? ' <span class="g-muted">(' + c.done + "/" + c.total + ")</span>" : "") + "</td>";
       }
-      h += '<tr><td><a href="#etapa-' + e.n + '">' + e.n + ". " + e.title + "</a></td><td>" + c1.total + "</td><td>" + obj + "</td>" + cell(c1) + cell(c2) + "<td>" + m.temas + "</td></tr>";
+      h += '<tr><td><a href="#etapa-' + e.n + '">' + e.n + ". " + e.title + "</a></td><td>" + c1.total + "</td><td>" + c1.max + "</td><td>" + obj + "</td>" + cell(c1) + cell(c2) + "<td>" + m.temas + "</td></tr>";
     });
-    h += "<tr><td><b>Total</b></td><td>" + t.q + "</td><td>" + t.obj + "</td><td><b>" + (t.d1 ? t.a1 : "—") + "</b></td><td><b>" + (t.d2 ? t.a2 : "—") + "</b></td><td>Temas 1–4</td></tr>";
+    h += "<tr><td><b>Total</b></td><td>" + t.q + "</td><td>" + t.max + "</td><td>" + t.obj + "</td><td><b>" + (t.d1 ? t.a1 : "—") + "</b></td><td><b>" + (t.d2 ? t.a2 : "—") + "</b></td><td>Temas 1–4</td></tr>";
     return h + "</tbody></table></div>";
   }
 
@@ -293,7 +306,7 @@
     var g = globalCounts();
     var h = document.getElementById("tpl-intro").innerHTML;
     h = h.replace("{{recorrido}}", recorridoHtml()).replace("{{autoeval}}", autoevalHtml())
-      .replace("{{global}}", String(g.ok)).replace("{{start}}", fmtDate(st.start)).replace("{{end}}", fmtDate(st.end))
+      .replace("{{global}}", String(g.ok)).replace("{{max}}", String(g.max)).replace("{{start}}", fmtDate(st.start)).replace("{{end}}", fmtDate(st.end))
       .replace("{{solIntro}}", G.solIntro);
     var next = G.etapas.filter(function (e) { var c = counts(e); return c.done < c.total; })[0];
     h = h.replace("{{continuar}}", next ? '<a class="btn primary" href="#etapa-' + next.n + '">' + (g.done ? "Continuar por la etapa " : "Empezar por la etapa ") + next.n + "</a>" : '<a class="btn primary" href="#repaso">Ir al repaso final</a>');
@@ -325,7 +338,7 @@
   function navHtml(cur) {
     var h = '<nav class="toc g-nav" aria-label="Etapas"><a href="#inicio"' + (cur === "inicio" ? ' aria-current="page"' : "") + ">Inicio</a>";
     G.etapas.forEach(function (e) {
-      var c = counts(e), cls = c.done === c.total ? (c.ok >= C.objetivos[e.n - 1] ? " g-done-ok" : " g-done-ko") : c.done ? " g-doing" : "";
+      var c = counts(e), cls = c.done === c.total ? (c.ok >= objetivo(e) ? " g-done-ok" : " g-done-ko") : c.done ? " g-doing" : "";
       h += '<a class="' + cls + '" href="#etapa-' + e.n + '" title="' + esc(e.title) + '"' + (cur === e.n ? ' aria-current="page"' : "") + ">Etapa " + e.n + "</a>";
     });
     h += '<a href="#formulario"' + (cur === "formulario" ? ' aria-current="page"' : "") + ">Formulario</a>";
@@ -366,27 +379,33 @@
 
   function update() {
     if (typeof view !== "number") return;
-    var e = G.etapas[view - 1], c = counts(e), ko = 0, nowOk = 0;
-    etapaQs(e).forEach(function (n) { var r = rec(n); if (r && !r.ok) ko++; if (r && r.ok) nowOk++; });
-    document.getElementById("sDone").textContent = nowOk + ko;
-    document.getElementById("sOk").textContent = nowOk;
-    document.getElementById("sKo").textContent = ko;
-    document.getElementById("fOk").style.width = (nowOk / c.total * 100) + "%";
-    document.getElementById("fKo").style.width = (ko / c.total * 100) + "%";
+    var e = G.etapas[view - 1], c = counts(e), ko = 0, nDone = 0, hit = 0, miss = 0;
+    etapaQs(e).forEach(function (n) {
+      var r = rec(n);
+      if (!r) return;
+      nDone++; if (!r.ok) ko++;
+      hit += r.hits; miss += pts(Q(n)) - r.hits;
+    });
+    /* El contador cuenta preguntas; ✓, ✗ y la barra, opciones */
+    document.getElementById("sDone").textContent = nDone;
+    document.getElementById("sOk").textContent = hit;
+    document.getElementById("sKo").textContent = miss;
+    document.getElementById("fOk").style.width = (hit / c.max * 100) + "%";
+    document.getElementById("fKo").style.width = (miss / c.max * 100) + "%";
     document.getElementById("bRetry").disabled = ko === 0;
     e.bloques.forEach(function (b) {
       var all = b.qs.every(function (n) { return rec(n); });
       var d = root.querySelector('[data-idea="' + b.id + '"]');
       if (d && all && !d.hasAttribute("data-auto")) { d.open = true; d.setAttribute("data-auto", ""); }
     });
-    var res = document.getElementById("result"), obj = C.objetivos[e.n - 1];
+    var res = document.getElementById("result"), obj = objetivo(e);
     if (c.done === c.total) {
-      var pct = Math.round(c.ok / c.total * 100), pass = c.ok >= obj;
+      var pct = Math.round(c.ok / c.max * 100), pass = c.ok >= obj;
       var cls = pass ? "bien" : pct >= 60 ? "aceptable" : "mal";
-      res.innerHTML = '<div class="result ' + cls + '"><h2>Resultado de la etapa ' + e.n + " · " + ordinal(att(e.n)) + ' intento</h2><div class="big">' + c.ok + "/" + c.total + " · " + pct + "%</div><p>" +
-        (pass ? "Has alcanzado el objetivo (" + obj + " aciertos, 80 %). Lee las ideas clave aunque hayas acertado y sigue con la siguiente etapa."
-          : "Objetivo: " + obj + " aciertos (80 %). Repasa las ideas clave y «Lo que debes retener», y vuelve a responder la etapa dos o tres días después con el 2.º intento.") +
-        "</p><p class=\"g-muted\">Cuenta la primera respuesta de cada pregunta; «Repetir las falladas» sirve para practicar sin cambiar la nota.</p></div>";
+      res.innerHTML = '<div class="result ' + cls + '"><h2>Resultado de la etapa ' + e.n + " · " + ordinal(att(e.n)) + ' intento</h2><div class="big">' + c.ok + "/" + c.max + " opciones · " + pct + "%</div><p>" +
+        (pass ? "Has alcanzado el objetivo (" + obj + " opciones correctas, 80 %). Lee las ideas clave aunque hayas acertado y sigue con la siguiente etapa."
+          : "Objetivo: " + obj + " opciones correctas (80 %). Repasa las ideas clave y «Lo que debes retener», y vuelve a responder la etapa dos o tres días después con el 2.º intento.") +
+        "</p><p class=\"g-muted\">Cada opción correcta vale un punto (un hueco, una casilla o una relación; las de test y cálculo valen uno). Cuenta la primera respuesta de cada pregunta; «Repetir las falladas» sirve para practicar sin cambiar la nota.</p></div>";
     } else res.innerHTML = "";
   }
 

@@ -125,9 +125,9 @@ Los enunciados, opciones y explicaciones admiten HTML y se insertan directamente
 
 ### Guías guiadas
 
-`ABD/abd-guia-t1-4.html` usa `assets/guia.js` en lugar del motor de tests. Los datos están en `ABD/guia-t1-4/data.js` (`window.GUIA`), generados a partir del PDF de la guía, y las figuras en `ABD/guia-t1-4/img/` (`pNNN.webp` para el diagrama de la pregunta y `pNNN-sol.webp` para el resuelto). Cada pregunta tiene un tipo `t` (`test`, `calc`, `huecos`, `rel`, `diag` u `ord`), su respuesta en `a` y el texto del solucionario en `r` (respuesta) y `w` (por qué). La página define en `window.GUIA_CONF` el `id` de progreso, la carpeta de imágenes y los objetivos del 80 % por etapa.
+`ABD/abd-guia-t1-4.html` usa `assets/guia.js` en lugar del motor de tests. Los datos están en `ABD/guia-t1-4/data.js` (`window.GUIA`), generados a partir del PDF de la guía, y las figuras en `ABD/guia-t1-4/img/` (`pNNN.webp` para el diagrama de la pregunta y `pNNN-sol.webp` para el resuelto). Cada pregunta tiene un tipo `t` (`test`, `calc`, `huecos`, `rel`, `diag` u `ord`), su respuesta en `a` y el texto del solucionario en `r` (respuesta) y `w` (por qué). La página define en `window.GUIA_CONF` el `id` de progreso, la carpeta de imágenes y el tiempo total.
 
-La guía se recorre por etapas con navegación por `#etapa-N`, `#formulario` y `#repaso`. Cada etapa admite dos intentos; la autoevaluación cuenta la primera respuesta de cada pregunta en cada intento, y «Repetir las falladas» permite practicar sin cambiar esa nota.
+La guía se recorre por etapas con navegación por `#etapa-N`, `#formulario` y `#repaso`. Cada etapa admite dos intentos. La nota se cuenta por opción, no por pregunta: cada hueco, relación o casilla acertada vale un punto, y cada pregunta de test o cálculo, uno. La autoevaluación cuenta la primera respuesta de cada pregunta en cada intento, con un objetivo del 80 % de las opciones de la etapa, y «Repetir las falladas» permite practicar sin cambiar esa nota.
 
 ## Publicación
 

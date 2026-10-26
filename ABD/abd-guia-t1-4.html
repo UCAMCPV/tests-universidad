@@ -28,7 +28,7 @@
     <tr><th>Grupo</th><td><input class="g-input" data-who="grupo" aria-label="Grupo"></td></tr>
     <tr><th>Profesor</th><td>Dr. Richard Avilés López</td></tr>
     <tr><th>Inicio y fin del recorrido</th><td>{{start}} – {{end}}</td></tr>
-    <tr><th>Resultado global</th><td><b>{{global}}</b> / 300 <span class="g-muted">(primeras respuestas del último intento de cada etapa)</span></td></tr>
+    <tr><th>Resultado global</th><td><b>{{global}}</b> / {{max}} opciones correctas <span class="g-muted">(primeras respuestas del último intento de cada etapa)</span></td></tr>
   </tbody></table></div>
 
   <section class="cat">
@@ -42,7 +42,7 @@
         <li><b>Corrige con el solucionario</b> del final. Cada bloque empieza con su idea clave: léela siempre, aciertes o falles. En los cálculos se explica qué fórmula se usa, por qué, y por qué la opción confusora está mal.</li>
         <li><b>Anota tus aciertos</b> en la tabla de autoevaluación de la última página. Si en una etapa no llegas al 80 %, repasa sus ideas clave y vuelve a responderla dos o tres días después.</li>
       </ol>
-      <div class="note"><b>En esta versión web:</b> elige la letra en cada desplegable y pulsa <b>Comprobar</b> (en test y cálculo basta con elegir la opción). Al corregir se muestran la respuesta y el porqué del solucionario y, en los diagramas, la figura resuelta. El botón <b>?</b> marca una pregunta como dudosa y el filtro «Dudosas» las reúne. La idea clave de cada bloque se abre sola al terminarlo. La tabla de autoevaluación se rellena sola: cuenta la primera respuesta de cada pregunta en cada intento.</div>
+      <div class="note"><b>En esta versión web:</b> elige la letra en cada desplegable y pulsa <b>Comprobar</b> (en test y cálculo basta con elegir la opción). Al corregir se muestran la respuesta y el porqué del solucionario y, en los diagramas, la figura resuelta. El botón <b>?</b> marca una pregunta como dudosa y el filtro «Dudosas» las reúne. La idea clave de cada bloque se abre sola al terminarlo. La tabla de autoevaluación se rellena sola y puntúa por opción, no por pregunta: cada hueco, relación o casilla acertada vale un punto, y cada pregunta de test o cálculo, uno. Cuenta la primera respuesta de cada pregunta en cada intento.</div>
     </div>
   </section>
 
@@ -85,6 +85,7 @@
   <section class="cat">
     <h2 class="cat-title">Autoevaluación</h2>
     <p>Anota tus aciertos en cada intento. Objetivo: al menos un 80 % en todas las etapas antes del examen.</p>
+    <p class="g-muted">En la web se cuentan opciones correctas: el objetivo de cada etapa es el 80 % de sus opciones.</p>
     {{autoeval}}
     <div class="g-box practica"><div class="g-box-h">✓ Buena práctica — Antes del examen</div><p>Relee solo las ideas clave del solucionario y la sección «Lo que debes retener» de cada etapa. Si sabes explicar cada una con tus palabras y citar la diapositiva de la que sale, estás preparado.</p></div>
   </section>
@@ -98,8 +99,6 @@ window.GUIA_CONF = {
   id: "abd-guia-t1-4",
   img: "guia-t1-4/img/",
   totalTime: "13 h 40 min",
-  /* Objetivo del 80 % por etapa, tal como figura en la tabla de autoevaluación de la guía */
-  objetivos: [12, 12, 12, 18, 18, 22, 21, 19, 22, 23, 22, 19, 20],
   buenaPractica: "Relee solo las ideas clave del solucionario y la sección «Lo que debes retener» de cada etapa. Si sabes explicar cada una con tus palabras y citar la diapositiva de la que sale, estás preparado."
 };
 </script>
