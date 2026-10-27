@@ -129,6 +129,18 @@ Los enunciados, opciones y explicaciones admiten HTML y se insertan directamente
 
 La guía se recorre por etapas con navegación por `#etapa-N`, `#formulario` y `#repaso`. Cada etapa admite dos intentos. La nota se cuenta por opción, no por pregunta: cada hueco, relación o casilla acertada vale un punto, y cada pregunta de test o cálculo, uno. La autoevaluación cuenta la primera respuesta de cada pregunta en cada intento, con un objetivo del 80 % de las opciones de la etapa, y «Repetir las falladas» permite practicar sin cambiar esa nota.
 
+Los 60 diagramas permiten arrastrar las opciones sobre sus casillas, o pulsar una opción y después el destino. Arrastrar una respuesta ya colocada la mueve; pulsar una casilla ocupada la vacía. La alternativa «Responder con desplegables» permite usar los controles habituales. Ambos modos comparten respuestas, bloqueo de letras y corrección. Las zonas se definen en `ABD/guia-t1-4/diagramas.js` (`window.GUIA_DIAGRAMAS`) como `[x, y, ancho, alto]` en píxeles de la imagen original, en orden de casilla. Si sustituyes una figura, revisa sus zonas. Ejecuta `node --test tests/guia.test.cjs` para comprobar que cada diagrama tiene todas sus zonas y que no se solapan.
+
+La prueba `tests/diagramas.browser.cjs` comprueba los 60 diagramas, arrastre con ratón y táctil, teclado, cancelación, corrección, recarga, errores de imagen y contraste en ambos temas. Con el servidor local en el puerto 8000, puedes ejecutarla con Playwright instalado fuera del proyecto (solo se necesita para las pruebas):
+
+```bash
+npm install --prefix /tmp/tests-universidad-browser playwright
+/tmp/tests-universidad-browser/node_modules/.bin/playwright install chromium
+NODE_PATH=/tmp/tests-universidad-browser/node_modules node tests/diagramas.browser.cjs
+```
+
+Para otro servidor, define `TEST_URL`, por ejemplo `TEST_URL=http://127.0.0.1:8765`.
+
 ## Publicación
 
 El sitio puede servirse desde cualquier alojamiento de archivos estáticos, incluido GitHub Pages. Publica la raíz del repositorio conservando las carpetas y sus rutas relativas. No requiere instalar paquetes, compilar ni configurar variables de entorno.

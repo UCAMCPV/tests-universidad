@@ -22,6 +22,8 @@
   var TYPE = { test: "Test", calc: "Cálculo", huecos: "Rellenar huecos", rel: "Relacionar", diag: "Completar diagrama", ord: "Ordenar" };
   var store = window.TUStore || { get: function () { return null; }, set: function () {}, del: function () {} };
   var pokemonPath = new URL("pokemon/", document.currentScript.src).href;
+  var diagramZones = window.GUIA_DIAGRAMAS || {};
+  var cancelDiagramDrag = function () {};
   function clearPokemon() {
     root.querySelectorAll(".g-pokemon-effect").forEach(function (el) { el.remove(); });
   }
@@ -46,7 +48,7 @@
     setTimeout(function () { effect.remove(); }, 2800);
   }
 
-  document.addEventListener("visibilitychange", function () { if (document.hidden) clearPokemon(); });
+  document.addEventListener("visibilitychange", function () { if (document.hidden) { clearPokemon(); cancelDiagramDrag(); } });
 
   /* Etapa de cada pregunta */
   var etapaOf = {};
@@ -123,7 +125,11 @@
   }
   function bankHtml(q) {
     var h = '<div class="g-bank"><div class="g-bank-h">' + esc(q.bh) + "</div><div class=\"g-chips\">";
-    q.b.forEach(function (b) { h += '<span class="g-chip" data-choice="' + b.l + '">' + choiceHtml(b.l, b.w) + "</span>"; });
+    var drag = q.t === "diag" && diagramZones[q.n];
+    q.b.forEach(function (b) {
+      h += (drag ? '<button type="button" class="g-chip g-drag-choice" aria-pressed="false"' : '<span class="g-chip"') +
+        ' data-choice="' + b.l + '">' + choiceHtml(b.l, b.w) + (drag ? "</button>" : "</span>");
+    });
     return h + "</div></div>";
   }
   function slotPool(q) {
@@ -158,7 +164,8 @@
         effect.innerHTML = pokemonHtml("pikachu");
         var bounds = choice.getBoundingClientRect();
         if (bounds.bottom < 160 || bounds.top > window.innerHeight) {
-          var field = selected.getBoundingClientRect(), question = card.getBoundingClientRect();
+          var control = card.querySelector('[data-drop="' + selected.getAttribute("data-k") + '"]') || selected;
+          var field = control.getBoundingClientRect(), question = card.getBoundingClientRect();
           effect.style.inset = "auto";
           effect.style.top = (field.top - question.top) + "px";
           effect.style.left = (field.left - question.left) + "px";
@@ -171,6 +178,153 @@
     });
     var check = card.querySelector("[data-check]");
     if (check) check.disabled = used.length !== slots.length || new Set(used).size !== used.length;
+    syncDiagram(card);
+  }
+
+  function diagramHtml(q) {
+    var zones = diagramZones[q.n];
+    var image = '<img src="' + img(q.n) + '" width="' + q.img[0] + '" height="' + q.img[1] + '" alt="Diagrama de la pregunta P' + q.n + ' con ' + q.k + ' casillas numeradas" loading="lazy">';
+    if (!zones) return '<figure class="figure g-fig">' + image + "</figure>" + bankHtml(q);
+    var h = '<p class="g-diagram-help" id="diagram-help-' + q.n + '">Arrastra una opción a su casilla, o pulsa la opción y después la casilla. Pulsa una casilla ocupada para vaciarla. Puedes desplazar el diagrama horizontalmente.</p>' + bankHtml(q);
+    h += '<figure class="figure g-diagram-figure"><div class="g-diagram-scroll" tabindex="0" role="group" aria-label="Diagrama interactivo de P' + q.n + '" aria-describedby="diagram-help-' + q.n + '"><div class="g-diagram-canvas">' + image;
+    zones.forEach(function (z, k) {
+      h += '<button type="button" class="g-drop" data-drop="' + k + '" aria-label="Casilla ' + (k + 1) + ', vacía" style="left:' + (z[0] / q.img[0] * 100) + '%;top:' + (z[1] / q.img[1] * 100) + '%;width:' + (z[2] / q.img[0] * 100) + '%;height:' + (z[3] / q.img[1] * 100) + '%">Soltar</button>';
+    });
+    return h + '</div></div></figure><p class="g-diagram-status" role="status" aria-live="polite">Elige una opción para empezar.</p>';
+  }
+
+  function syncDiagram(card) {
+    var targets = card.querySelectorAll("[data-drop]");
+    if (!targets.length) return;
+    var q = Q(+card.getAttribute("data-n")), locked = !!rec(q.n);
+    var selected = card.getAttribute("data-diagram-choice") || "";
+    if (locked || Array.from(card.querySelectorAll(".slot")).some(function (sel) { return sel.value === selected; })) {
+      selected = ""; card.removeAttribute("data-diagram-choice");
+    }
+    targets.forEach(function (target) {
+      var sel = card.querySelector('.slot[data-k="' + target.getAttribute("data-drop") + '"]');
+      var choice = q.b.find(function (b) { return b.l === sel.value; });
+      var label = choice ? choice.l + " · " + stripTags(choice.w) : "Soltar";
+      target.textContent = label;
+      target.title = label;
+      target.disabled = locked;
+      target.setAttribute("data-value", sel.value);
+      target.setAttribute("aria-label", "Casilla " + (+target.getAttribute("data-drop") + 1) + ": " + (choice ? label : "vacía") + (locked ? (sel.classList.contains("s-ok") ? ", correcta" : ", incorrecta; respuesta: " + q.a[+target.getAttribute("data-drop")]) : choice ? ". Pulsa para vaciar o arrastra para mover." : ". Pulsa para colocar la opción seleccionada."));
+      target.classList.toggle("g-filled", !!choice);
+      target.classList.toggle("s-ok", sel.classList.contains("s-ok"));
+      target.classList.toggle("s-ko", sel.classList.contains("s-ko"));
+    });
+    card.querySelectorAll(".g-drag-choice").forEach(function (choice) {
+      choice.disabled = locked || choice.classList.contains("g-used");
+      choice.setAttribute("aria-pressed", !choice.disabled && choice.getAttribute("data-choice") === selected ? "true" : "false");
+    });
+    card.classList.toggle("g-diagram-ready", !!selected && !locked);
+  }
+
+  function placeDiagram(card, k, letter) {
+    var n = +card.getAttribute("data-n"), q = Q(n);
+    var slot = card.querySelector('.slot[data-k="' + k + '"]');
+    if (rec(n) || !slot || (letter && !q.b.some(function (b) { return b.l === letter; }))) return;
+    card.querySelectorAll(".slot").forEach(function (other) { if (letter && other !== slot && other.value === letter) other.value = ""; });
+    slot.value = letter;
+    card.removeAttribute("data-diagram-choice");
+    slot.dispatchEvent(new Event("change", { bubbles: true }));
+    card.querySelector(".g-diagram-status").textContent = letter ? "Opción " + letter + " colocada en la casilla " + (+k + 1) + "." : "Casilla " + (+k + 1) + " vaciada. La opción vuelve al banco.";
+  }
+
+  function wireDiagram(card) {
+    if (!card.querySelector("[data-drop]")) return;
+    var drag = null, frame = null, suppressClick = false;
+    var viewport = card.querySelector(".g-diagram-scroll");
+    function stopDrag() {
+      cancelAnimationFrame(frame);
+      if (drag && drag.ghost) drag.ghost.remove();
+      card.querySelectorAll(".g-drag-over").forEach(function (el) { el.classList.remove("g-drag-over"); });
+      card.classList.remove("g-diagram-dragging");
+      var old = drag; drag = null;
+      if (old && old.source.hasPointerCapture(old.id)) old.source.releasePointerCapture(old.id);
+    }
+    function dragFrame() {
+      if (!drag || !drag.ghost) return;
+      if (drag.y < 180) window.scrollBy(0, -10);
+      else if (drag.y > window.innerHeight - 48) window.scrollBy(0, 10);
+      var bounds = viewport.getBoundingClientRect();
+      if (drag.y >= bounds.top && drag.y <= bounds.bottom) {
+        if (drag.x < bounds.left + 40) viewport.scrollLeft -= 10;
+        else if (drag.x > bounds.right - 40) viewport.scrollLeft += 10;
+      }
+      var under = document.elementFromPoint(drag.x, drag.y);
+      var target = under && under.closest("[data-drop]");
+      if (!target || !card.contains(target) || target.disabled) target = null;
+      card.querySelectorAll(".g-drag-over").forEach(function (el) { if (el !== target) el.classList.remove("g-drag-over"); });
+      if (target) target.classList.add("g-drag-over");
+      frame = requestAnimationFrame(dragFrame);
+    }
+    card.addEventListener("click", function (event) {
+      if (suppressClick && event.detail) { suppressClick = false; event.preventDefault(); return; }
+      var choice = event.target.closest(".g-drag-choice"), target = event.target.closest("[data-drop]");
+      if (choice && !choice.disabled) {
+        var value = choice.getAttribute("data-choice");
+        card.setAttribute("data-diagram-choice", card.getAttribute("data-diagram-choice") === value ? "" : value);
+        syncDiagram(card);
+        card.querySelector(".g-diagram-status").textContent = card.getAttribute("data-diagram-choice") ? "Opción " + value + " seleccionada. Pulsa su casilla en el diagrama." : "Selección cancelada.";
+      } else if (target && !target.disabled) placeDiagram(card, target.getAttribute("data-drop"), card.getAttribute("data-diagram-choice") || "");
+    });
+    card.addEventListener("pointerdown", function (event) {
+      suppressClick = false;
+      var source = event.target.closest(".g-drag-choice, [data-drop]");
+      if (!source || source.disabled || event.button !== 0 || !event.isPrimary) return;
+      var letter = source.getAttribute("data-choice") || source.getAttribute("data-value");
+      if (!letter) return;
+      cancelDiagramDrag();
+      drag = { source: source, id: event.pointerId, letter: letter, startX: event.clientX, startY: event.clientY, x: event.clientX, y: event.clientY, ghost: null };
+      cancelDiagramDrag = stopDrag;
+      source.setPointerCapture(event.pointerId);
+    });
+    card.addEventListener("pointermove", function (event) {
+      if (!drag || event.pointerId !== drag.id) return;
+      drag.x = event.clientX; drag.y = event.clientY;
+      if (!drag.ghost && Math.hypot(drag.x - drag.startX, drag.y - drag.startY) < 6) return;
+      event.preventDefault();
+      if (!drag.ghost) {
+        drag.ghost = document.createElement("div");
+        drag.ghost.className = "g-drag-ghost";
+        drag.ghost.setAttribute("aria-hidden", "true");
+        drag.ghost.textContent = drag.source.querySelector(".g-choice-text") ? drag.source.querySelector(".g-choice-text").textContent : drag.source.textContent;
+        document.body.appendChild(drag.ghost);
+        card.classList.add("g-diagram-dragging");
+        frame = requestAnimationFrame(dragFrame);
+      }
+      var x = Math.max(8, Math.min(drag.x + 14, window.innerWidth - drag.ghost.offsetWidth - 8));
+      drag.ghost.style.transform = "translate(" + x + "px," + Math.max(8, drag.y - 20) + "px)";
+    });
+    card.addEventListener("pointerup", function (event) {
+      if (!drag || event.pointerId !== drag.id) return;
+      if (drag.ghost) {
+        var under = document.elementFromPoint(event.clientX, event.clientY);
+        var target = under && under.closest("[data-drop]"), letter = drag.letter;
+        suppressClick = true;
+        if (target && card.contains(target) && !target.disabled) placeDiagram(card, target.getAttribute("data-drop"), letter);
+      }
+      stopDrag();
+    });
+    card.addEventListener("pointercancel", stopDrag);
+    card.addEventListener("lostpointercapture", stopDrag);
+    card.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        stopDrag(); card.removeAttribute("data-diagram-choice"); syncDiagram(card);
+        card.querySelector(".g-diagram-status").textContent = "Selección cancelada.";
+      }
+    });
+    var image = viewport.querySelector("img");
+    function imageFailed() {
+      viewport.hidden = true;
+      card.querySelector(".g-diagram-inputs").open = true;
+      card.querySelector(".g-diagram-status").textContent = "No se pudo cargar el diagrama. Puedes responder con los desplegables.";
+    }
+    image.addEventListener("error", imageFailed);
+    if (image.complete && !image.naturalWidth) imageFailed();
+    syncDiagram(card);
   }
 
   /* ---------- Tarjeta de pregunta ---------- */
@@ -198,11 +352,12 @@
     } else if (q.t === "huecos") {
       h += bankHtml(q);
     } else if (q.t === "diag") {
-      h += '<figure class="figure g-fig"><img src="' + img(n) + '" width="' + q.img[0] + '" height="' + q.img[1] + '" alt="Diagrama de la pregunta P' + n + ' con ' + q.k + ' casillas numeradas" loading="lazy"></figure>';
-      h += bankHtml(q);
+      h += diagramHtml(q);
+      if (diagramZones[n]) h += '<details class="g-diagram-inputs"><summary>Responder con desplegables</summary>';
       h += '<div class="g-grid">';
       for (var k = 0; k < q.k; k++) h += '<label class="g-cell"><span>Casilla ' + (k + 1) + "</span>" + selectHtml(q, k, pool, "—") + "</label>";
       h += "</div>";
+      if (diagramZones[n]) h += "</details>";
     } else if (q.t === "rel") {
       h += '<div class="g-rel"><div class="g-rel-col"><div class="g-col-h">Concepto · Letra</div>';
       q.c.forEach(function (c, k) {
@@ -434,6 +589,7 @@
   }
 
   function render() {
+    cancelDiagramDrag();
     clearPokemon();
     var h = navHtml(view);
     if (typeof view === "number") h += etapaView(G.etapas[view - 1]);
@@ -524,6 +680,7 @@
         syncChoices(card, sel);
       });
     });
+    root.querySelectorAll(".g-q").forEach(wireDiagram);
     root.querySelectorAll("[data-check]").forEach(function (b) {
       b.addEventListener("click", function () { var n = +b.getAttribute("data-check"); if (!rec(n)) answer(n, slotsOf(b.closest(".g-q"))); });
     });

@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "assets/styles.css"
+        ],
+        "createdAt": "2026-10-27T18:27:25.774Z",
+        "reason": "User requested suppressing the existing side-tab warning in assets/styles.css."
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "assets/styles.css"
+        ],
+        "createdAt": "2026-10-27T18:27:25.843Z",
+        "reason": "User requested suppressing the existing layout-transition warning in assets/styles.css."
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "ABD/abd-guia-t1-4.html"
+        ],
+        "createdAt": "2026-10-27T18:48:03.916Z",
+        "reason": "Agent: computed browser contrast checks in tests/diagramas.browser.cjs pass in both themes (light minimum 4.67:1; dark 6.91:1). Static findings mix dark-theme tokens with white backgrounds and omit inherited foreground colors."
+      },
+      {
+        "rule": "all-caps-body",
+        "value": "*",
+        "files": [
+          "ABD/abd-guia-t1-4.html"
+        ],
+        "createdAt": "2026-10-27T18:48:03.986Z",
+        "reason": "Agent: the findings are the existing subject eyebrow and section-heading labels in the template, not uppercase body paragraphs; headings retained as part of the incumbent design."
+      }
+    ]
+  }
+}
