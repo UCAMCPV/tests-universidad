@@ -21,6 +21,32 @@
   var DIF = ["fácil", "intermedia", "difícil"];
   var TYPE = { test: "Test", calc: "Cálculo", huecos: "Rellenar huecos", rel: "Relacionar", diag: "Completar diagrama", ord: "Ordenar" };
   var store = window.TUStore || { get: function () { return null; }, set: function () {}, del: function () {} };
+  var pokemonPath = new URL("pokemon/", document.currentScript.src).href;
+  var victory = document.createElement("div"), victoryTimer;
+  victory.className = "g-victory";
+  victory.hidden = true;
+  victory.setAttribute("aria-hidden", "true");
+  document.body.appendChild(victory);
+
+  function clearVictory() {
+    clearTimeout(victoryTimer);
+    victory.hidden = true;
+    victory.replaceChildren();
+  }
+
+  function celebrate(n) {
+    clearVictory();
+    var h = '<div class="g-victory-party">';
+    for (var k = 0; k < 16; k++) h += '<i class="g-confetti" style="--i:' + k + '"></i>';
+    h += '</div><img class="g-pokemon" src="' + pokemonPath + 'pikachu.png" width="96" height="96" alt="">' +
+      '<div class="g-victory-copy"><strong>¡Respuesta correcta!</strong><span>P' + n + ' · ¡Así se hace!</span></div>' +
+      '<img class="g-pokemon" src="' + pokemonPath + 'eevee.png" width="96" height="96" alt="">';
+    victory.innerHTML = h;
+    victory.hidden = false;
+    victoryTimer = setTimeout(clearVictory, 2800);
+  }
+
+  document.addEventListener("visibilitychange", function () { if (document.hidden) clearVictory(); });
 
   /* Etapa de cada pregunta */
   var etapaOf = {};
@@ -226,6 +252,7 @@
     if (st.f[i][n] === undefined) st.f[i][n] = r.hits;
     st.r[i][n] = r;
     save(); paint(n); update();
+    if (r.ok) celebrate(n); else clearVictory();
   }
 
   /* ---------- Vistas ---------- */
@@ -361,6 +388,7 @@
   }
 
   function render() {
+    clearVictory();
     var h = navHtml(view);
     if (typeof view === "number") h += etapaView(G.etapas[view - 1]);
     else if (view === "formulario") h += formularioView();
