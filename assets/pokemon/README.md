@@ -1,4 +1,4 @@
-Sprites de Pikachu (25) y Eevee (133): [PokéAPI/sprites](https://github.com/PokeAPI/sprites), carpeta `sprites/pokemon`.
+Sprites de Pikachu (25), Eevee (133) y Gengar (94): [PokéAPI/sprites](https://github.com/PokeAPI/sprites), carpeta `sprites/pokemon`.
 
 Se guardan como PNG estáticos y se animan con CSS para respetar `prefers-reduced-motion` y funcionar sin peticiones externas.
 
