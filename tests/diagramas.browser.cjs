@@ -11,11 +11,19 @@ const url = (process.env.TEST_URL || 'http://127.0.0.1:8000') + '/ABD/abd-guia-t
   const card=p.locator('#p1');
   await card.locator('img').first().waitFor();
   await p.waitForFunction(()=>document.querySelector('#p1 .g-diagram-canvas img').naturalWidth>0);
+  for (const theme of ['light','dark']) {
+   await p.evaluate(theme=>document.documentElement.setAttribute('data-theme',theme),theme);
+   assert(await card.locator('[data-drop]').evaluateAll(els=>els.every(el=>{
+    const style=getComputedStyle(el);
+    return !el.textContent && !!el.getAttribute('aria-label') && style.backgroundColor==='rgba(0, 0, 0, 0)' && style.borderStyle==='dashed';
+   })),theme+' empty zones are transparent, dashed and accessible without a visible label');
+  }
   await card.locator('[data-choice="B"]').dragTo(card.locator('[data-drop="0"]'));
   assert.equal(await card.locator('.slot[data-k="0"]').inputValue(),'B','mouse drag places letter');
   assert(await card.locator('[data-choice="B"]').isDisabled());
   assert(await card.locator('[data-choice="B"]').evaluate(e=>e.classList.contains('g-used')));
   await card.locator('[data-choice="C"]').click();
+  assert.equal(await card.locator('[data-drop="1"]').evaluate(el=>getComputedStyle(el).borderStyle),'dashed','ready target remains dashed');
   await card.locator('[data-drop="1"]').click();
   await card.locator('[data-drop="0"]').dragTo(card.locator('[data-drop="1"]'));
   assert.equal(await card.locator('.slot[data-k="0"]').inputValue(),'');
@@ -55,6 +63,7 @@ const url = (process.env.TEST_URL || 'http://127.0.0.1:8000') + '/ABD/abd-guia-t
    await c.locator('[data-check]').evaluate(el=>el.click());
    assert(await c.evaluate(el=>el.classList.contains('correct')),'P'+q.n+' grading');
    assert.equal(await c.locator('.g-drop.s-ok:disabled').count(),q.k);
+   assert(await c.locator('[data-drop]').evaluateAll(els=>els.every(el=>getComputedStyle(el).backgroundColor==='rgba(0, 0, 0, 0)'&&getComputedStyle(el).borderStyle==='dashed')),'P'+q.n+' graded zones stay transparent and dashed');
   }
   await p.reload();
   assert.equal(await p.locator('#p294 .g-drop.s-ok:disabled').count(),6,'restored targets locked');

@@ -188,7 +188,7 @@
     var h = '<p class="g-diagram-help" id="diagram-help-' + q.n + '">Arrastra una opción a su casilla, o pulsa la opción y después la casilla. Pulsa una casilla ocupada para vaciarla. Puedes desplazar el diagrama horizontalmente.</p>' + bankHtml(q);
     h += '<figure class="figure g-diagram-figure"><div class="g-diagram-scroll" tabindex="0" role="group" aria-label="Diagrama interactivo de P' + q.n + '" aria-describedby="diagram-help-' + q.n + '"><div class="g-diagram-canvas">' + image;
     zones.forEach(function (z, k) {
-      h += '<button type="button" class="g-drop" data-drop="' + k + '" aria-label="Casilla ' + (k + 1) + ', vacía" style="left:' + (z[0] / q.img[0] * 100) + '%;top:' + (z[1] / q.img[1] * 100) + '%;width:' + (z[2] / q.img[0] * 100) + '%;height:' + (z[3] / q.img[1] * 100) + '%">Soltar</button>';
+      h += '<button type="button" class="g-drop" data-drop="' + k + '" aria-label="Casilla ' + (k + 1) + ', vacía" style="left:' + (z[0] / q.img[0] * 100) + '%;top:' + (z[1] / q.img[1] * 100) + '%;width:' + (z[2] / q.img[0] * 100) + '%;height:' + (z[3] / q.img[1] * 100) + '%"></button>';
     });
     return h + '</div></div></figure><p class="g-diagram-status" role="status" aria-live="polite">Elige una opción para empezar.</p>';
   }
@@ -204,7 +204,7 @@
     targets.forEach(function (target) {
       var sel = card.querySelector('.slot[data-k="' + target.getAttribute("data-drop") + '"]');
       var choice = q.b.find(function (b) { return b.l === sel.value; });
-      var label = choice ? choice.l + " · " + stripTags(choice.w) : "Soltar";
+      var label = choice ? choice.l + " · " + stripTags(choice.w) : "";
       target.textContent = label;
       target.title = label;
       target.disabled = locked;

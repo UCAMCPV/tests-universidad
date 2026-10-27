@@ -376,7 +376,8 @@ details.g-box.idea summary { cursor: pointer; }
 .g-diagram-status { min-height: 1.6em; }
 .g-diagram-scroll { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-sm); background: #fff; }
 .g-diagram-scroll[hidden] { display: none; }
-.g-diagram-canvas { position: relative; min-width: 760px; }
+/* Las figuras conservan su fondo blanco también en modo oscuro. */
+.g-diagram-canvas { position: relative; min-width: 760px; --accent: #2458d6; --accent-text: #1d47b0; --ok: #147d3b; --ko: #c02626; }
 .g-diagram-canvas img { display: block; width: 100%; max-width: none; height: auto; margin: 0; border: 0; border-radius: 0; }
 .g-drag-choice { max-width: 100%; font: inherit; font-size: .88rem; text-align: left; overflow-wrap: anywhere; color: var(--text); cursor: grab; touch-action: none; }
 .g-drag-choice:hover:not(:disabled), .g-drag-choice[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
@@ -384,16 +385,15 @@ details.g-box.idea summary { cursor: pointer; }
 .g-drag-choice:disabled { opacity: 1; cursor: default; touch-action: auto; }
 .g-drop {
   position: absolute; min-height: 24px; padding: 1px 4px; border: 1px dashed var(--accent);
-  border-radius: 5px; background: var(--surface); color: var(--accent-text);
+  border-radius: 5px; background: transparent; color: var(--accent-text);
   font: inherit; font-size: .82rem; font-weight: 600; text-align: center;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;
 }
-.g-drop.g-filled { background: var(--accent-soft); border-style: solid; cursor: grab; touch-action: none; }
+.g-drop.g-filled { cursor: grab; touch-action: none; }
 .g-drop:disabled { opacity: 1; cursor: default; touch-action: auto; }
-.g-drop.s-ok { background: var(--ok-soft); border-color: var(--ok); color: var(--ok); }
-.g-drop.s-ko { background: var(--ko-soft); border-color: var(--ko); color: var(--ko); }
+.g-drop.s-ok { border-color: var(--ok); color: var(--ok); }
+.g-drop.s-ko { border-color: var(--ko); color: var(--ko); }
 .g-drop:hover:not(:disabled), .g-drop:focus-visible, .g-drop.g-drag-over { outline: 3px solid #2458d6; outline-offset: 2px; }
-.g-diagram-ready .g-drop:not(:disabled), .g-diagram-dragging .g-drop:not(:disabled) { border-style: solid; }
 .g-diagram-inputs { margin: 12px 0; }
 .g-diagram-inputs > summary { cursor: pointer; color: var(--accent-text); font-size: .9rem; }
 .g-drag-ghost {
