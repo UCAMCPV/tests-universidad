@@ -22,31 +22,31 @@
   var TYPE = { test: "Test", calc: "Cálculo", huecos: "Rellenar huecos", rel: "Relacionar", diag: "Completar diagrama", ord: "Ordenar" };
   var store = window.TUStore || { get: function () { return null; }, set: function () {}, del: function () {} };
   var pokemonPath = new URL("pokemon/", document.currentScript.src).href;
-  var victory = document.createElement("div"), victoryTimer;
-  victory.className = "g-victory";
-  victory.hidden = true;
-  victory.setAttribute("aria-hidden", "true");
-  document.body.appendChild(victory);
-
-  function clearVictory() {
-    clearTimeout(victoryTimer);
-    victory.hidden = true;
-    victory.replaceChildren();
+  function clearPokemon() {
+    root.querySelectorAll(".g-pokemon-effect").forEach(function (el) { el.remove(); });
   }
 
-  function celebrate(n) {
-    clearVictory();
-    var h = '<div class="g-victory-party">';
-    for (var k = 0; k < 16; k++) h += '<i class="g-confetti" style="--i:' + k + '"></i>';
-    h += '</div><img class="g-pokemon" src="' + pokemonPath + 'pikachu.png" width="96" height="96" alt="">' +
-      '<div class="g-victory-copy"><strong>¡Respuesta correcta!</strong><span>P' + n + ' · ¡Así se hace!</span></div>' +
-      '<img class="g-pokemon" src="' + pokemonPath + 'eevee.png" width="96" height="96" alt="">';
-    victory.innerHTML = h;
-    victory.hidden = false;
-    victoryTimer = setTimeout(clearVictory, 2800);
+  function pokemonHtml(name) {
+    return '<img class="g-pokemon" src="' + pokemonPath + name + '.png" width="96" height="96" alt="">';
   }
 
-  document.addEventListener("visibilitychange", function () { if (document.hidden) clearVictory(); });
+  function showOutcome(card, ok, top) {
+    clearPokemon();
+    var effect = document.createElement("div"), h = "";
+    effect.className = "g-pokemon-effect g-outcome " + (ok ? "g-outcome-ok" : "g-outcome-ko");
+    effect.setAttribute("aria-hidden", "true");
+    effect.style.top = Math.max(32, top - 48) + "px";
+    if (ok) {
+      h = '<div class="g-outcome-party">';
+      for (var k = 0; k < 16; k++) h += '<i class="g-confetti" style="--i:' + k + '"></i>';
+      h += "</div>" + pokemonHtml("pikachu") + pokemonHtml("eevee");
+    } else h = pokemonHtml("gengar");
+    effect.innerHTML = h;
+    card.appendChild(effect);
+    setTimeout(function () { effect.remove(); }, 2800);
+  }
+
+  document.addEventListener("visibilitychange", function () { if (document.hidden) clearPokemon(); });
 
   /* Etapa de cada pregunta */
   var etapaOf = {};
@@ -123,13 +123,54 @@
   }
   function bankHtml(q) {
     var h = '<div class="g-bank"><div class="g-bank-h">' + esc(q.bh) + "</div><div class=\"g-chips\">";
-    q.b.forEach(function (b) { h += '<span class="g-chip"><b>' + b.l + ".</b> " + b.w + "</span>"; });
+    q.b.forEach(function (b) { h += '<span class="g-chip" data-choice="' + b.l + '">' + choiceHtml(b.l, b.w) + "</span>"; });
     return h + "</div></div>";
   }
   function slotPool(q) {
     if (q.t === "rel") return q.df.map(function (d) { return { l: d.l }; });
     if (q.t === "ord") return q.it.map(function (d) { return { l: d.l }; });
     return q.b.map(function (b) { return { l: b.l, w: stripTags(b.w) }; });
+  }
+
+  function choiceHtml(letter, text) {
+    return '<span class="g-choice-text"><b>' + letter + ".</b> " + text + '</span><span class="g-choice-status" hidden> · En uso</span>';
+  }
+
+  function syncChoices(card, selected) {
+    if (selected) clearPokemon();
+    var slots = Array.from(card.querySelectorAll(".slot"));
+    var used = slots.map(function (sel) { return sel.value; }).filter(Boolean);
+    slots.forEach(function (sel) {
+      Array.from(sel.options).forEach(function (opt) {
+        var taken = !!opt.value && opt.value !== sel.value && used.indexOf(opt.value) !== -1;
+        opt.disabled = taken;
+        opt.hidden = taken;
+      });
+    });
+    card.querySelectorAll("[data-choice]").forEach(function (choice) {
+      var letter = choice.getAttribute("data-choice"), taken = used.indexOf(letter) !== -1;
+      choice.classList.toggle("g-used", taken);
+      choice.querySelector(".g-choice-status").hidden = !taken;
+      if (selected && selected.value === letter) {
+        var effect = document.createElement("span");
+        effect.className = "g-pokemon-effect g-crossout";
+        effect.setAttribute("aria-hidden", "true");
+        effect.innerHTML = pokemonHtml("pikachu");
+        var bounds = choice.getBoundingClientRect();
+        if (bounds.bottom < 160 || bounds.top > window.innerHeight) {
+          var field = selected.getBoundingClientRect(), question = card.getBoundingClientRect();
+          effect.style.inset = "auto";
+          effect.style.top = (field.top - question.top) + "px";
+          effect.style.left = (field.left - question.left) + "px";
+          effect.style.width = field.width + "px";
+          effect.style.height = field.height + "px";
+          card.appendChild(effect);
+        } else choice.appendChild(effect);
+        setTimeout(function () { effect.remove(); }, 850);
+      }
+    });
+    var check = card.querySelector("[data-check]");
+    if (check) check.disabled = used.length !== slots.length || new Set(used).size !== used.length;
   }
 
   /* ---------- Tarjeta de pregunta ---------- */
@@ -168,11 +209,11 @@
         h += '<label class="g-rel-row"><span class="g-num">' + (k + 1) + ".</span><span class=\"g-rel-c\">" + c + "</span>" + selectHtml(q, k, pool, "—") + "</label>";
       });
       h += '</div><div class="g-rel-col"><div class="g-col-h">Definición</div><ol class="g-defs">';
-      q.df.forEach(function (d) { h += '<li><b>' + d.l + ".</b> " + d.h + "</li>"; });
+      q.df.forEach(function (d) { h += '<li data-choice="' + d.l + '">' + choiceHtml(d.l, d.h) + "</li>"; });
       h += "</ol></div></div>";
     } else if (q.t === "ord") {
       h += '<ol class="g-defs g-items">';
-      q.it.forEach(function (d) { h += '<li><b>' + d.l + ")</b> " + d.h + "</li>"; });
+      q.it.forEach(function (d) { h += '<li data-choice="' + d.l + '">' + choiceHtml(d.l, d.h) + "</li>"; });
       h += '</ol><div class="g-grid">';
       for (var p = 0; p < q.a.length; p++) h += '<label class="g-cell"><span>Posición ' + (p + 1) + "</span>" + selectHtml(q, p, pool, "—") + "</label>";
       h += "</div>";
@@ -232,6 +273,7 @@
         var fix = sel.parentNode.querySelector('.g-fix[data-k="' + k + '"]');
         if (v !== q.a[k] && !fix) sel.insertAdjacentHTML("afterend", '<span class="g-fix" data-k="' + k + '">→ ' + q.a[k] + "</span>");
       });
+      syncChoices(card);
     }
     var ex = card.querySelector(".explain");
     ex.hidden = false;
@@ -240,6 +282,10 @@
 
   function answer(n, v, reveal) {
     var q = Q(n), i = att(etapaOf[n]);
+    var card = document.getElementById("p" + n);
+    var picked = card.querySelector(".opt input:checked");
+    var anchor = picked ? picked.closest(".opt") : card.querySelector(".g-actions");
+    var top = anchor.getBoundingClientRect().top - card.getBoundingClientRect().top;
     var r = { v: v };
     if (reveal) { r.ok = false; r.hits = 0; r.rev = true; }
     else if (q.t === "test" || q.t === "calc") { r.ok = v === q.a; r.hits = r.ok ? 1 : 0; }
@@ -252,7 +298,7 @@
     if (st.f[i][n] === undefined) st.f[i][n] = r.hits;
     st.r[i][n] = r;
     save(); paint(n); update();
-    if (r.ok) celebrate(n); else clearVictory();
+    if (!reveal) showOutcome(card, r.ok, top); else clearPokemon();
   }
 
   /* ---------- Vistas ---------- */
@@ -388,7 +434,7 @@
   }
 
   function render() {
-    clearVictory();
+    clearPokemon();
     var h = navHtml(view);
     if (typeof view === "number") h += etapaView(G.etapas[view - 1]);
     else if (view === "formulario") h += formularioView();
@@ -472,8 +518,10 @@
     });
     root.querySelectorAll(".slot").forEach(function (sel) {
       sel.addEventListener("change", function () {
-        var card = sel.closest(".g-q"), btn = card.querySelector("[data-check]");
-        if (btn) btn.disabled = slotsOf(card).some(function (x) { return !x; });
+        var card = sel.closest(".g-q");
+        var duplicate = Array.from(card.querySelectorAll(".slot")).some(function (other) { return other !== sel && sel.value && other.value === sel.value; });
+        if (duplicate) sel.value = "";
+        syncChoices(card, sel);
       });
     });
     root.querySelectorAll("[data-check]").forEach(function (b) {
