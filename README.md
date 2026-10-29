@@ -11,7 +11,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 | Administración de Bases de Datos | Resúmenes y tests de los temas 1 (fundamentos), 2 (Oracle y ecosistema de datos) y 3 (arquitectura de un SGBD, apartados 3.0–3.2), más la guía de estudio del primer parcial (temas 1–4): 300 preguntas guiadas de seis tipos en 13 etapas, con solucionario comentado, diagramas, formulario y autoevaluación. |
 | Aplicaciones para Dispositivos Móviles | Resumen y test del tema 2 (Kotlin), más 16 ejercicios resueltos. |
 | Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1, 2, 2.1, 2.2, 2.3 y 2.4, más un examen parcial de 30 preguntas y un simulacro de 30 preguntas con su guía de estudio. |
-| Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5). |
+| Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5), más el banco guiado del primer parcial: 300 preguntas en 13 etapas, con solucionario, 30 diagramas interactivos, formulario y autoevaluación. |
 | Administración de Sistemas | Resúmenes y tests de los temas 1 (sistemas de información) y 2 (virtualización). |
 | Desarrollo de Aplicaciones Distribuidas I | Apuntes del primer parcial (hilos, sockets, HTTP y FTP), el primer parcial real resuelto, talleres con 12 ejercicios y un examen de ejemplo. No son tests de opción múltiple: cada pregunta se resuelve con «Ver solución». |
 | Soluciones Informáticas para la Empresa | Resúmenes y tests de los temas 1 (software empresarial y comercio digital, secciones 1.1–1.9, con los requisitos de la Tarea 1) y 2 (ERP, CRM e integración de sistemas empresariales, secciones 2.1–2.9). |
@@ -140,6 +140,20 @@ NODE_PATH=/tmp/tests-universidad-browser/node_modules node tests/diagramas.brows
 ```
 
 Para otro servidor, define `TEST_URL`, por ejemplo `TEST_URL=http://127.0.0.1:8765`.
+
+La guía de Calidad está en `CalidadSoftware/cs-guia-t1-4.html`, con los datos y figuras en `CalidadSoftware/guia-t1-4/`. Reutiliza el mismo motor y guarda su progreso con el identificador independiente `cs-guia-t1-4`. Contiene las 300 preguntas del banco del Dr. Richard Avilés López (v1.0, 23/10/2026): 90 test, 45 cálculos, 60 huecos, 45 relaciones, 30 diagramas y 30 ejercicios de ordenar; además de las 39 fórmulas, ejemplos guiados y explicaciones del solucionario. El alcance es Tema 1 (1.1 y 1.6–1.9), Tema 2 completo, Tema 3 completo y Tema 4 (4.1–4.4).
+
+Comprobación de los datos y los diagramas de Calidad:
+
+```bash
+node --test tests/calidad-guia.test.cjs
+```
+
+Con Playwright instalado como se indica arriba y el servidor local activo, la prueba de navegador resuelve las 300 preguntas y comprueba imágenes, persistencia, formulario, repaso, segundo intento, interacción de diagramas y vista móvil:
+
+```bash
+TEST_URL=http://127.0.0.1:8000 NODE_PATH=/tmp/tests-universidad-browser/node_modules node tests/calidad-guia.browser.cjs
+```
 
 ## Publicación
 

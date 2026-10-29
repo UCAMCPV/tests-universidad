@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía Calidad Temas 1–4 · Banco guiado de 300 preguntas</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="Calidad · Guía de estudio Temas 1–4">
+
+<main class="wrap">
+  <div id="guia"></div>
+  <footer class="page-foot">Basado en la «Banco guiado de preguntas del primer parcial · Temas 1 a 4» del Dr. Richard Avilés López (primer parcial de Calidad de Software). Incluye las 13 etapas, los 73 bloques, el solucionario comentado con sus 30 diagramas resueltos, el formulario y la tabla de autoevaluación.</footer>
+</main>
+
+<template id="tpl-intro">
+  <div class="page-head">
+    <span class="eyebrow">Calidad de Software · Primer parcial · Temas 1 a 4</span>
+    <h1>Banco guiado de 300 preguntas</h1>
+    <p class="lead">Dr. Richard Avilés López · <i>Grado Ingeniería Informática</i></p>
+    <div class="actions-row">{{continuar}}<a class="btn" href="#formulario">Formulario</a><a class="btn" href="#repaso">Repaso final</a></div>
+  </div>
+
+  <div class="tbl-wrap"><table class="tbl g-ficha"><tbody>
+    <tr><th>Estudiante</th><td><input class="g-input" data-who="estudiante" aria-label="Estudiante"></td></tr>
+    <tr><th>Grupo</th><td><input class="g-input" data-who="grupo" aria-label="Grupo"></td></tr>
+    <tr><th>Profesor</th><td>Dr. Richard Avilés López</td></tr>
+    <tr><th>Inicio y fin del recorrido</th><td>{{start}} – {{end}}</td></tr>
+    <tr><th>Resultado global</th><td><b>{{global}}</b> / {{max}} opciones correctas <span class="g-muted">(primeras respuestas del último intento de cada etapa)</span></td></tr>
+  </tbody></table></div>
+
+  <section class="cat">
+    <h2 class="cat-title">Cómo usar este banco</h2>
+    <div class="bloque">
+      <p>Este banco recorre en 13 etapas los contenidos del primer parcial: Tema 1 (1.1 y 1.6–1.9), Tema 2 completo, Tema 3 completo y Tema 4 (4.1–4.4). Sigue el esquema de un equipo de calidad: qué es la calidad, cómo se revisa el código, cómo se asegura con datos y cómo se prueba.</p>
+      <ol>
+        <li>Lee el hilo de la etapa, el cuadro «Lo que necesitáis recordar» y los ejemplos guiados.</li>
+        <li>Responde en orden sin consultar las soluciones. Marca las dudas con «?» y consulta su diapositiva.</li>
+        <li>Corrige y lee el porqué incluso cuando aciertes. En los cálculos, sigue el método de seis pasos del formulario.</li>
+        <li>Revisa la autoevaluación: el objetivo es alcanzar al menos el 80 % de cada etapa. Usa el segundo intento tras repasar.</li>
+      </ol>
+      <div class="note"><b>En esta versión web:</b> elige la letra en cada desplegable y pulsa <b>Comprobar</b> (en test y cálculo basta con elegir la opción). Al corregir se muestran la respuesta y el porqué del solucionario y, en los diagramas, la figura resuelta. El botón <b>?</b> marca una pregunta como dudosa y el filtro «Dudosas» las reúne. La idea clave de cada bloque se abre sola al terminarlo. La tabla de autoevaluación se rellena sola y puntúa por opción, no por pregunta: cada hueco, relación o casilla acertada vale un punto, y cada pregunta de test o cálculo, uno. Cuenta la primera respuesta de cada pregunta en cada intento.</div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">La leyenda de cada pregunta</h2>
+    <div class="bloque">
+      <p>Junto al número aparece, en gris: tipo · tema · sección · diapositiva · dificultad. Por ejemplo, «<i>P12 Huecos · Tema 1 · 1.6 · Diaps. 62, 64 · fácil</i>». El color del número indica la dificultad: <b class="g-pn d0">azul = fácil</b>, <b class="g-pn d1">naranja = intermedia</b> y <b class="g-pn d2">rojo = difícil</b>.</p>
+      <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tema</th><th>Fuente y alcance</th></tr></thead><tbody>
+        <tr><td>Tema 1 · Concepto de calidad de software</td><td>PDF completo v1.2 · 1.1 y 1.6–1.9</td></tr>
+        <tr><td>Tema 2 · Técnicas de revisión</td><td>PDF completo v1.2 · introducción y 2.0–2.5</td></tr>
+        <tr><td>Tema 3 · Aseguramiento de la calidad del software</td><td>PDF v4 · 3.0–3.8</td></tr>
+        <tr><td>Tema 4 · Estrategias de prueba del software</td><td>PDF v1.0 · 4.1–4.4</td></tr>
+      </tbody></table></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Tipos de pregunta</h2>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Tipo</th><th>Nº</th><th>Cómo se responde</th><th>Tiempo orientativo</th></tr></thead><tbody>
+      <tr><td>Test</td><td>90</td><td>Cuatro alternativas, una sola correcta. Rodea la letra.</td><td>1 min</td></tr>
+      <tr><td>Cálculo (caso breve)</td><td>45</td><td>Cuatro resultados: uno correcto, uno «confusor» (sale de aplicar una fórmula equivocada) y dos incorrectos. Haz la cuenta en el margen.</td><td>3–5 min</td></tr>
+      <tr><td>Rellenar huecos</td><td>60</td><td>Siete huecos y un banco de nueve palabras: sobran dos. Escribe la letra de cada palabra bajo el número del hueco.</td><td>2–3 min</td></tr>
+      <tr><td>Relacionar</td><td>45</td><td>Siete conceptos y nueve definiciones: sobran dos. Escribe la letra junto a cada concepto.</td><td>3 min</td></tr>
+      <tr><td>Completar diagrama</td><td>30</td><td>Casillas numeradas en una figura y un banco de palabras en el que sobran algunas. Las pistas en cursiva hacen que cada casilla tenga una única respuesta.</td><td>2–3 min</td></tr>
+      <tr><td>Ordenar</td><td>30</td><td>Pasos o etapas desordenados con letras. Escribe la letra que va en cada posición.</td><td>2 min</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Recorrido</h2>
+    {{recorrido}}
+    <p class="g-muted"><i>Resolver las 300 preguntas lleva unas 11 h 30 min de trabajo efectivo, más una hora de lectura de los cuadros de cada etapa y unas tres horas para corregir y volver a las diapositivas. Repártelo en unas dos semanas, una etapa por sesión.</i></p>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Solucionario comentado</h2>
+    <div class="bloque"><p>{{solIntro}}</p><p class="g-muted">Aquí el solucionario aparece debajo de cada pregunta al corregirla, y la idea clave al final de cada bloque.</p></div>
+  </section>
+
+  <section class="cat">
+    <h2 class="cat-title">Autoevaluación</h2>
+    <p>Anota tus aciertos en cada intento. Objetivo: al menos un 80 % en todas las etapas antes del examen.</p>
+    <p class="g-muted">En la web se cuentan opciones correctas: el objetivo de cada etapa es el 80 % de sus opciones.</p>
+    {{autoeval}}
+    <div class="g-box practica"><div class="g-box-h">✓ Buena práctica — Antes del examen</div><p>Relee solo las ideas clave del solucionario y la sección «Lo que debes retener» de cada etapa. Si sabes explicar cada una con tus palabras y citar la diapositiva de la que sale, estás preparado.</p></div>
+  </section>
+
+  <div class="toolbar"><button class="btn" id="bResetAll">Borrar todo el progreso</button></div>
+</template>
+
+<script src="guia-t1-4/data.js"></script>
+<script src="guia-t1-4/diagramas.js"></script>
+<script>
+window.GUIA_CONF = {
+  id: "cs-guia-t1-4",
+  img: "guia-t1-4/img/",
+  totalTime: "11 h 30 min",
+  buenaPractica: "Relee solo las ideas clave del solucionario y la sección «Lo que debes retener» de cada etapa. Si sabes explicar cada una con tus palabras y citar la diapositiva de la que sale, estás preparado."
+};
+</script>
+<script src="../assets/guia.js"></script>
+</body>
+</html>
