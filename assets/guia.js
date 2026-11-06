@@ -209,7 +209,7 @@
       target.title = label;
       target.disabled = locked;
       target.setAttribute("data-value", sel.value);
-      target.setAttribute("aria-label", "Casilla " + (+target.getAttribute("data-drop") + 1) + ": " + (choice ? label : "vacía") + (locked ? (sel.classList.contains("s-ok") ? ", correcta" : ", incorrecta; respuesta: " + q.a[+target.getAttribute("data-drop")]) : choice ? ". Pulsa para vaciar o arrastra para mover." : ". Pulsa para colocar la opción seleccionada."));
+      target.setAttribute("aria-label", "Casilla " + (+target.getAttribute("data-drop") + 1) + ": " + (choice ? label : "vacía") + (locked ? (sel.classList.contains("s-ok") ? ", correcta" : (q.unordered ? ", incorrecta" : ", incorrecta; respuesta: " + q.a[+target.getAttribute("data-drop")])) : choice ? ". Pulsa para vaciar o arrastra para mover." : ". Pulsa para colocar la opción seleccionada."));
       target.classList.toggle("g-filled", !!choice);
       target.classList.toggle("s-ok", sel.classList.contains("s-ok"));
       target.classList.toggle("s-ko", sel.classList.contains("s-ko"));
@@ -424,9 +424,10 @@
       card.querySelectorAll(".slot").forEach(function (sel) {
         var k = +sel.getAttribute("data-k"), v = r.v ? r.v[k] : "";
         sel.value = v || ""; sel.disabled = true;
-        sel.classList.add(v === q.a[k] ? "s-ok" : "s-ko");
+        var correct = q.unordered ? q.a.includes(v) && r.v.indexOf(v) === k : v === q.a[k];
+        sel.classList.add(correct ? "s-ok" : "s-ko");
         var fix = sel.parentNode.querySelector('.g-fix[data-k="' + k + '"]');
-        if (v !== q.a[k] && !fix) sel.insertAdjacentHTML("afterend", '<span class="g-fix" data-k="' + k + '">→ ' + q.a[k] + "</span>");
+        if (!correct && !q.unordered && !fix) sel.insertAdjacentHTML("afterend", '<span class="g-fix" data-k="' + k + '">→ ' + q.a[k] + "</span>");
       });
       syncChoices(card);
     }
@@ -446,7 +447,7 @@
     else if (q.t === "test" || q.t === "calc") { r.ok = v === q.a; r.hits = r.ok ? 1 : 0; }
     else {
       r.hits = 0;
-      q.a.forEach(function (a, k) { if (v[k] === a) r.hits++; });
+      q.a.forEach(function (a, k) { if (q.unordered ? v.includes(a) : v[k] === a) r.hits++; });
       r.ok = r.hits === q.a.length;
     }
     /* El acierto que puntúa es el de la primera respuesta del intento */

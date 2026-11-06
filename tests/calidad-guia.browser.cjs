@@ -9,6 +9,25 @@ const { chromium } = require('playwright');
   const url=(process.env.TEST_URL || 'http://127.0.0.1:8765')+'/CalidadSoftware/cs-guia-t1-4.html';
   await p.goto(url); await p.locator('.g-auto').waitFor();
   await p.screenshot({path:'/tmp/calidad-desktop.png',fullPage:true});
+  await p.goto(url+'#etapa-1');
+  await p.locator('#p16').evaluate(card => {
+   const answers = window.GUIA.qs[15].a.slice().reverse();
+   card.querySelectorAll('.slot').forEach((sel,k) => { sel.value=answers[k]; sel.dispatchEvent(new Event('change',{bubbles:true})); });
+   card.querySelector('[data-check]').click();
+  });
+  assert.match(await p.locator('#p16 .explain .head').innerText(), /^Correcto \(7\/7\)/);
+  await p.evaluate(() => localStorage.clear());
+  await p.reload();
+  await p.locator('#p16').evaluate(card => {
+   const answers = window.GUIA.qs[15].a.slice().reverse(); answers[0] = 'G';
+   card.querySelectorAll('.slot').forEach((sel,k) => { sel.value=answers[k]; sel.dispatchEvent(new Event('change',{bubbles:true})); });
+   card.querySelector('[data-check]').click();
+  });
+  assert.match(await p.locator('#p16 .explain .head').innerText(), /6 de 7/);
+  assert.equal(await p.locator('#p16 .slot.s-ok').count(), 6);
+  await p.evaluate(() => localStorage.clear());
+  await p.reload();
+
   for (let stage=1; stage<=13; stage++) {
    await p.goto(url+'#etapa-'+stage); await p.locator('.g-q').first().waitFor();
    await p.evaluate(() => {
