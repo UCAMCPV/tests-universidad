@@ -77,6 +77,28 @@ const { chromium } = require('playwright');
   await p.evaluate(() => localStorage.clear());
   await p.reload();
 
+  await p.goto(url+'#etapa-3');
+  await p.locator('#p54').evaluate(card => {
+   const answers = window.GUIA.qs[53].a.slice(); [answers[5], answers[6]] = [answers[6], answers[5]];
+   card.querySelectorAll('.slot').forEach((sel,k) => { sel.value=answers[k]; sel.dispatchEvent(new Event('change',{bubbles:true})); });
+   card.querySelector('[data-check]').click();
+  });
+  assert.match(await p.locator('#p54 .explain .head').innerText(), /^Correcto \(7\/7\)/);
+  assert.equal(await p.locator('#p54 .slot.s-ok').count(), 7);
+  await p.reload();
+  assert.equal(await p.locator('#p54 .slot.s-ok').count(), 7);
+  await p.evaluate(() => localStorage.clear());
+  await p.reload();
+  await p.locator('#p54').evaluate(card => {
+   const answers = window.GUIA.qs[53].a.slice(); answers[5] = 'B';
+   card.querySelectorAll('.slot').forEach((sel,k) => { sel.value=answers[k]; sel.dispatchEvent(new Event('change',{bubbles:true})); });
+   card.querySelector('[data-check]').click();
+  });
+  assert.match(await p.locator('#p54 .explain .head').innerText(), /6 de 7/);
+  assert.match(await p.locator('#p54 [data-drop="5"]').getAttribute('aria-label'), /C o A/);
+  await p.evaluate(() => localStorage.clear());
+  await p.reload();
+
   for (let stage=1; stage<=13; stage++) {
    await p.goto(url+'#etapa-'+stage); await p.locator('.g-q').first().waitFor();
    const before = await p.evaluate(() => Array.from(document.querySelectorAll('.g-q')).filter(card => window.GUIA.qs[+card.dataset.n-1].t !== 'test').map(card => card.querySelector('.opts, .g-chips, .g-defs')?.innerHTML));

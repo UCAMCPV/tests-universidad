@@ -204,6 +204,15 @@
     return h + '</div></div></figure><p class="g-diagram-status" role="status" aria-live="polite">Elige una opción para empezar.</p>';
   }
 
+  function slotAnswers(q, k) {
+    var group = (q.interchangeable || []).find(function (g) { return g.includes(k); });
+    return group ? group.map(function (i) { return q.a[i]; }) : [q.a[k]];
+  }
+  function slotCorrect(q, v, k) {
+    if (!v || !v[k]) return false;
+    return (q.unordered ? q.a : slotAnswers(q, k)).includes(v[k]) && v.indexOf(v[k]) === k;
+  }
+
   function syncDiagram(card) {
     var targets = card.querySelectorAll("[data-drop]");
     if (!targets.length) return;
@@ -220,7 +229,7 @@
       target.title = label;
       target.disabled = locked;
       target.setAttribute("data-value", sel.value);
-      target.setAttribute("aria-label", "Casilla " + (+target.getAttribute("data-drop") + 1) + ": " + (choice ? label : "vacía") + (locked ? (sel.classList.contains("s-ok") ? ", correcta" : (q.unordered ? ", incorrecta" : ", incorrecta; respuesta: " + q.a[+target.getAttribute("data-drop")])) : choice ? ". Pulsa para vaciar o arrastra para mover." : ". Pulsa para colocar la opción seleccionada."));
+      target.setAttribute("aria-label", "Casilla " + (+target.getAttribute("data-drop") + 1) + ": " + (choice ? label : "vacía") + (locked ? (sel.classList.contains("s-ok") ? ", correcta" : (q.unordered ? ", incorrecta" : ", incorrecta; respuesta: " + slotAnswers(q, +target.getAttribute("data-drop")).join(" o "))) : choice ? ". Pulsa para vaciar o arrastra para mover." : ". Pulsa para colocar la opción seleccionada."));
       target.classList.toggle("g-filled", !!choice);
       target.classList.toggle("s-ok", sel.classList.contains("s-ok"));
       target.classList.toggle("s-ko", sel.classList.contains("s-ko"));
@@ -436,10 +445,10 @@
       card.querySelectorAll(".slot").forEach(function (sel) {
         var k = +sel.getAttribute("data-k"), v = r.v ? r.v[k] : "";
         sel.value = v || ""; sel.disabled = true;
-        var correct = q.unordered ? q.a.includes(v) && r.v.indexOf(v) === k : v === q.a[k];
+        var correct = slotCorrect(q, r.v, k);
         sel.classList.add(correct ? "s-ok" : "s-ko");
         var fix = sel.parentNode.querySelector('.g-fix[data-k="' + k + '"]');
-        if (!correct && !q.unordered && !fix) sel.insertAdjacentHTML("afterend", '<span class="g-fix" data-k="' + k + '">→ ' + q.a[k] + "</span>");
+        if (!correct && !q.unordered && !fix) sel.insertAdjacentHTML("afterend", '<span class="g-fix" data-k="' + k + '">→ ' + slotAnswers(q, k).join(" o ") + "</span>");
       });
       syncChoices(card);
     }
@@ -459,7 +468,7 @@
     else if (q.t === "test" || q.t === "calc") { r.ok = v === q.a; r.hits = r.ok ? 1 : 0; }
     else {
       r.hits = 0;
-      q.a.forEach(function (a, k) { if (q.unordered ? v.includes(a) : v[k] === a) r.hits++; });
+      q.a.forEach(function (a, k) { if (slotCorrect(q, v, k)) r.hits++; });
       r.ok = r.hits === q.a.length;
     }
     /* El acierto que puntúa es el de la primera respuesta del intento */
