@@ -118,11 +118,11 @@
   }
 
   function arrange(card, order) {
-    var list = card.querySelector(".opts, .g-chips, .g-defs");
+    var list = card.querySelector(".opts");
     if (!list || !order) return;
     var items = Array.from(list.children);
     order.forEach(function (id) {
-      var item = items.find(function (el) { return (el.getAttribute("data-o") || el.getAttribute("data-choice")) === id; });
+      var item = items.find(function (el) { return el.getAttribute("data-o") === id; });
       if (item) list.appendChild(item);
     });
     list.querySelectorAll(".opt .letter").forEach(function (letter, k) { letter.textContent = LET[k] + ")"; });
@@ -402,7 +402,7 @@
     else if (multi) h += '<div class="head">Incorrecto: ' + r.hits + " de " + q.a.length + " bien.</div>";
     else h += '<div class="head">Incorrecto. La respuesta correcta es la ' +
       document.querySelector('#p' + n + ' .opt[data-o="' + q.a + '"] .letter').textContent + ".</div>";
-    h += '<div class="g-sol"><div class="g-sol-h">Respuesta' + ((q.t === "test" || q.t === "calc") && st.order && st.order[n] ? ' (letras originales del solucionario)' : '') + '</div><div class="g-resp">' + q.r.map(function (x) { return "<div>" + x + "</div>"; }).join("") + "</div>";
+    h += '<div class="g-sol"><div class="g-sol-h">Respuesta' + (q.t === "test" && st.order && st.order[n] ? ' (letras originales del solucionario)' : '') + '</div><div class="g-resp">' + q.r.map(function (x) { return "<div>" + x + "</div>"; }).join("") + "</div>";
     h += '<div class="g-sol-h">Por qué</div>' + q.w.map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div>";
     if (q.t === "diag") h += '<figure class="figure g-fig"><img src="' + img(n, true) + '" width="' + q.simg[0] + '" height="' + q.simg[1] + '" alt="Diagrama de P' + n + ' resuelto" loading="lazy"><figcaption class="figcaption">P' + n + " resuelta</figcaption></figure>";
     return h;
@@ -615,7 +615,7 @@
     if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: "nearest", inline: "center" });
     if (typeof view === "number") {
       etapaQs(G.etapas[view - 1]).forEach(function (n) {
-        arrange(document.getElementById("p" + n), st.order && st.order[n]);
+        if (Q(n).t === "test") arrange(document.getElementById("p" + n), st.order && st.order[n]);
         paint(n);
       });
       wireEtapa();
@@ -718,10 +718,10 @@
     if (C.shuffle) document.getElementById("bShuffle").addEventListener("click", function () {
       st.order = st.order || {};
       etapaQs(e).forEach(function (n) {
-        if (rec(n)) return;
-        var card = document.getElementById("p" + n), list = card.querySelector(".opts, .g-chips, .g-defs");
+        if (rec(n) || Q(n).t !== "test") return;
+        var card = document.getElementById("p" + n), list = card.querySelector(".opts");
         if (!list) return;
-        var order = Array.from(list.children).map(function (el) { return el.getAttribute("data-o") || el.getAttribute("data-choice"); });
+        var order = Array.from(list.children).map(function (el) { return el.getAttribute("data-o"); });
         for (var i = order.length - 1; i > 0; i--) {
           var j = Math.floor(Math.random() * (i + 1)), temp = order[i]; order[i] = order[j]; order[j] = temp;
         }
