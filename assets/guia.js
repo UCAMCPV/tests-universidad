@@ -492,7 +492,7 @@
       '<button class="btn small" data-f="pending">Pendientes</button>' +
       '<button class="btn small" data-f="wrong">Falladas</button>' +
       '<button class="btn small" data-f="doubt">Dudosas «?»</button>' +
-      (C.shuffle ? '<button type="button" class="btn small" id="bShuffle">Shuffle opciones pendientes</button>' : "") + "</div>";
+      (C.shuffle ? '<button type="button" class="btn small" id="bShuffle">Shuffle</button>' : "") + "</div>";
 
     e.bloques.forEach(function (b) {
       h += '<section class="cat g-bloque" id="b-' + b.id + '" data-b="' + b.id + '">';
