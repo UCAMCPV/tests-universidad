@@ -63,6 +63,20 @@ const { chromium } = require('playwright');
   await p.evaluate(() => localStorage.clear());
   await p.reload();
 
+  await p.goto(url+'#etapa-2');
+  const p36 = p.locator('#p36');
+  const targets = await p36.locator('[data-drop]').evaluateAll(els => els.map(el => ({ id: el.dataset.drop, left: parseFloat(el.style.left), top: parseFloat(el.style.top) })));
+  const firstRow = targets.slice().sort((a,b) => a.left-b.left).slice(0,2).sort((a,b) => a.left-b.left);
+  const lower = targets.filter(t => !firstRow.includes(t)).sort((a,b) => a.top-b.top);
+  for (const [letter, target] of [['C', firstRow[0]], ['A', firstRow[1]], ['D', lower[0]], ['E', lower[1]]]) {
+   await p36.locator('[data-choice="'+letter+'"]').evaluate(el => el.click());
+   await p36.locator('[data-drop="'+target.id+'"]').evaluate(el => el.click());
+  }
+  await p36.locator('[data-check]').evaluate(el => el.click());
+  assert.match(await p36.locator('.explain .head').innerText(), /^Correcto \(4\/4\)/);
+  await p.evaluate(() => localStorage.clear());
+  await p.reload();
+
   for (let stage=1; stage<=13; stage++) {
    await p.goto(url+'#etapa-'+stage); await p.locator('.g-q').first().waitFor();
    const before = await p.evaluate(() => Array.from(document.querySelectorAll('.g-q')).filter(card => window.GUIA.qs[+card.dataset.n-1].t !== 'test').map(card => card.querySelector('.opts, .g-chips, .g-defs')?.innerHTML));
