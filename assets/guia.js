@@ -117,6 +117,17 @@
     return { temas: p[0] + " · " + p[1], qs: p[2], range: p[3], time: p[4].replace(/^unos /, "") };
   }
 
+  function arrange(card, order) {
+    var list = card.querySelector(".opts, .g-chips, .g-defs");
+    if (!list || !order) return;
+    var items = Array.from(list.children);
+    order.forEach(function (id) {
+      var item = items.find(function (el) { return (el.getAttribute("data-o") || el.getAttribute("data-choice")) === id; });
+      if (item) list.appendChild(item);
+    });
+    list.querySelectorAll(".opt .letter").forEach(function (letter, k) { letter.textContent = LET[k] + ")"; });
+  }
+
   /* Opciones de un desplegable con letras del banco */
   function selectHtml(q, k, pool, label) {
     var h = '<select class="slot" data-k="' + k + '" aria-label="' + esc(label) + '"><option value="">' + esc(label) + "</option>";
@@ -389,8 +400,9 @@
     if (r.rev) h += '<div class="head">Solución (cuenta como fallada).</div>';
     else if (r.ok) h += '<div class="head">Correcto' + (multi ? " (" + r.hits + "/" + q.a.length + ")" : "") + ".</div>";
     else if (multi) h += '<div class="head">Incorrecto: ' + r.hits + " de " + q.a.length + " bien.</div>";
-    else h += '<div class="head">Incorrecto. La respuesta correcta es la ' + LET[q.a] + ").</div>";
-    h += '<div class="g-sol"><div class="g-sol-h">Respuesta</div><div class="g-resp">' + q.r.map(function (x) { return "<div>" + x + "</div>"; }).join("") + "</div>";
+    else h += '<div class="head">Incorrecto. La respuesta correcta es la ' +
+      document.querySelector('#p' + n + ' .opt[data-o="' + q.a + '"] .letter').textContent + ".</div>";
+    h += '<div class="g-sol"><div class="g-sol-h">Respuesta' + ((q.t === "test" || q.t === "calc") && st.order && st.order[n] ? ' (letras originales del solucionario)' : '') + '</div><div class="g-resp">' + q.r.map(function (x) { return "<div>" + x + "</div>"; }).join("") + "</div>";
     h += '<div class="g-sol-h">Por qué</div>' + q.w.map(function (x) { return "<p>" + x + "</p>"; }).join("") + "</div>";
     if (q.t === "diag") h += '<figure class="figure g-fig"><img src="' + img(n, true) + '" width="' + q.simg[0] + '" height="' + q.simg[1] + '" alt="Diagrama de P' + n + ' resuelto" loading="lazy"><figcaption class="figcaption">P' + n + " resuelta</figcaption></figure>";
     return h;
@@ -479,7 +491,8 @@
       '<button class="btn small" data-f="all">Todas</button>' +
       '<button class="btn small" data-f="pending">Pendientes</button>' +
       '<button class="btn small" data-f="wrong">Falladas</button>' +
-      '<button class="btn small" data-f="doubt">Dudosas «?»</button></div>';
+      '<button class="btn small" data-f="doubt">Dudosas «?»</button>' +
+      (C.shuffle ? '<button type="button" class="btn small" id="bShuffle">Shuffle opciones pendientes</button>' : "") + "</div>";
 
     e.bloques.forEach(function (b) {
       h += '<section class="cat g-bloque" id="b-' + b.id + '" data-b="' + b.id + '">';
@@ -601,7 +614,10 @@
     var cur = root.querySelector('.g-nav [aria-current]');
     if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: "nearest", inline: "center" });
     if (typeof view === "number") {
-      etapaQs(G.etapas[view - 1]).forEach(paint);
+      etapaQs(G.etapas[view - 1]).forEach(function (n) {
+        arrange(document.getElementById("p" + n), st.order && st.order[n]);
+        paint(n);
+      });
       wireEtapa();
       applyFilter();
       update();
@@ -698,6 +714,21 @@
     });
     root.querySelectorAll("[data-f]").forEach(function (b) {
       b.addEventListener("click", function () { st.filter = b.getAttribute("data-f"); save(); applyFilter(); });
+    });
+    if (C.shuffle) document.getElementById("bShuffle").addEventListener("click", function () {
+      st.order = st.order || {};
+      etapaQs(e).forEach(function (n) {
+        if (rec(n)) return;
+        var card = document.getElementById("p" + n), list = card.querySelector(".opts, .g-chips, .g-defs");
+        if (!list) return;
+        var order = Array.from(list.children).map(function (el) { return el.getAttribute("data-o") || el.getAttribute("data-choice"); });
+        for (var i = order.length - 1; i > 0; i--) {
+          var j = Math.floor(Math.random() * (i + 1)), temp = order[i]; order[i] = order[j]; order[j] = temp;
+        }
+        st.order[n] = order;
+        arrange(card, order);
+      });
+      save();
     });
     document.getElementById("bRetry").addEventListener("click", function () {
       var i = att(e.n);

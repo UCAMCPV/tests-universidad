@@ -10,6 +10,25 @@ const { chromium } = require('playwright');
   await p.goto(url); await p.locator('.g-auto').waitFor();
   await p.screenshot({path:'/tmp/calidad-desktop.png',fullPage:true});
   await p.goto(url+'#etapa-1');
+  const original = await p.locator('#p4 .opt').evaluateAll(items => items.map(x => x.dataset.o));
+  await p.locator('#p1 .slot').first().selectOption('A');
+  await p.locator('#p5 .opt input').first().check();
+  const answered = await p.locator('#p5 .opt').evaluateAll(items => items.map(x => x.dataset.o));
+  await p.evaluate(() => { Math.random = () => 0; });
+  await p.locator('#bShuffle').click();
+  const shuffled = await p.locator('#p4 .opt').evaluateAll(items => items.map(x => x.dataset.o));
+  assert.notDeepEqual(shuffled, original);
+  assert.deepEqual(await p.locator('#p5 .opt').evaluateAll(items => items.map(x => x.dataset.o)), answered);
+  assert.equal(await p.locator('#p1 .slot').first().inputValue(), 'A');
+  await p.reload();
+  assert.deepEqual(await p.locator('#p4 .opt').evaluateAll(items => items.map(x => x.dataset.o)), shuffled);
+  const correct = await p.evaluate(() => window.GUIA.qs[3].a);
+  await p.locator('#p4 .opt[data-o="'+correct+'"] input').check();
+  assert.match(await p.locator('#p4 .explain .head').innerText(), /^Correcto/);
+  await p.evaluate(() => localStorage.clear());
+  await p.reload();
+
+  await p.goto(url+'#etapa-1');
   await p.locator('#p16').evaluate(card => {
    const answers = window.GUIA.qs[15].a.slice().reverse();
    card.querySelectorAll('.slot').forEach((sel,k) => { sel.value=answers[k]; sel.dispatchEvent(new Event('change',{bubbles:true})); });
