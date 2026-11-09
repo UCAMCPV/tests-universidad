@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro 1 del parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro 1">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Primer parcial · estilo «Parcial 1 tipo A»</span>
+    <h1>Simulacro 1 del examen parcial</h1>
+    <p class="lead">20 preguntas conceptuales de respuesta única con tres opciones (a, b, c), como el Parcial 1 tipo A: definiciones de los apuntes y opciones «Todas son correctas» o «Ninguna es correcta». Las opciones van en orden fijo, como en el examen. Cada pregunta se corrige al responder y trae su explicación.</p>
+    <div class="note">Examen inventado a partir de los exámenes reales y de los apuntes de los Temas 1 a 2.4; no es un examen oficial. Antes de hacerlo, repasa la guía para el examen.</div>
+    <div class="actions-row"><a class="btn primary" href="ic-guia-examen.html">Guía para el examen</a><a class="btn" href="ic-simulacro-2.html">Simulacro 2</a><a class="btn" href="ic-simulacro-3.html">Simulacro 3</a><a class="btn" href="ic-simulacro-4.html">Simulacro 4</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Simulacro basado en el examen parcial, el Parcial 1 tipo A y los apuntes de Ingeniería del Conocimiento (Temas 1 a 2.4).</footer>
+</main>
+
+<script>
+/* Opciones en orden fijo (shuffle:false) y respuesta correcta indicada con c (0 = a, 1 = b, 2 = c, 3 = d). */
+window.TEST = {
+  id: "ic-simulacro-1",
+  shuffle: false,
+  cats: ["Tema 1 · IC y Sistemas Basados en Conocimiento","Tema 2 · IA, aprendizaje y entrenamiento","Tema 2.1 · Datos, EDA y preprocesamiento","Tema 2.2 · Modelos, activación y costo","Tema 2.3 · Evaluación y métricas","Tema 2.4 · Hiperparámetros"],
+  qs: [
+  {cat:0, c:1, t:"¿Cuál es el objetivo principal de la Ingeniería del Conocimiento?",
+   o:["Sustituir por completo a los expertos humanos para que el sistema decida solo y sin supervisión","Reducir el esfuerzo y el tiempo de resolver problemas complejos usando conocimiento experto","Almacenar datos en bases de datos relacionales"],
+   e:"Los apuntes la definen como la disciplina que integra conocimiento en sistemas informáticos para resolver problemas complejos; su objetivo principal es reducir el esfuerzo y el tiempo que llevarían a mano. No se trata de almacenar datos (eso lo hace un SI) ni de eliminar a los expertos."},
+  {cat:0, c:2, t:"¿Cuáles son los componentes de un Sistema Basado en Conocimiento?",
+   o:["Base de Datos, Algoritmo, Gestor de Consultas, Módulo de Explicación e Interfaz","Base de Conocimiento, Motor de Inferencia, Red Neuronal, Módulo de Optimización e Interfaz","Base de Conocimiento, Motor de Inferencia, Memoria de Trabajo, Explicación e Interfaz"],
+   e:"Son cinco: Base de Conocimiento (conocimiento del problema), Motor de Inferencia (llega a conclusiones), Memoria de Trabajo (datos iniciales y resultados intermedios), Módulo de Explicación (guarda las decisiones) e Interfaz."},
+  {cat:0, c:0, t:"¿Cuál es el orden de las fases de la Ingeniería del Conocimiento?",
+   o:["Adquisición → Representación → Validación → Inferencia → Explicación y justificación","Representación → Adquisición → Inferencia → Validación → Explicación y justificación","Inferencia → Adquisición → Representación → Explicación y justificación → Validación final"],
+   e:"Primero se adquiere el conocimiento, luego se representa formalmente, se valida, se usa para inferir y, por último, se explica y justifica el razonamiento. Todo gira alrededor de la Base de Conocimiento."},
+  {cat:1, c:1, t:"El bias de una neurona artificial…",
+   o:["Es la diferencia entre la predicción media del modelo y el valor real que se quiere predecir","Desplaza la función de activación a izquierda o derecha, como la ordenada en el origen","Ninguna es correcta"],
+   e:"Trampa de vocabulario: el bias de la neurona es un término que desplaza la activación (y = f(Σwᵢxᵢ + b)). La primera opción define el bias del compromiso sesgo-varianza, que es otro concepto aunque se llame igual."},
+  {cat:1, c:2, t:"En el aprendizaje no supervisado…",
+   o:["Los datos de entrada están etiquetados con la salida (y) que se quiere predecir después","Un agente aprende con recompensas y penalizaciones, sin ningún dato histórico","Solo hay features (X): se agrupan datos, se reduce dimensión o se generan datos"],
+   e:"Sin etiquetas: clustering, reducción de dimensionalidad y modelos generativos. Los datos etiquetados son del supervisado y las recompensas, del aprendizaje por refuerzo."},
+  {cat:1, c:0, t:"En el aprendizaje por transferencia, ¿qué diferencia hay entre feature transfer y fine tuning?",
+   o:["En feature transfer se congelan las primeras capas y solo se ajustan los pesos de la última; en fine tuning se actualizan todas","En fine tuning se congelan las primeras capas y solo se ajustan los pesos de la última; en feature transfer se actualizan todas","Todas son correctas"],
+   e:"Feature transfer reutiliza las características ya aprendidas y solo reentrena la última capa; fine tuning reajusta los pesos de todas las capas. Las dos primeras opciones se contradicen, así que «todas» no puede ser."},
+  {cat:1, c:0, t:"La tasa de aprendizaje (learning rate)…",
+   o:["Si es muy grande se salta el mínimo; si es muy pequeña, la optimización tarda muchísimo","Indica la dirección en la que hay que mover cada peso para que el error de la red disminuya","Ninguna es correcta"],
+   e:"El descenso de gradiente necesita dos cosas: la dirección (el gradiente) y el tamaño del paso (el learning rate). Un paso enorme se salta el mínimo; uno diminuto desperdicia cómputo."},
+  {cat:1, c:1, t:"Si un modelo de Deep Learning converge muy lentamente…",
+   o:["Hay que reducir el número de datos de entrenamiento y quitar la activación","Se puede subir el learning rate, con cuidado de que no deje de converger","Ninguna es correcta"],
+   e:"Según los apuntes, la convergencia lenta depende de las épocas, el learning rate y el momentum, y se soluciona subiendo el learning rate con precaución."},
+  {cat:1, c:0, t:"Para combatir el sobreajuste (overfitting) se puede…",
+   o:["Usar Dropout, aplicar regularización o reducir el número de épocas","Aumentar la complejidad del modelo y el número de épocas de entreno","Todas son correctas"],
+   e:"El sobreajuste es un modelo demasiado complejo que memoriza: se simplifica con Dropout, regularización o menos épocas. Aumentar complejidad y épocas es la receta contra el underfitting."},
+  {cat:1, c:2, t:"Respecto al desvanecimiento de gradiente (vanishing gradient)…",
+   o:["Se produce porque la derivada de la función de activación se hace muy pequeña y los pesos dejan de actualizarse","Se soluciona cambiando la función de activación e inicializando los pesos de forma adecuada","Todas son correctas"],
+   e:"Las dos afirmaciones son ciertas: el gradiente se vuelve tan pequeño que los pesos casi no cambian, y se mitiga cambiando la activación (por ejemplo, ReLU en lugar de sigmoide) e inicializando bien los pesos."},
+  {cat:2, c:0, t:"Respecto a las fuentes de datos de pago…",
+   o:["Parecen caras, pero salen baratas a largo plazo y vienen anotadas y con calidad garantizada","Son gratuitas, porque las define, configura y mantiene el propio administrador del sistema interno","Son las más baratas a corto y medio plazo, aunque haya que anotarlas y curarlas a mano"],
+   e:"Los proveedores de pago entregan datasets listos para ML, anotados y con plazos definidos; son caros al principio y baratos a largo plazo. Los que mantiene el propio administrador son los recursos internos."},
+  {cat:2, c:1, t:"La discretización por igual frecuencia (igual alto)…",
+   o:["Divide el rango de valores en N intervalos que tienen todos el mismo tamaño","Divide los datos en N grupos con el mismo número de instancias cada uno","Todas son correctas"],
+   e:"Igual frecuencia = mismo número de instancias por grupo. Dividir el rango en intervalos del mismo tamaño es la discretización de mismo ancho."},
+  {cat:2, c:0, t:"En la codificación categórica…",
+   o:["Label encoding se usa habitualmente en la variable target y One-Hot en las features","One-Hot se usa habitualmente en la variable target y Label encoding en las features","Ninguna es correcta"],
+   e:"Según los apuntes: Label encoding (un número por categoría) para el target y One-Hot (una columna 0/1 por categoría) para las features."},
+  {cat:2, c:2, t:"Cuando se hace un análisis exploratorio de datos multivariante…",
+   o:["Se estudia cada variable por separado","Se estudian las variables de dos en dos para ver la relación de cada par con el objetivo","Se estudian todas las variables a la vez y cómo influyen unas en otras"],
+   e:"Univariante = una variable; bivariante = pares; multivariante = todas a la vez."},
+  {cat:3, c:2, t:"Random Forest…",
+   o:["Sirve tanto para clasificación como para regresión","Combina las predicciones de muchos árboles de decisión por votación o por promedio","Todas son correctas"],
+   e:"Es un ensemble de árboles entrenados con submuestras aleatorias: vota la clase en clasificación y promedia en regresión. Las dos afirmaciones son ciertas."},
+  {cat:3, c:1, t:"La función de activación softmax…",
+   o:["Se usa en las capas ocultas de las CNN","Va en la salida multiclase y devuelve probabilidades que suman 1","Va en la capa de salida de los problemas de regresión para predecir cualquier valor real"],
+   e:"Softmax solo se usa en la salida multiclase. En las capas ocultas de las CNN va ReLU y en la salida de regresión, una activación lineal."},
+  {cat:3, c:1, t:"En un problema de regresión con muchos valores atípicos (outliers)…",
+   o:["MSE es más robusta, porque eleva los errores al cuadrado","MAE es más robusta que MSE frente a los valores atípicos","Ninguna es correcta"],
+   e:"Al elevar al cuadrado, MSE castiga muchísimo los errores grandes que producen los outliers; MAE usa el valor absoluto y es más robusta."},
+  {cat:4, c:2, t:"La técnica de evaluación bootstrap…",
+   o:["Divide los datos en k partes y rota el test","Separa una sola vez los datos al azar en entrenamiento, validación y prueba (por ejemplo, 60:20:20)","Remuestrea con reemplazo muestras del tamaño del dataset; su estimación es optimista"],
+   e:"Bootstrap remuestrea con reemplazo; como entrenamiento y prueba se solapan mucho, la estimación es optimista. La primera opción es la validación cruzada k-fold y la segunda, el holdout."},
+  {cat:4, c:0, t:"En un problema de agrupamiento, ¿qué valores indican un buen resultado?",
+   o:["SSW bajo, SSB alto y silueta cercana a 1","SSW alto, SSB bajo y silueta cercana a −1","Ninguna es correcta"],
+   e:"SSW mide la cohesión (cuanto menor, más compactos), SSB la separación (cuanto mayor, más alejados) y la silueta va de −1 a 1 (cuanto más alta, mejor)."},
+  {cat:5, c:1, t:"¿Qué diferencia hay entre los parámetros y los hiperparámetros de un modelo?",
+   o:["Los hiperparámetros (como los pesos) se aprenden al entrenar; los parámetros se fijan antes","Los parámetros (como los pesos) se aprenden al entrenar; los hiperparámetros se fijan antes","Ninguna es correcta"],
+   e:"Pesos y bias son parámetros: se ajustan al entrenar. Learning rate, número de capas, batch size o k de un KNN son hiperparámetros: los decides tú (o una búsqueda)."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro 3 del parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro 3">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Primer parcial · estilo «examen parcial»</span>
+    <h1>Simulacro 3 del examen parcial</h1>
+    <p class="lead">30 preguntas con cuatro opciones, como el examen parcial: casos con personajes, preguntas encadenadas sobre el mismo caso, cálculos rápidos y alguna «señala la falsa». Las opciones van en orden fijo, como en el examen. Cada pregunta se corrige al responder y trae su explicación.</p>
+    <div class="note">Examen inventado a partir de los exámenes reales y de los apuntes de los Temas 1 a 2.4; no es un examen oficial. Antes de hacerlo, repasa la guía para el examen.</div>
+    <div class="actions-row"><a class="btn primary" href="ic-guia-examen.html">Guía para el examen</a><a class="btn" href="ic-simulacro-1.html">Simulacro 1</a><a class="btn" href="ic-simulacro-2.html">Simulacro 2</a><a class="btn" href="ic-simulacro-4.html">Simulacro 4</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Simulacro basado en el examen parcial, el Parcial 1 tipo A y los apuntes de Ingeniería del Conocimiento (Temas 1 a 2.4).</footer>
+</main>
+
+<script>
+/* Opciones en orden fijo (shuffle:false) y respuesta correcta indicada con c (0 = a, 1 = b, 2 = c, 3 = d). */
+window.TEST = {
+  id: "ic-simulacro-3",
+  shuffle: false,
+  cats: ["Tema 1 · IC y Sistemas Basados en Conocimiento","Tema 2 · IA, aprendizaje y entrenamiento","Tema 2.1 · Datos, EDA y preprocesamiento","Tema 2.2 · Modelos, activación y costo","Tema 2.3 · Evaluación y métricas","Tema 2.4 · Hiperparámetros"],
+  qs: [
+  {cat:1, c:1, t:"Supermercados «Ahorrín» tiene una tabla con 3.000 clientes y 12 variables (edad, gasto medio, visitas al mes…) y quiere predecir si un cliente usará un cupón. Un becario propone una red neuronal profunda de 40 capas. ¿Qué le recomiendas?",
+   o:["Deep Learning en todos los casos, porque siempre es más preciso que el Machine Learning","Machine Learning clásico: son pocos datos tabulares y un problema sencillo","Un algoritmo de preprocesamiento de datos","Ninguno de los anteriores"],
+   e:"El ML clásico se usa con menos datos y problemas menos complejos; el DL brilla con muchos datos e imágenes, audio, texto o secuencias. 3.000 filas tabulares no justifican 40 capas."},
+  {cat:1, c:3, t:"¿Cuál de estas afirmaciones sobre IA, Machine Learning y Deep Learning es correcta?",
+   o:["El Machine Learning es un subconjunto del Deep Learning, que a su vez forma parte de la IA","La IA y el Machine Learning son disciplinas independientes que no comparten técnicas","El DL no forma parte de la IA","El Deep Learning es un subconjunto del ML, y el ML lo es de la IA"],
+   e:"IA ⊃ ML ⊃ DL. El ML usa métodos estadísticos/algorítmicos y el DL, redes neuronales multicapa (métodos estocásticos)."},
+  {cat:1, c:0, t:"La bodega «Tintorro» tiene 40.000 reseñas de sus vinos, pero solo 300 están etiquetadas como positivas o negativas. Quiere aprovecharlas todas para entrenar un modelo. ¿Qué tipo de aprendizaje encaja mejor?",
+   o:["Aprendizaje semi-supervisado","Aprendizaje por refuerzo","Aprendizaje supervisado puro","Aprendizaje por transferencia únicamente"],
+   e:"Pocos datos etiquetados y muchos sin etiquetar: aprendizaje semi-supervisado."},
+  {cat:1, c:1, t:"Aerolíneas «Vuelaquevuela» quiere agrupar a sus pasajeros en perfiles de viaje parecidos, pero no tiene ninguna etiqueta previa. ¿Qué tipo de aprendizaje necesita?",
+   o:["Aprendizaje supervisado","Aprendizaje no supervisado","Aprendizaje por refuerzo","Aprendizaje por transferencia"],
+   e:"Agrupar sin etiquetas es clustering: aprendizaje no supervisado."},
+  {cat:2, c:2, t:"La nutricionista Paca Lavera usa un KNN con las variables «altura» (en metros, de 1,50 a 2,00) y «peso» (en gramos, de 50.000 a 120.000). El modelo se fija casi solo en el peso. ¿Qué debería hacer?",
+   o:["Discretizar las dos variables en dos grupos para que tengan el mismo número de valores","Codificarlas con One-Hot","Normalizarlas (min-max o Z-score) para que tengan escalas comparables","Eliminar la variable peso, porque al tener valores tan grandes no aporta información"],
+   e:"KNN se basa en distancias: la variable con valores más grandes domina. Normalizar pone ambas en escalas comparables."},
+  {cat:2, c:0, t:"La pizzería «Don Calzone» quiere usar la variable «tamaño» (pequeña, mediana, familiar) como entrada de un perceptrón multicapa. ¿Qué proceso debe aplicar antes?",
+   o:["Codificación categórica","Discretización","Reducción de la dimensionalidad","Normalización Z-score"],
+   e:"Pasar de categorías a números es codificación categórica (One-Hot para las features). Discretizar es justo lo contrario."},
+  {cat:2, c:3, t:"Durante el EDA, el técnico de «Don Calzone» descubre que la temperatura del horno vale 250 °C en casi todos los registros, pero hay unos pocos con 2.000 °C debidos a un fallo de lectura del sensor. ¿Qué debe hacer?",
+   o:["Dejarlos, porque los modelos detectan por sí solos los valores atípicos y no aprenden de ellos","Duplicarlos para que el modelo aprenda también de esas situaciones excepcionales","Normalizarlos con min-max para que dejen de ser atípicos","Limpiarlos (por ejemplo, eliminarlos), porque son errores de lectura"],
+   e:"Un EDA debe preguntarse si los outliers son errores de carga o valores reales. Aquí son errores del sensor: se limpian en el preprocesamiento. Normalizar no cambia que un valor sea atípico."},
+  {cat:2, c:1, t:"La app de citas «Flechazo» quiere predecir si dos usuarios harán match, pero solo el 5 % de los ejemplos son match. ¿Qué técnica genera ejemplos sintéticos de la clase minoritaria?",
+   o:["Undersampling","SMOTE","One-Hot Encoding","PCA"],
+   e:"SMOTE inventa ejemplos sintéticos de la minoritaria; el undersampling reduce la mayoritaria; el oversampling repite ejemplos existentes."},
+  {cat:2, c:2, t:"Una fábrica registra 800 variables por máquina, muchas de ellas redundantes, y el entrenamiento es lentísimo. ¿Qué puede hacer?",
+   o:["Discretizar todas las variables en tramos para que el modelo procese menos valores","Aplicar One-Hot Encoding a todas las variables para simplificar su representación","Reducir la dimensionalidad (PCA) o quedarse con los atributos más importantes","Imputar los valores con la media para reducir la variabilidad"],
+   e:"Con demasiadas variables se reduce la dimensionalidad (PCA, t-SNE, NMF, autoencoder) o se muestrean atributos. One-Hot, de hecho, añadiría columnas."},
+  {cat:1, c:1, t:"Durante el entrenamiento de su red, el ingeniero Rigoberto Pesos observa que el gradiente vale prácticamente 0 en todas las capas. ¿Qué está ocurriendo?",
+   o:["El modelo ha alcanzado con seguridad el mínimo absoluto del error","Los pesos dejan de actualizarse y el modelo deja de aprender","El learning rate se ha aumentado automáticamente","Los pesos se reinicializan solos en la siguiente época"],
+   e:"Cada peso se actualiza en proporción a su gradiente: w ← w − α·dJ/dw. Con gradiente 0 no cambian y el modelo deja de aprender (es lo que pasa en el desvanecimiento de gradiente)."},
+  {cat:1, c:2, t:"El analista de «Murcia Cyclists» entrena un modelo y obtiene un error del 1 % en entrenamiento y del 28 % en validación. ¿Qué problema tiene?",
+   o:["Bajo ajuste (underfitting)","Está entrenando perfectamente","Sobreajuste (overfitting)","Es imposible tener esos errores"],
+   e:"Error muy bajo en entrenamiento y mucho mayor en validación: el modelo memoriza y no generaliza."},
+  {cat:1, c:0, t:"¿Qué podría hacer el analista de «Murcia Cyclists» para corregir ese problema?",
+   o:["Añadir Dropout o regularización (L1/L2), o reducir el número de épocas","Añadir más capas y neuronas para que el modelo capture mejor los datos de entrada","Entrenar muchas más épocas hasta que el error de validación baje","Eliminar el conjunto de validación y evaluar solo con entrenamiento"],
+   e:"Contra el overfitting: simplificar (Dropout, regularización L1/L2, menos épocas) o conseguir más datos. Más capas o más épocas lo empeorarían."},
+  {cat:3, c:3, t:"El hospital «Virgen del Wifi» quiere predecir cuántos días estará ingresado un paciente a partir de una tabla con sus datos clínicos. ¿Qué modelo es adecuado?",
+   o:["K-Means","Una regresión logística, que estima la probabilidad de cada día","DBSCAN, porque detecta los ingresos atípicos como ruido","Un Random Forest de regresión"],
+   e:"Días de ingreso = valor numérico → regresión. Random Forest sirve para regresión; la logística es un clasificador y K-Means y DBSCAN agrupan."},
+  {cat:3, c:1, t:"El preparador de «Murcia Cyclists» quiere predecir el ritmo cardíaco de un ciclista en el siguiente minuto usando las mediciones de los últimos 30 minutos. ¿Qué modelo le recomiendas?",
+   o:["Una red convolucional (CNN)","Una LSTM o una GRU","K-Means","Una regresión logística"],
+   e:"Datos secuenciales en el tiempo → red recurrente (LSTM o GRU)."},
+  {cat:3, c:2, t:"En el caso anterior del ritmo cardíaco, ¿qué función de activación pondrías en la neurona de salida?",
+   o:["Sigmoide","Softmax","Lineal","No hace falta neurona de salida"],
+   e:"Se predice un número (pulsaciones por minuto): regresión → salida lineal."},
+  {cat:3, c:0, t:"Los bomberos de «Llamarada SA» quieren detectar en fotografías de satélite si hay un incendio o no. ¿Qué modelo deberían usar?",
+   o:["Una red convolucional (CNN)","Una LSTM, porque las fotos se toman cada día","Una regresión lineal sobre los píxeles","DBSCAN"],
+   e:"La entrada es una imagen → CNN."},
+  {cat:3, c:3, t:"¿Qué función de coste usarían los bomberos de «Llamarada SA» con su CNN?",
+   o:["Mean Squared Error","Sparse Multiclass Cross-Entropy","Mean Absolute Error","Binary Cross-Entropy"],
+   e:"Incendio sí/no es clasificación binaria → Binary Cross-Entropy (con sigmoide en la salida)."},
+  {cat:4, c:1, t:"Los bomberos no quieren que se les escape ningún incendio, aunque a veces salgan sin necesidad. ¿Qué métrica deben priorizar?",
+   o:["Precision, para no salir sin necesidad","Recall o sensibilidad","R²","Índice silueta, para separar zonas con y sin fuego"],
+   e:"Que se escape un incendio es un falso negativo: minimizar falsos negativos es maximizar el recall."},
+  {cat:3, c:2, t:"Señala la respuesta FALSA sobre K-Means:",
+   o:["Hay que fijar de antemano el número de clústeres con el hiperparámetro n_clusters","Recalcula cada centro como el promedio de los puntos asignados a su clúster","Deduce por sí solo el número de clústeres y marca los puntos aislados como ruido","Es un algoritmo de aprendizaje no supervisado que agrupa por cercanía al centro"],
+   e:"Es falsa: deducir el número de grupos y marcar ruido es propio de DBSCAN. K-Means necesita k (n_clusters)."},
+  {cat:3, c:1, t:"La tienda «Todo a Cien» quiere organizar sus productos en una jerarquía de grupos y subgrupos (un árbol) que pueda cortar a distintos niveles. No tiene etiquetas. ¿Qué algoritmo encaja mejor?",
+   o:["Una SVM","Clustering jerárquico","Una regresión logística","Una LSTM"],
+   e:"El clustering jerárquico empieza con cada instancia como su propio clúster y los fusiona; cortando el árbol a distintos niveles se obtienen distintos agrupamientos."},
+  {cat:3, c:3, t:"La emisora «Radio Chunda» quiere clasificar canciones en seis géneros excluyentes con un perceptrón multicapa. ¿Cómo debe ser la capa de salida?",
+   o:["Una neurona con activación lineal","Una neurona con sigmoide","Seis neuronas con ReLU","Seis neuronas con softmax"],
+   e:"Multiclase excluyente: una neurona por clase y softmax, que reparte probabilidades que suman 1."},
+  {cat:4, c:2, t:"Un modelo de clasificación obtiene esta matriz de confusión: TP = 30, FN = 10, FP = 20, TN = 40. ¿Cuál es su accuracy?",
+   o:["0,60","0,75","0,70","0,67"],
+   e:"Accuracy = (TP + TN) / total = (30 + 40) / 100 = 0,70. Ojo: 0,60 es la precision (30/50) y 0,75, el recall (30/40)."},
+  {cat:4, c:0, t:"Con la misma matriz (TP = 30, FN = 10, FP = 20, TN = 40), ¿cuál es su F1 Score aproximado?",
+   o:["0,67","0,70","0,60","0,75"],
+   e:"Precision = 30/50 = 0,60; recall = 30/40 = 0,75. F1 = 2·(0,60·0,75)/(0,60+0,75) = 0,9/1,35 ≈ 0,67."},
+  {cat:4, c:3, t:"El analista de «Ahorrín» ha entrenado tres modelos de clasificación: el A obtiene un MAE de 3, el B un R² de 0,9 y el C un F1 de 0,8. ¿Cuál debe escoger?",
+   o:["El B, porque 0,9 es el valor más alto de los tres modelos evaluados","El A, porque un error de 3 es el más bajo","El C, porque el F1 siempre es la mejor métrica","No se pueden comparar: hay que usar la misma métrica"],
+   e:"Como en el examen real, solo se comparan métricas iguales. Además, MAE y R² son de regresión: no sirven para un problema de clasificación."},
+  {cat:4, c:0, t:"Una empresa conoce las etiquetas reales de sus clientes y quiere comprobar si los grupos de su K-Means coinciden con ellas. ¿Qué métrica de validación externa puede usar?",
+   o:["ARI (Adjusted Rand Index)","SSW (Sum of Squared Within)","Índice silueta (Silhouette Score)","R² (coeficiente de determinación)"],
+   e:"SSW, SSB y silueta son de validación interna (no necesitan etiquetas). El ARI compara las etiquetas reales con las asignadas por el algoritmo."},
+  {cat:4, c:2, t:"Un científico de datos aplica un holdout sin estratificar a un dataset con 900 ejemplos de la clase «A» y 100 de la clase «B». ¿Qué riesgo corre?",
+   o:["Ninguno, porque el holdout respeta siempre la proporción de cada clase","Que el modelo necesite más épocas para aprender la clase «B»","Que no se respete la proporción de clases; conviene estratificar el holdout","Que el conjunto de test acabe teniendo más datos que el de entrenamiento y validación"],
+   e:"Con clases desbalanceadas, el reparto aleatorio puede dejar casi sin «B» algún conjunto. El holdout estratificado mantiene las proporciones."},
+  {cat:4, c:1, t:"Una cadena de heladerías tiene las ventas diarias de los últimos cinco años y quiere validar un modelo que predice las ventas del mes siguiente. ¿Qué validación cruzada es la adecuada?",
+   o:["Leave One Out","Time Series Cross Validation","Monte Carlo con particiones aleatorias","Bootstrap"],
+   e:"En series temporales hay que dividir respetando el tiempo: entrenar con el pasado y validar con el futuro. Las particiones aleatorias mezclarían el futuro en el entrenamiento."},
+  {cat:4, c:3, t:"Un investigador tiene solo 100 muestras y aplica Leave One Out. ¿Cuántos entrenamientos hará?",
+   o:["1","10","99","100"],
+   e:"LOOCV deja cada vez un único dato como test y entrena con los otros 99: se repite para cada dato, 100 entrenamientos."},
+  {cat:5, c:2, t:"El banco «Cajafuerte» quiere ajustar una SVM probando C ∈ {0,1; 1; 10} y kernel ∈ {linear, rbf}. ¿Cuántas combinaciones evaluará un Grid Search?",
+   o:["3","5","6","2"],
+   e:"Grid Search evalúa todas las combinaciones: 3 valores de C × 2 kernels = 6."},
+  {cat:5, c:1, t:"Para no evaluar todas las combinaciones, «Cajafuerte» quiere un método que use un modelo probabilístico y aprenda de cada evaluación qué zonas son más prometedoras. ¿Cuál?",
+   o:["Random Search","Optimización bayesiana","Búsqueda manual","Optimización evolutiva (genética)"],
+   e:"La optimización bayesiana actualiza un modelo probabilístico con cada evaluación y guía la búsqueda. Random Search elige al azar y la evolutiva combina y muta poblaciones."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

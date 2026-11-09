@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía para el examen · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+<style>
+.freq td.bar { width: 40%; }
+.freq .b { display: inline-block; height: 10px; border-radius: 5px; background: var(--accent); vertical-align: middle; }
+</style>
+</head>
+<body data-crumb="IC · Guía para el examen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Ingeniería del Conocimiento · Primer parcial (Temas 1 a 2.4)</span>
+  <h1>Guía para preparar el examen</h1>
+  <p class="lead">Basada en los dos exámenes reales (el examen parcial y el Parcial 1 tipo A, 50 preguntas) y en los Wooclap de clase (39 preguntas): cómo es el examen, qué cae más, el método para resolver los casos, lo que hay que saber de memoria, los cálculos, las trampas y un plan para los últimos días.</p>
+  <div class="actions-row"><a class="btn primary" href="ic-simulacro-1.html">Simulacro 1</a><a class="btn" href="ic-simulacro-2.html">Simulacro 2</a><a class="btn" href="ic-simulacro-3.html">Simulacro 3</a><a class="btn" href="ic-simulacro-4.html">Simulacro 4</a><a class="btn" href="ic-global-parcial-1.html">Test global</a></div>
+</div>
+
+<nav class="toc" id="toc"><a href="#sec0">1. Cómo es</a><a href="#sec1">2. Qué cae</a><a href="#sec2">3. Método</a><a href="#sec3">4. De memoria</a><a href="#sec4">5. Cálculos</a><a href="#sec5">6. Trampas</a><a href="#sec6">7. Dudosas</a><a href="#sec7">8. Plan</a></nav>
+
+<section class="cat" id="sec0"><h2 class="cat-title">1. Cómo es el examen</h2>
+<div class="bloque">
+<p>Hay dos formatos reales, y los dos son de respuesta única:</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th></th><th>Examen parcial</th><th>Parcial 1 tipo A</th></tr>
+<tr><td><b>Preguntas</b></td><td>30</td><td>20</td></tr>
+<tr><td><b>Opciones</b></td><td>4 (a–d)</td><td>3 (a–c)</td></tr>
+<tr><td><b>Estilo</b></td><td>Casos con personajes inventados («Elrond Mask, CEO de Testa SA…»). Unas 10 de 30 continúan el caso de la pregunta anterior.</td><td>Preguntas cortas de concepto («¿Qué es…?», «Respecto a…») con frases casi literales de los apuntes.</td></tr>
+<tr><td><b>Opciones especiales</b></td><td>«A y B son correctas», «Todas las anteriores son válidas», «Ninguno de los anteriores», «Señala la respuesta falsa»</td><td>«Todas son correctas» y «Ninguna es correcta»</td></tr>
+<tr><td><b>Temas</b></td><td>Solo Tema 2 y subtemas: casi todo es aplicar</td><td>También Tema 1 (IC, SBC, neurona): 4 de 20</td></tr>
+<tr><td><b>Para practicar</b></td><td><a href="ic-examen-parcial.html">Examen real</a>, <a href="ic-simulacro-3.html">Simulacro 3</a>, <a href="ic-simulacro-4.html">Simulacro 4</a> y <a href="ic-simulacro-parcial.html">el simulacro anterior</a></td><td><a href="ic-global-parcial-1.html">Test global</a> (bloque «Tipo A»), <a href="ic-simulacro-1.html">Simulacro 1</a> y <a href="ic-simulacro-2.html">Simulacro 2</a></td></tr>
+</table></div>
+<div class="note">Ninguno de los dos exámenes reales tiene solucionario oficial: sus respuestas están razonadas a partir de los apuntes. El nombre «tipo A» sugiere que hay varios modelos con las preguntas o las opciones en otro orden, así que <b>no memorices letras: memoriza el porqué</b>.</div>
+</div>
+</section>
+
+<section class="cat" id="sec1"><h2 class="cat-title">2. Qué cae más</h2>
+<div class="bloque">
+<p>Recuento de las 89 preguntas reales y de clase por bloque (cada pregunta en un solo bloque):</p>
+<div class="tbl-wrap"><table class="tbl freq">
+<tr><th>Bloque</th><th>Examen parcial</th><th>Tipo A</th><th>Wooclap</th><th>Total</th><th class="bar"></th></tr>
+<tr><td><b>Datos, EDA y preprocesamiento</b> (2.1)</td><td>5</td><td>4</td><td>10</td><td><b>19</b></td><td class="bar"><span class="b" style="width:95%"></span></td></tr>
+<tr><td><b>Elegir el modelo</b> (2.2)</td><td>6</td><td>0</td><td>11</td><td><b>17</b></td><td class="bar"><span class="b" style="width:85%"></span></td></tr>
+<tr><td><b>Métricas</b> (2.3)</td><td>6</td><td>1</td><td>8</td><td><b>15</b></td><td class="bar"><span class="b" style="width:75%"></span></td></tr>
+<tr><td><b>Activación y función de coste</b> (2.2)</td><td>3</td><td>2</td><td>6</td><td><b>11</b></td><td class="bar"><span class="b" style="width:55%"></span></td></tr>
+<tr><td><b>Entrenamiento: backprop, gradiente, under/overfitting</b> (2)</td><td>3</td><td>4</td><td>0</td><td><b>7</b></td><td class="bar"><span class="b" style="width:35%"></span></td></tr>
+<tr><td><b>Técnicas de evaluación y particiones</b> (2.3)</td><td>2</td><td>1</td><td>4</td><td><b>7</b></td><td class="bar"><span class="b" style="width:35%"></span></td></tr>
+<tr><td><b>Tipo de aprendizaje y ML frente a DL</b> (2)</td><td>4</td><td>2</td><td>0</td><td><b>6</b></td><td class="bar"><span class="b" style="width:30%"></span></td></tr>
+<tr><td><b>IC, SBC y neurona</b> (1 y 2)</td><td>0</td><td>4</td><td>0</td><td><b>4</b></td><td class="bar"><span class="b" style="width:20%"></span></td></tr>
+<tr><td><b>Hiperparámetros</b> (2.4)</td><td>1</td><td>2</td><td>0</td><td><b>3</b></td><td class="bar"><span class="b" style="width:15%"></span></td></tr>
+</table></div>
+<div class="key">El núcleo del examen es una cadena: <b>tipo de problema → modelo → activación de salida → función de coste → métrica</b>. Si dominas la tabla del apartado 3 y el preprocesamiento, tienes más de la mitad del examen.</div>
+<p><b>No ha salido nunca</b> (prioridad baja, pero no nula): historia de la IA, Tema 1.1 (frameworks, Colab y Kaggle), fuentes de datos (libres, internas y de pago), regularización L1/L2, tipos de SBC, hiperparámetros concretos de cada modelo (n_estimators, kernel, p…) y LOOCV o la validación cruzada para series temporales. Los simulacros incluyen alguna pregunta de estos temas para que no te pillen.</p>
+</div>
+</section>
+
+<section class="cat" id="sec2"><h2 class="cat-title">3. El método para las preguntas de caso</h2>
+<div class="bloque">
+<h4>Cuatro preguntas antes de mirar las opciones</h4>
+<ol>
+<li><b>¿Qué entra?</b> Tabla de números, imagen, secuencia en el tiempo («las últimas 5 semanas», «las últimas 24 horas»), texto o audio.</li>
+<li><b>¿Qué sale?</b> Un número (regresión), una clase (clasificación: dos clases = binaria; más = multiclase; varias a la vez = multietiqueta) o grupos sin etiqueta (agrupamiento).</li>
+<li><b>¿Hay respuestas conocidas?</b> Datos históricos con la etiqueta → supervisado. Sin etiquetas → no supervisado. Pocas etiquetas y muchos datos sin etiquetar → semi-supervisado. Recompensas y penalizaciones sin datos → refuerzo. Modelo ya entrenado que se reutiliza → transferencia.</li>
+<li><b>¿Qué importa más?</b> No dejar escapar positivos (enfermedad, fraude, incendio) → recall. No dar falsas alarmas (spam) → precision. Clases desbalanceadas → F1.</li>
+</ol>
+<h4>La tabla maestra</h4>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Problema</th><th>Pista en el enunciado</th><th>Modelos</th><th>Salida</th><th>Coste</th><th>Métricas</th></tr>
+<tr><td><b>Clasificación binaria</b></td><td>«si pagará o no», «si hay lesión», «fraude o legítima»</td><td>Regresión logística, SVM, RF, KNN, MLP; CNN si es imagen</td><td>Sigmoide (1 neurona)</td><td>Binary Cross-Entropy (Hinge en SVM, etiquetas −1/1)</td><td>Accuracy, Precision, Recall, F1, AUC-ROC</td></tr>
+<tr><td><b>Multiclase</b></td><td>«en botijos, ceniceros o cuencos», «cinco categorías excluyentes»</td><td>SVM, RF, KNN, MLP; CNN si es imagen</td><td>Softmax (1 neurona por clase)</td><td>Multiclass Cross-Entropy (one-hot) o Sparse (enteros)</td><td>Las mismas + matriz de confusión</td></tr>
+<tr><td><b>Multietiqueta</b></td><td>«puede contener varias a la vez»</td><td>MLP, CNN</td><td>Sigmoide en cada salida</td><td>Binary Cross-Entropy</td><td>Las de clasificación</td></tr>
+<tr><td><b>Regresión</b></td><td>«cuántos litros / km / días», «qué precio», «qué temperatura»</td><td>Regresión lineal, SVR, RF, KNN, MLP; LSTM si es secuencia</td><td>Lineal</td><td>MSE (MAE con outliers, MSLE con objetivos de gran amplitud)</td><td>R², MSE, RMSE, MAE, MAPE</td></tr>
+<tr><td><b>Agrupamiento</b></td><td>«generar grupos», «segmentar», «perfiles parecidos», sin etiquetas</td><td>K-Means (k conocido), DBSCAN (densidad, ruido, forma irregular), jerárquico (árbol)</td><td>—</td><td>—</td><td>Silueta (alta), SSW (bajo), SSB (alto); ARI si hay etiquetas</td></tr>
+</table></div>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Si la entrada es…</th><th>Modelo</th></tr>
+<tr><td>Imagen (rodilla, rostro, radiografía, satélite)</td><td><b>CNN</b></td></tr>
+<tr><td>Secuencia temporal o texto en orden (últimas semanas, serie de precios, frases)</td><td><b>LSTM o GRU</b></td></tr>
+<tr><td>Reconstruir la entrada, comprimir o detectar anomalías entrenando solo con «lo normal»</td><td><b>Autoencoder</b></td></tr>
+<tr><td>Tabla de variables con pocos datos</td><td><b>Machine Learning clásico</b> (RF, SVM, KNN, regresiones)</td></tr>
+<tr><td>Imágenes, audio, texto o muchísimos datos</td><td><b>Deep Learning</b></td></tr>
+</table></div>
+<div class="warn"><b>Preguntas encadenadas:</b> en el examen parcial unas 10 de 30 continúan un caso («En este caso…», «el problema anterior»). Decide una vez el tipo de problema y arrástralo: si te equivocas en la primera, fallas toda la cadena. Si la cadena se contradice (por ejemplo, un modelo de clasificación y luego una salida lineal), vuelve a leer qué se predice.</div>
+</div>
+</section>
+
+<section class="cat" id="sec3"><h2 class="cat-title">4. Lo que hay que saber de memoria</h2>
+<div class="bloque">
+<p>Las preguntas de concepto del Parcial tipo A usan frases casi literales de los apuntes. Estas son las que más se repiten o pueden repetirse:</p>
+<h4>Tema 1 · IC y SBC</h4>
+<div class="tbl-wrap"><table class="tbl">
+<tr><td><b>IC</b></td><td>Rama de la IA que estudia, diseña y desarrolla sistemas que emulan el juicio de un experto. No se limita a «recoger el conocimiento para que otros programen»: el diseño del SBC también es IC.</td></tr>
+<tr><td><b>Fases</b></td><td>Adquisición → Representación → Validación → Inferencia → Explicación y justificación.</td></tr>
+<tr><td><b>Componentes del SBC</b></td><td>Base de Conocimiento, Motor de Inferencia, Memoria de Trabajo, Módulo de Explicación e Interfaz.</td></tr>
+<tr><td><b>SBC frente a SI</b></td><td>SBC: heurístico, razonamiento simbólico, conocimiento experto, con explicación. SI: algorítmico, solo recupera información de bases de datos. Cuidado con las opciones que intercambian los papeles.</td></tr>
+<tr><td><b>SBC frente a SE</b></td><td>IA ⊃ SBC ⊃ SE. El SE tiene conocimiento <b>experto</b>; el SBC no tiene por qué.</td></tr>
+<tr><td><b>Datos → información → conocimiento</b></td><td>Hechos sin procesar → datos procesados y útiles → experiencia, valores, información y know-how útil para la acción.</td></tr>
+</table></div>
+<h4>Tema 2 · IA y entrenamiento</h4>
+<div class="tbl-wrap"><table class="tbl">
+<tr><td><b>Neurona artificial</b></td><td>Entradas, pesos (+ bias), función de transferencia (suma ponderada), función de activación y salida. <b>Sin dendritas</b>: eso es la neurona biológica.</td></tr>
+<tr><td><b>ML frente a DL</b></td><td>ML: métodos estadísticos/algorítmicos, menos datos, problemas menos complejos. DL: redes multicapa (métodos estocásticos), muchos datos, problemas complejos. IA ⊃ ML ⊃ DL.</td></tr>
+<tr><td><b>Transferencia</b></td><td>Reutilizar lo aprendido en un contexto en otro (normalmente parecido). Feature transfer: solo se reentrena la última capa. Fine tuning: todas.</td></tr>
+<tr><td><b>Cómo aprende</b></td><td>Feed forward (predicción) → coste (error) → <b>backpropagation</b> (propaga el error y calcula gradientes) → <b>descenso de gradiente</b> (actualiza los pesos). En las opciones suelen intercambiar backprop y descenso: léelas despacio.</td></tr>
+<tr><td><b>Descenso de gradiente</b></td><td>Necesita la <b>dirección (gradiente)</b> y el <b>tamaño del paso (learning rate)</b>; el momentum no es la dirección. w_nuevo = w_viejo − α·dJ/dw.</td></tr>
+<tr><td><b>Sesgo y varianza</b></td><td>Minimizar ambos (equilibrio). Sesgo alto = underfitting; varianza alta = overfitting.</td></tr>
+<tr><td><b>Desvanecimiento de gradiente</b></td><td>Problema: los gradientes se hacen tan pequeños que los pesos no se actualizan y el modelo deja de aprender. Se mitiga cambiando la activación (ReLU) e inicializando bien los pesos.</td></tr>
+<tr><td><b>Train / validation / test</b></td><td>Train ajusta pesos; validation ajusta hiperparámetros y elige modelo; test mide la calidad final (y_pred frente a y_test).</td></tr>
+</table></div>
+<h4>Diagnóstico por los errores</h4>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Entrenamiento</th><th>Validación / test</th><th>Diagnóstico</th><th>Remedio</th></tr>
+<tr><td>Alto</td><td>Alto</td><td><b>Underfitting</b> (sí es posible)</td><td>Más capas o neuronas, más épocas, menos Dropout</td></tr>
+<tr><td>Muy bajo</td><td>Mucho más alto</td><td><b>Overfitting</b></td><td>Dropout, regularización L1/L2, menos épocas, más datos</td></tr>
+<tr><td>Bajo</td><td>Bajo y parecido</td><td><b>Entrena bien</b></td><td>Nada</td></tr>
+</table></div>
+<h4>Tema 2.1 · Datos y preprocesamiento</h4>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Situación</th><th>Respuesta</th></tr>
+<tr><td>Continua → categorías</td><td><b>Discretización</b> (mismo ancho o igual frecuencia)</td></tr>
+<tr><td>Categorías → números</td><td><b>Codificación categórica</b>: One-Hot (features, una columna por categoría) o Label encoding (target, un entero por clase)</td></tr>
+<tr><td>Escalas muy distintas (sobre todo en KNN o redes)</td><td><b>Normalización</b>: min-max a [0, 1] o Z-score</td></tr>
+<tr><td>Demasiadas variables o redundantes</td><td><b>Reducción de dimensionalidad</b> (PCA, t-SNE, NMF, autoencoder) o quitar una de dos variables idénticas</td></tr>
+<tr><td>Valores faltantes</td><td>Imputar (media/mediana en numéricas, <b>moda</b> en categóricas, interpolación en series) o eliminar; con muchos nulos, analizar antes de decidir</td></tr>
+<tr><td>Valores atípicos por error</td><td>Detectarlos en el EDA y limpiarlos (eliminarlos); los modelos no «saben» que son atípicos</td></tr>
+<tr><td>Clases desbalanceadas</td><td>Oversampling, undersampling o SMOTE (las tres valen) y medir con F1, recall o precision</td></tr>
+<tr><td>Mismas categorías escritas distinto (España, ESPAÑA…)</td><td>Estandarizarlas antes de contar</td></tr>
+<tr><td>Datos horarios → mensuales</td><td><b>Agregación</b></td></tr>
+<tr><td>EDA</td><td>Estadístico y gráfico; univariante, bivariante (dos variables) y multivariante. Las opciones con «solo» son falsas.</td></tr>
+</table></div>
+<h4>Temas 2.3 y 2.4 · Evaluación e hiperparámetros</h4>
+<div class="tbl-wrap"><table class="tbl">
+<tr><td><b>Técnicas frente a métricas</b></td><td>Técnicas: holdout, validación cruzada, bootstrap. Métricas: F1, MSE, R²… Una opción que llama «técnica» a una métrica es falsa.</td></tr>
+<tr><td><b>Holdout</b></td><td>60:20:20, 50:20:30 o 40:20:40: el entrenamiento suele ser el mayor. Estratificado si hay desbalanceo.</td></tr>
+<tr><td><b>Validación cruzada</b></td><td>k-fold (k = 5 o 10): cada dato es test una vez; buena con pocos datos. LOOCV: un dato de test cada vez. Time Series CV para series. Estima la generalización; no sirve para aprender el modelo.</td></tr>
+<tr><td><b>Bootstrap</b></td><td>Muestras con reemplazo; estimación optimista.</td></tr>
+<tr><td><b>Hiperparámetros</b></td><td>Se fijan fuera del entrenamiento (los pesos son parámetros). Técnicas: manual, Grid Search (todas las combinaciones), Random Search, bayesiana, evolutiva, por gradiente y AutoML. Son importantes para todos, también para los expertos.</td></tr>
+</table></div>
+</div>
+</section>
+
+<section class="cat" id="sec4"><h2 class="cat-title">5. Cálculos que pueden caer</h2>
+<div class="bloque">
+<p>Los exámenes reales no traen cálculos, pero los Wooclap sí, y son preguntas rápidas de puntuar:</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Cálculo</th><th>Fórmula</th><th>Ejemplo</th></tr>
+<tr><td>Accuracy</td><td>(TP + TN) / total</td><td>TP 30, FN 10, FP 20, TN 40 → 70/100 = <b>0,70</b></td></tr>
+<tr><td>Precision</td><td>TP / (TP + FP)</td><td>30/50 = <b>0,60</b></td></tr>
+<tr><td>Recall</td><td>TP / (TP + FN)</td><td>30/40 = <b>0,75</b></td></tr>
+<tr><td>F1</td><td>2·P·R / (P + R)</td><td>2·0,6·0,75 / 1,35 ≈ <b>0,67</b></td></tr>
+<tr><td>Partición estratificada</td><td>Casos de la clase × porcentaje del conjunto</td><td>1.000 fraudes, test del 20 % → <b>200</b></td></tr>
+<tr><td>k-fold</td><td>Validación = N/k; entrenamiento = N − N/k</td><td>1.000 muestras, k = 5 → <b>800 y 200</b></td></tr>
+<tr><td>Min-max</td><td>(x − mín) / (máx − mín)</td><td>50 entre 0 y 200 → <b>0,25</b></td></tr>
+<tr><td>Z-score</td><td>(x − μ) / σ</td><td>190 con μ = 170 y σ = 10 → <b>2</b></td></tr>
+<tr><td>Descenso de gradiente</td><td>w − α·dJ/dw</td><td>0,8 − 0,1·2 = <b>0,6</b></td></tr>
+<tr><td>Grid Search</td><td>Producto del número de valores</td><td>3 valores de C × 2 kernels = <b>6</b></td></tr>
+</table></div>
+<div class="key"><b>Comparar modelos:</b> solo se comparan métricas iguales y del tipo de problema correcto. Con el mismo MSE, desempata el R² (más cerca de 1, mejor). En clustering: silueta más alta, SSW más bajo, SSB más alto. Un R² en un problema de clasificación o una accuracy de 0,1 descartan ese modelo.</div>
+</div>
+</section>
+
+<section class="cat" id="sec5"><h2 class="cat-title">6. Trampas y patrones de respuesta</h2>
+<div class="bloque">
+<h4>Lo que dicen los exámenes reales</h4>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Patrón</th><th>Examen parcial (30)</th><th>Tipo A (20)</th><th>Conclusión</th></tr>
+<tr><td>Letra de la correcta</td><td>a 10 · b 6 · c 7 · d 7</td><td>a 8 · b 7 · c 5</td><td>No hay letra favorita.</td></tr>
+<tr><td>«Todas…» es la correcta</td><td>2 de 3</td><td>2 de 6</td><td>4 de 9: solo si <b>todas</b> las demás son ciertas.</td></tr>
+<tr><td>«Ninguna / Ninguno» es la correcta</td><td>0 de 3</td><td>1 de 2</td><td>Casi siempre es un relleno.</td></tr>
+<tr><td>«A y B son correctas»</td><td>1 de 1</td><td>—</td><td>Comprueba las dos por separado.</td></tr>
+<tr><td>La correcta es la más larga</td><td>10 de 30</td><td>5 de 20</td><td>Lo que daría el azar: no sirve como pista.</td></tr>
+</table></div>
+<h4>Trampas que se repiten</h4>
+<ul>
+<li><b>Pares invertidos:</b> «el ML usa métodos estocásticos y el DL estadísticos», «los SBC son algorítmicos y los SI heurísticos», «propago con descenso de gradiente y actualizo con backpropagation». Lee las dos mitades de cada opción.</li>
+<li><b>«Solo», «siempre», «nunca»:</b> «interesa solo el análisis univariante», «siempre se debe usar validación cruzada», «nunca se puede usar una regresión logística para clasificar». Casi siempre son falsas.</li>
+<li><b>Nombres engañosos:</b> la regresión logística clasifica; la SVR es la SVM de regresión; el «bias» de la neurona no es el sesgo del compromiso sesgo-varianza.</li>
+<li><b>Técnica o métrica:</b> holdout, validación cruzada y bootstrap son técnicas; F1, MSE y R² son métricas; KMeans es un algoritmo.</li>
+<li><b>Verbos imposibles:</b> la retropropagación nunca «aumenta el error» ni «elimina neuronas»; los modelos no «saben» qué datos son atípicos; siempre hace falta una neurona de salida.</li>
+<li><b>Funciones parecidas:</b> la función de activación decide qué pasa a la siguiente capa; la de coste mide la distancia entre el valor real y el predicho; el optimizador calcula cuánto ajustar los pesos.</li>
+<li><b>Softmax o sigmoide:</b> clases excluyentes → softmax; varias etiquetas a la vez → una sigmoide por salida.</li>
+<li><b>Discretizar o codificar:</b> son opuestos. Número → categoría es discretizar; categoría → número es codificar.</li>
+<li><b>Particiones:</b> 20 % de entrenamiento y 60 % de validación está mal: el entrenamiento debe ser el mayor.</li>
+</ul>
+</div>
+</section>
+
+<section class="cat" id="sec6"><h2 class="cat-title">7. Preguntas que no tienen respuesta clara</h2>
+<div class="bloque">
+<p>Algunas preguntas reales admiten dos lecturas. En el examen elige la que encaje con la frase de los apuntes y no le des más vueltas:</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Pregunta</th><th>Respuesta razonada</th><th>Por qué</th></tr>
+<tr><td>Predecir «si un jugador se lesionará con una determinada probabilidad (ej. 80 %)» con una SVM de clasificación</td><td>Solo la SVR sirve para regresión, y salida lineal</td><td>Se interpreta que se predice un número (la probabilidad). Si fuera clasificación binaria, la salida ideal sería una sigmoide, pero no estaba entre las opciones.</td></tr>
+<tr><td>Métrica para Tuister «una vez balanceadas las clases»</td><td>Accuracy</td><td>Con clases balanceadas la accuracy vuelve a ser representativa; el F1 sería la respuesta si siguieran desbalanceadas.</td></tr>
+<tr><td>«Cuando se tienen muchos outliers…»</td><td>Borrarlos</td><td>Los apuntes dicen detectarlos y eliminarlos en la limpieza; interpolarlos inventaría datos.</td></tr>
+<tr><td>Técnicas de hiperparametrización</td><td>Grid Search y Random Search son técnicas muy usadas</td><td>La manual no es «la más recomendada»: los apuntes buscan sustituirla por métodos automáticos.</td></tr>
+<tr><td>«¿Qué es la IC?»</td><td>Rama de la IA que obtiene el conocimiento y modela los sistemas que lo usan</td><td>La otra opción la reduce a recoger conocimiento para que otros programen.</td></tr>
+</table></div>
+</div>
+</section>
+
+<section class="cat" id="sec7"><h2 class="cat-title">8. Plan para los últimos días</h2>
+<div class="bloque">
+<ol>
+<li><b>Tres días antes:</b> lee esta guía y los resúmenes de los Temas 2.2 y 2.3, que concentran la mitad de las preguntas. Rehaz el <a href="ic-examen-parcial.html">examen parcial real</a> sin mirar.</li>
+<li><b>Dos días antes:</b> haz el <a href="ic-simulacro-1.html">Simulacro 1</a> y el <a href="ic-simulacro-3.html">Simulacro 3</a> en condiciones de examen (sin apuntes, de una sentada). Repasa en el resumen el tema de cada fallo.</li>
+<li><b>El día antes:</b> haz el <a href="ic-simulacro-2.html">Simulacro 2</a> y el <a href="ic-simulacro-4.html">Simulacro 4</a>. Después, el <a href="ic-global-parcial-1.html">test global</a> con el filtro «Falladas» y repite las falladas de todos.</li>
+<li><b>Antes de entrar:</b> repasa la tabla maestra del apartado 3, la tabla de diagnóstico y las trampas del apartado 6.</li>
+</ol>
+<div class="key"><b>En el examen:</b> subraya qué se predice y con qué datos, descarta primero las opciones con «solo», «siempre» o los papeles intercambiados, y en las encadenadas no cambies de tipo de problema a mitad del caso.</div>
+</div>
+</section>
+
+<footer class="page-foot">Guía elaborada a partir del examen parcial, el Parcial 1 tipo A, los Wooclap 2.1–2.3 de clase y los apuntes de Ingeniería del Conocimiento (Temas 1 a 2.4). Las estadísticas cuentan las 50 preguntas de examen y las 39 de los Wooclap.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro 4 del parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro 4">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Primer parcial · estilo «examen parcial»</span>
+    <h1>Simulacro 4 del examen parcial</h1>
+    <p class="lead">30 preguntas con cuatro opciones, como el examen parcial: casos con personajes, preguntas encadenadas sobre el mismo caso, cálculos rápidos y opciones como «A y B son correctas» o «Todas las anteriores». Las opciones van en orden fijo, como en el examen. Cada pregunta se corrige al responder y trae su explicación.</p>
+    <div class="note">Examen inventado a partir de los exámenes reales y de los apuntes de los Temas 1 a 2.4; no es un examen oficial. Antes de hacerlo, repasa la guía para el examen.</div>
+    <div class="actions-row"><a class="btn primary" href="ic-guia-examen.html">Guía para el examen</a><a class="btn" href="ic-simulacro-1.html">Simulacro 1</a><a class="btn" href="ic-simulacro-2.html">Simulacro 2</a><a class="btn" href="ic-simulacro-3.html">Simulacro 3</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Simulacro basado en el examen parcial, el Parcial 1 tipo A y los apuntes de Ingeniería del Conocimiento (Temas 1 a 2.4).</footer>
+</main>
+
+<script>
+/* Opciones en orden fijo (shuffle:false) y respuesta correcta indicada con c (0 = a, 1 = b, 2 = c, 3 = d). */
+window.TEST = {
+  id: "ic-simulacro-4",
+  shuffle: false,
+  cats: ["Tema 1 · IC y Sistemas Basados en Conocimiento","Tema 2 · IA, aprendizaje y entrenamiento","Tema 2.1 · Datos, EDA y preprocesamiento","Tema 2.2 · Modelos, activación y costo","Tema 2.3 · Evaluación y métricas","Tema 2.4 · Hiperparámetros"],
+  qs: [
+  {cat:1, c:2, t:"El estudio de grabación «Gallo Records» quiere transcribir automáticamente a texto el audio de miles de canciones. ¿Qué tipo de algoritmo recomiendas?",
+   o:["Uno de Machine Learning","Uno de preprocesamiento de datos","Uno de Deep Learning","Ninguno de los anteriores"],
+   e:"Audio, lenguaje y gran volumen de datos: problema complejo y no tabular → Deep Learning."},
+  {cat:1, c:0, t:"La startup «Hojita» reutiliza una ResNet50 ya entrenada con millones de imágenes: congela todas las capas salvo la última y la reentrena con 500 fotos de setas. ¿Qué está haciendo?",
+   o:["Aprendizaje por transferencia con feature transfer","Aprendizaje por transferencia con fine tuning de toda la red","Aprendizaje por refuerzo","Aprendizaje no supervisado"],
+   e:"Reutilizar un modelo entrenado es transferencia. Congelar las capas y ajustar solo la última es feature transfer."},
+  {cat:1, c:2, t:"Si «Hojita» decide después actualizar los pesos de todas las capas de la ResNet50 con sus fotos de setas, ¿qué técnica aplica?",
+   o:["Feature transfer","Bootstrap","Fine tuning","Aprendizaje por refuerzo"],
+   e:"Fine tuning actualiza los pesos de todas las capas; feature transfer solo los de la última."},
+  {cat:2, c:0, t:"El ayuntamiento de Villarriba quiere convertir la edad de sus vecinos en tramos de 20 años (0–20, 20–40, 40–60…). ¿Qué está haciendo?",
+   o:["Discretización de mismo ancho","Discretización de igual frecuencia","One-Hot Encoding","Normalización Z-score"],
+   e:"Pasa de continua a intervalos, todos del mismo tamaño: discretización de mismo ancho. En la de igual frecuencia cada tramo tendría el mismo número de vecinos."},
+  {cat:2, c:1, t:"El sensor de temperatura de la cámara frigorífica de «Helados Polito» ha dejado huecos sueltos en una serie temporal medida cada minuto. ¿Cómo se pueden rellenar?",
+   o:["Sustituyendo cada hueco por el texto «Desconocido» como valor ficticio","Interpolando los valores (lineal, cuadrática o polinomial)","Aplicando Label encoding","Eliminando la columna entera"],
+   e:"En datos numéricos y series temporales los faltantes se pueden interpolar a partir de los vecinos en el tiempo. «Desconocido» es una sustitución ficticia para categorías."},
+  {cat:2, c:3, t:"La altura de los jugadores del «Basket Patatas» tiene media 170 cm y desviación estándar 10 cm. ¿Qué valor tiene un jugador de 190 cm tras normalizar con Z-score?",
+   o:["0,2","20","1,9","2"],
+   e:"z = (x − μ) / σ = (190 − 170) / 10 = 2."},
+  {cat:2, c:3, t:"Al cargar un CSV de opiniones de clientes, algunas filas se descuadran porque el campo «comentario» contiene tabuladores y caracteres extraños incrustados. ¿Qué tarea de preprocesamiento lo resuelve?",
+   o:["Discretización","Reducción de datos","Codificación categórica","Limpieza de texto"],
+   e:"La limpieza de texto quita los caracteres incrustados que causan errores de alineación."},
+  {cat:2, c:0, t:"Antes de entrenar, una analista dibuja un histograma y un diagrama de cajas y bigotes de cada variable, una a una. ¿Qué tipo de EDA está haciendo?",
+   o:["Gráfico y univariante","Estadístico y multivariante","Gráfico y bivariante","Ninguno: eso no forma parte de un EDA"],
+   e:"Por el tipo de estudio es gráfico (histogramas, cajas) y por el número de variables, univariante (una a una)."},
+  {cat:1, c:1, t:"La ingeniera Delia Gradiente actualiza un peso con w_nuevo = w_viejo − α·dJ/dw. Si w_viejo = 0,8, α = 0,1 y dJ/dw = 2, ¿cuánto vale el nuevo peso?",
+   o:["1,0","0,6","0,78","0,16"],
+   e:"w_nuevo = 0,8 − 0,1·2 = 0,8 − 0,2 = 0,6. El peso se mueve en sentido contrario al gradiente, con un paso que marca el learning rate."},
+  {cat:1, c:3, t:"Durante el entrenamiento, la pérdida del modelo de Delia oscila arriba y abajo sin llegar a bajar. Sospecha que el learning rate es demasiado grande. ¿Qué debería hacer?",
+   o:["Aumentar todavía más el learning rate para que los pasos sean más rápidos","Eliminar la retropropagación y actualizar los pesos a mano","Cambiar el conjunto de test por otro con más datos","Reducir el learning rate: con pasos tan grandes se salta el mínimo"],
+   e:"Un learning rate demasiado grande hace que el descenso de gradiente se salte el mínimo y no converja."},
+  {cat:1, c:0, t:"Un modelo para predecir el precio de los pisos de «Inmobiliaria Tejado» obtiene un error del 35 % en entrenamiento y del 36 % en validación. ¿Qué le pasa?",
+   o:["Bajo ajuste (underfitting)","Sobreajuste (overfitting)","Está entrenando perfectamente","Desvanecimiento de gradiente, con seguridad"],
+   e:"Error alto en los dos conjuntos: el modelo es demasiado simple (bias alto). Tener los dos errores altos sí es posible."},
+  {cat:1, c:0, t:"¿Qué debería hacer «Inmobiliaria Tejado» para mejorar ese modelo?",
+   o:["Más capacidad (capas o neuronas) o más épocas","Añadir más Dropout y más regularización L1/L2","Reducir el número de épocas de entrenamiento","Quitar variables hasta que los errores se igualen"],
+   e:"Contra el underfitting se da más capacidad al modelo. Dropout, regularización y menos épocas son remedios contra el overfitting."},
+  {cat:3, c:3, t:"La cadena «Hoteles Dormilón» quiere predecir si una reserva se cancelará o no a partir de su historial de reservas. Su analista propone un K-Means. ¿Ha hecho bien?",
+   o:["Sí, K-Means es uno de los mejores algoritmos de clasificación supervisada","No, debería usar una regresión lineal, que predice si se cancela o no","No, debería usar DBSCAN, que además detecta las reservas atípicas","No: es clasificación; serviría una regresión logística, un RF o un KNN"],
+   e:"Cancela sí/no con datos históricos etiquetados es clasificación binaria supervisada. K-Means y DBSCAN agrupan sin etiquetas y la regresión lineal es solo para regresión."},
+  {cat:3, c:0, t:"La empresa de correo «Chasquimail» quiere detectar si un mensaje es spam teniendo en cuenta el orden de las palabras de cada frase. ¿Qué modelo encaja mejor?",
+   o:["Una LSTM","Una CNN","K-Means","Una regresión lineal"],
+   e:"Una frase es una secuencia y el orden importa: red recurrente (LSTM o GRU), muy usadas en procesamiento del lenguaje natural."},
+  {cat:3, c:2, t:"Si «Chasquimail» utiliza esa red para decidir spam / no spam, ¿qué activación pondrá en la neurona de salida?",
+   o:["Softmax","Lineal","Sigmoide","Leaky ReLU"],
+   e:"Clasificación binaria → una neurona con sigmoide, que da una probabilidad entre 0 y 1."},
+  {cat:3, c:1, t:"Otro equipo de «Chasquimail» prefiere una SVM con las etiquetas codificadas como −1 y 1. ¿Qué función de coste está pensada para ese caso?",
+   o:["Kullback-Leibler Divergence","Hinge Loss","Mean Squared Error","Sparse Multiclass Cross-Entropy"],
+   e:"Hinge Loss es la alternativa para clasificación binaria pensada para las SVM, con objetivos en {−1, 1}."},
+  {cat:3, c:2, t:"Una SVM lineal no consigue separar bien las clases porque los datos no son linealmente separables. ¿Qué hiperparámetro conviene cambiar?",
+   o:["n_estimators, para añadir más árboles","n_neighbors, para mirar más vecinos","El kernel (por ejemplo, rbf o poly)","n_clusters, para separar más grupos"],
+   e:"Con un kernel no lineal la SVM transforma las características a un espacio donde sí son separables. n_estimators es de Random Forest, n_neighbors de KNN y n_clusters de K-Means."},
+  {cat:3, c:3, t:"En un KNN, ¿qué significa fijar el hiperparámetro p = 1?",
+   o:["Que se usa un único vecino","Que todos los vecinos pesan lo mismo","Que se usa la distancia euclidiana","Que se usa la distancia Manhattan"],
+   e:"p = 1 es la distancia Manhattan (L1) y p = 2, la euclidiana (L2). El número de vecinos es n_neighbors."},
+  {cat:3, c:1, t:"Señala la respuesta FALSA relacionada con una CNN:",
+   o:["Los filtros de las capas convolucionales extraen características locales como bordes y texturas","La capa de pooling aumenta la dimensionalidad de las características","Con padding «same» la salida mantiene el tamaño de la entrada","El max pooling se queda con el valor máximo de cada región"],
+   e:"Es falsa: el pooling reduce la dimensionalidad. Lo demás es cierto."},
+  {cat:3, c:0, t:"«Inmobiliaria Tejado» predice precios que van de 50.000 € a 5 millones sin escalar y quiere una función de coste que relaje el castigo a los errores grandes. ¿Cuál le recomiendas?",
+   o:["MSLE (Mean Squared Logarithmic Error)","Binary Cross-Entropy (entropía cruzada binaria)","Hinge Loss (pérdida bisagra de las SVM)","Multi-Class Cross-Entropy (multiclase)"],
+   e:"MSLE aplica el logaritmo antes del MSE: útil con objetivos de gran amplitud y sin escalar. Las demás son funciones de coste de clasificación."},
+  {cat:4, c:1, t:"El filtro de spam de «Chasquimail» no debe mandar nunca un correo legítimo a la carpeta de spam. El modelo A tiene recall 0,95 y precision 0,40; el modelo B, recall 0,60 y precision 0,90. ¿Cuál elegirías?",
+   o:["El A, porque su recall alto detecta casi todo el spam","El B, porque su precision alta evita los falsos positivos","Cualquiera, porque la media de las dos métricas es parecida","Ninguno: en este caso hay que evaluar con R²"],
+   e:"Mandar un correo legítimo a spam es un falso positivo: se prioriza la precision. Es el ejemplo de los apuntes (spam → precision; cáncer → recall)."},
+  {cat:4, c:2, t:"Para presentar el error de su modelo a la dirección en euros, la misma unidad que el precio, ¿qué métrica puede usar «Inmobiliaria Tejado»?",
+   o:["RMSE","MAE","A y B son correctas","R²"],
+   e:"El RMSE (raíz del MSE) y el MAE expresan el error en la misma unidad que la variable objetivo. El MSE estaría en euros al cuadrado y el R² no tiene unidades."},
+  {cat:4, c:3, t:"Si «Inmobiliaria Tejado» quiere expresar el error de su modelo como un porcentaje, ¿qué métrica es la adecuada?",
+   o:["MSE","Índice silueta","F1 Score","MAPE"],
+   e:"MAPE es el promedio de los errores porcentuales absolutos."},
+  {cat:4, c:1, t:"Un detector de averías obtiene TP = 8, FP = 2, FN = 8 y TN = 82, es decir, una accuracy de 0,90. ¿Qué conclusión es correcta?",
+   o:["El modelo es excelente, porque acierta el 90 % de las veces","La accuracy engaña: el recall es 0,5 y se deja la mitad de averías","La precision es 0,5 y el recall es 0,8, así que detecta casi todo","Hay que evaluarlo con el índice silueta, que es la métrica correcta"],
+   e:"Recall = 8/(8+8) = 0,5 y precision = 8/(8+2) = 0,8. Con clases desbalanceadas la accuracy engaña."},
+  {cat:4, c:3, t:"Una telefónica tiene 10.000 clientes, de los que 500 se dieron de baja. Aplica un holdout estratificado 70 % / 15 % / 15 %. ¿Cuántas bajas habrá en el conjunto de test?",
+   o:["500","1.500","150","75"],
+   e:"Estratificado = misma proporción en cada conjunto: 500 × 0,15 = 75 bajas (en un test de 1.500 clientes)."},
+  {cat:4, c:2, t:"¿Por qué el bootstrap da una estimación optimista del rendimiento del modelo?",
+   o:["Porque solo usa el 10 % de los datos para entrenar en cada iteración","Porque aplica también validación cruzada","Por el gran solape entre entrenamiento y prueba","Porque no permite que un dato aparezca más de una vez en la muestra"],
+   e:"Se entrena con una muestra con reemplazo y se evalúa sobre el conjunto original, que comparte muchos de esos datos."},
+  {cat:4, c:1, t:"¿Qué conjunto de datos se usa para ajustar los hiperparámetros y elegir el mejor modelo?",
+   o:["El de entrenamiento","El de validación","El de test","Todos a la vez"],
+   e:"Entrenamiento: ajustar pesos y bias. Validación: optimizar hiperparámetros y elegir modelo. Test: medir la calidad final."},
+  {cat:5, c:2, t:"Un equipo genera poblaciones de configuraciones de hiperparámetros, evalúa cada una y combina y muta las mejores para formar la siguiente generación. ¿Qué técnica usa?",
+   o:["Grid Search","Optimización por gradiente","Optimización evolutiva","Búsqueda manual"],
+   e:"Inspirada en la evolución biológica. No suele encontrar el óptimo absoluto, pero sí uno de los mejores de forma eficiente."},
+  {cat:5, c:1, t:"¿Por qué la optimización por gradiente no se suele recomendar para buscar hiperparámetros?",
+   o:["Porque solo funciona con Random Forest","Porque la búsqueda no es suave ni convexa","Porque siempre encuentra el óptimo global, pero tarda demasiado","Porque no se puede aplicar en redes neuronales ni en modelos lineales"],
+   e:"Los hiperparámetros discretos crean superficies no lisas y la búsqueda suele ser no convexa: en el mejor caso se llega a un mínimo local."},
+  {cat:5, c:3, t:"¿Cuál de estas herramientas automatiza la selección de hiperparámetros (AutoML)?",
+   o:["Auto-Sklearn","AutoKeras","Google's AutoML","Todas las anteriores"],
+   e:"Las tres son herramientas de AutoML citadas en los apuntes."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

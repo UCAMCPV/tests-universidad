@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro 2 del parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro 2">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Primer parcial · estilo «Parcial 1 tipo A»</span>
+    <h1>Simulacro 2 del examen parcial</h1>
+    <p class="lead">20 preguntas conceptuales de respuesta única con tres opciones (a, b, c), como el Parcial 1 tipo A: definiciones de los apuntes y opciones «Todas son correctas» o «Ninguna es correcta». Las opciones van en orden fijo, como en el examen. Cada pregunta se corrige al responder y trae su explicación.</p>
+    <div class="note">Examen inventado a partir de los exámenes reales y de los apuntes de los Temas 1 a 2.4; no es un examen oficial. Antes de hacerlo, repasa la guía para el examen.</div>
+    <div class="actions-row"><a class="btn primary" href="ic-guia-examen.html">Guía para el examen</a><a class="btn" href="ic-simulacro-1.html">Simulacro 1</a><a class="btn" href="ic-simulacro-3.html">Simulacro 3</a><a class="btn" href="ic-simulacro-4.html">Simulacro 4</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Simulacro basado en el examen parcial, el Parcial 1 tipo A y los apuntes de Ingeniería del Conocimiento (Temas 1 a 2.4).</footer>
+</main>
+
+<script>
+/* Opciones en orden fijo (shuffle:false) y respuesta correcta indicada con c (0 = a, 1 = b, 2 = c, 3 = d). */
+window.TEST = {
+  id: "ic-simulacro-2",
+  shuffle: false,
+  cats: ["Tema 1 · IC y Sistemas Basados en Conocimiento","Tema 2 · IA, aprendizaje y entrenamiento","Tema 2.1 · Datos, EDA y preprocesamiento","Tema 2.2 · Modelos, activación y costo","Tema 2.3 · Evaluación y métricas","Tema 2.4 · Hiperparámetros"],
+  qs: [
+  {cat:0, c:0, t:"¿Cómo se identifica que un problema debe resolverse con un Sistema Basado en Conocimiento?",
+   o:["Es de naturaleza heurística, requiere razonamiento simbólico y necesita conocimiento experto","Es de naturaleza algorítmica y solo necesita recuperar la información guardada en bases de datos","Todas son correctas"],
+   e:"Rasgos de un SBC: heurístico, razonamiento simbólico, no se resuelve con métodos tradicionales y necesita conocimiento experto. Lo algorítmico y la mera consulta de bases de datos son propios de un SI."},
+  {cat:0, c:1, t:"Respecto a los datos, la información y el conocimiento…",
+   o:["Los datos son hechos ya procesados, agregados y presentados de forma útil para la empresa","El conocimiento mezcla experiencia, valores, información y know-how útil para la acción","Todas son correctas"],
+   e:"Datos = hechos sin procesar; información = datos procesados y útiles para alguien; conocimiento = experiencia + valores + información + know-how, útil para la acción. La primera opción describe la información, no los datos."},
+  {cat:0, c:2, t:"Un SBC que resuelve un problema nuevo revisando situaciones pasadas similares es de tipo…",
+   o:["De pizarra (blackboard)","De análisis de elegibilidad (preguntas guiadas)","Basado en casos (case-based)"],
+   e:"El razonamiento basado en casos compara con situaciones pasadas parecidas. Los de pizarra combinan varias fuentes de información y los de elegibilidad hacen preguntas guiadas hasta una respuesta descalificatoria."},
+  {cat:1, c:0, t:"¿Cuál es el orden de las etapas de un proyecto de IA?",
+   o:["Definir el problema → recopilar datos → preparar y preprocesar → construir el modelo → evaluar → desplegar","Recopilar datos → construir el modelo → definir el problema → preparar los datos → desplegar → evaluar","Construir el modelo → recopilar datos → evaluar → definir el problema → preparar los datos → desplegar el modelo"],
+   e:"Son seis etapas y siempre se empieza por definir el problema (objetivos organizacionales y de minería de datos). Se despliega solo después de evaluar."},
+  {cat:1, c:0, t:"Una neurona artificial…",
+   o:["Suma sus entradas multiplicadas por los pesos, añade el bias y aplica una activación","Calcula la media de sus entradas y la compara con un umbral fijo sin usar ningún peso","Ninguna es correcta"],
+   e:"y = f(w₁x₁ + w₂x₂ + … + b): función de transferencia (suma ponderada) y función de activación."},
+  {cat:1, c:2, t:"El aprendizaje por refuerzo…",
+   o:["Parte de cero, sin datos históricos etiquetados","Aprende mediante recompensas y penalizaciones, como en la psicología conductista","Todas son correctas"],
+   e:"Las dos afirmaciones son ciertas: el agente empieza sin datos y aprende de las recompensas y penalizaciones de sus acciones (navegación, conducción autónoma, juegos)."},
+  {cat:1, c:2, t:"El algoritmo de backpropagation…",
+   o:["Lleva los datos de la entrada a la salida","Actualiza los pesos multiplicando el learning rate por el error, sin calcular ningún gradiente","Calcula, con la regla de la cadena, el gradiente del coste respecto a cada peso"],
+   e:"Backpropagation propaga el error hacia atrás y calcula los gradientes; el descenso de gradiente los usa para actualizar los pesos. La primera opción describe el feed forward."},
+  {cat:1, c:0, t:"La regularización…",
+   o:["Penaliza la complejidad en la función de coste para que el modelo generalice mejor","Aumenta la complejidad del modelo para reducir el underfitting y ajustar más los datos","Ninguna es correcta"],
+   e:"J = MSE + α·C: la penalización por complejidad combate el overfitting."},
+  {cat:1, c:0, t:"Respecto a la regularización Lasso (L1) y Ridge (L2)…",
+   o:["Lasso puede llevar coeficientes a 0 y conviene si hay features irrelevantes; Ridge los hace más pequeños y conviene si están correlacionadas","Ridge puede llevar coeficientes a 0 y conviene si hay features irrelevantes; Lasso los hace más pequeños y conviene si están correlacionadas","Ninguna es correcta"],
+   e:"Lasso (L1) fuerza coeficientes a 0 (solución poco densa); Ridge (L2) los encoge. Si hay de los dos casos, ElasticNet combina ambas."},
+  {cat:1, c:0, t:"Si el error total de un modelo es Bias² + Varianza + Error irreducible, el punto óptimo de complejidad…",
+   o:["Es el que minimiza el error total, entre el underfitting y el overfitting","Es el que minimiza únicamente el bias, aunque la varianza aumente muchísimo","Es el que maximiza la varianza para que el modelo sea más flexible"],
+   e:"A la izquierda del óptimo hay underfitting (bias alto) y a la derecha overfitting (varianza alta). Se busca el equilibrio que minimiza el error total."},
+  {cat:2, c:1, t:"¿Cuáles son los problemas de calidad de datos más habituales?",
+   o:["Datos normalizados, escalados y codificados","Datos incompletos, ruidosos e incoherentes","Todas son correctas"],
+   e:"Incompletos (faltan valores), ruidosos (erróneos o atípicos) e incoherentes (registros en conflicto). Normalizar, codificar y discretizar son tareas de preprocesamiento, no problemas."},
+  {cat:2, c:0, t:"Con una normalización min-max, ¿qué valor toma x = 50 si el mínimo es 0 y el máximo, 200?",
+   o:["0,25","0,50","50"],
+   e:"x' = (x − mín) / (máx − mín) = (50 − 0) / (200 − 0) = 0,25."},
+  {cat:2, c:2, t:"Para tratar los valores faltantes de una variable numérica…",
+   o:["Solo se pueden eliminar los registros incompletos","Solo se pueden sustituir por un 0","Ninguna es correcta"],
+   e:"Hay muchas más opciones: eliminación, sustitución ficticia, media/mediana/moda, regresión o interpolación (series temporales). El «solo» hace falsas las dos primeras."},
+  {cat:2, c:1, t:"Las fuentes de datos libres (Kaggle, Google Datasets, UCI…)…",
+   o:["Están siempre anotadas, revisadas y con garantía de calidad para entrenar modelos","Son gratuitas, pero pueden no encajar o estar desactualizadas, y hay que vigilar licencias","Son las que define, configura y mantiene el propio administrador con sus puntos de contacto"],
+   e:"Son gratuitas pero genéricas: a menudo hay que compilar, curar, formatear y anotar a mano. Lo anotado y garantizado son las de pago; lo que mantiene el administrador, los recursos internos."},
+  {cat:3, c:1, t:"DBSCAN…",
+   o:["Necesita fijar de antemano el número de clústeres y asigna todos los puntos a alguno","Agrupa por densidad (radio ε y mínimo de puntos) y marca los aislados como ruido","Todas son correctas"],
+   e:"DBSCAN no necesita el número de clústeres: lo deduce de la densidad. El que exige fijar k es K-Means."},
+  {cat:3, c:2, t:"¿Cuáles son las tres puertas de una LSTM?",
+   o:["Convolución, pooling y salida","Entrada, oculta y salida","Olvido, entrada y salida"],
+   e:"Forget gate (qué se descarta), input gate (cuánta información nueva entra) y output gate (nuevo estado oculto y salida)."},
+  {cat:3, c:1, t:"¿Qué funciones de activación NO se recomiendan en las capas ocultas de redes profundas por el desvanecimiento de gradiente?",
+   o:["ReLU y Leaky ReLU","Sigmoide y tanh","Ninguna es correcta"],
+   e:"La sigmoide y la tanh saturan y su derivada se hace muy pequeña. En las capas ocultas de una CNN se usa ReLU (las RNN sí usan tanh y sigmoide internamente)."},
+  {cat:4, c:1, t:"Respecto a la validación cruzada…",
+   o:["Es el método con el que se aprende el modelo final que después se va a desplegar","Estima la capacidad de generalización; no es un método para aprender el modelo","Todas son correctas"],
+   e:"Los apuntes insisten: la validación cruzada estima la generalización (y ayuda a ajustar parámetros). Después se aprende el modelo con todo el entrenamiento y se evalúa con un test independiente."},
+  {cat:4, c:1, t:"Respecto a la precision y el recall…",
+   o:["La precision minimiza falsos negativos (detección de cáncer) y el recall, los falsos positivos (detección de spam)","La precision minimiza falsos positivos (detección de spam) y el recall, falsos negativos (detección de cáncer)","Todas son correctas"],
+   e:"Precision = TP/(TP+FP): importa no dar falsas alarmas. Recall = TP/(TP+FN): importa no dejar escapar positivos."},
+  {cat:5, c:2, t:"La optimización bayesiana de hiperparámetros…",
+   o:["Prueba todas las combinaciones de una cuadrícula","Genera poblaciones de configuraciones que se combinan y mutan generación tras generación","Usa un modelo probabilístico, actualizado en cada evaluación, para guiar la búsqueda"],
+   e:"La primera opción describe Grid Search y la segunda, la optimización evolutiva."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>
