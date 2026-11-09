@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro 5 del parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro 5">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Primer parcial · estilo «examen parcial»</span>
+    <h1>Simulacro 5 del examen parcial</h1>
+    <p class="lead">30 preguntas con cuatro opciones, como el examen parcial: casos con personajes, preguntas encadenadas sobre el mismo caso, cálculos rápidos y alguna «señala la falsa». Solo usa contenidos de los resúmenes de esta web. Las opciones van en orden fijo, como en el examen. Cada pregunta se corrige al responder y trae su explicación.</p>
+    <div class="note">Examen inventado a partir de los exámenes reales y de los apuntes de los Temas 1 a 2.4; no es un examen oficial. Antes de hacerlo, repasa la guía para el examen.</div>
+    <div class="actions-row"><a class="btn primary" href="ic-guia-examen.html">Guía para el examen</a><a class="btn" href="ic-simulacro-1.html">Simulacro 1</a><a class="btn" href="ic-simulacro-2.html">Simulacro 2</a><a class="btn" href="ic-simulacro-3.html">Simulacro 3</a><a class="btn" href="ic-simulacro-4.html">Simulacro 4</a><a class="btn" href="ic-simulacro-6.html">Simulacro 6</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Simulacro basado en el examen parcial, el Parcial 1 tipo A y los apuntes de Ingeniería del Conocimiento (Temas 1 a 2.4).</footer>
+</main>
+
+<script>
+/* Opciones en orden fijo (shuffle:false) y respuesta correcta indicada con c (0 = a, 1 = b, 2 = c, 3 = d). */
+window.TEST = {
+  id: "ic-simulacro-5",
+  shuffle: false,
+  cats: ["Tema 1 · IC y Sistemas Basados en Conocimiento","Tema 2 · IA, aprendizaje y entrenamiento","Tema 2.1 · Datos, EDA y preprocesamiento","Tema 2.2 · Modelos, activación y costo","Tema 2.3 · Evaluación y métricas","Tema 2.4 · Hiperparámetros"],
+  qs: [
+  {cat:1, c:2, t:"Bodegas «Uvaloca» quiere predecir si un barril saldrá bueno a partir de 8 mediciones químicas. Tiene datos de 600 barriles en una tabla. ¿Qué tipo de algoritmo le recomiendas?",
+   o:["Uno de Deep Learning","Uno de preprocesamiento de datos","Uno de Machine Learning","Ninguno de los anteriores"],
+   e:"Pocos datos tabulares y un problema sencillo → Machine Learning. El Deep Learning necesita gran cantidad de datos."},
+  {cat:1, c:0, t:"La consultora «Datazos» explica a un cliente la diferencia entre Machine Learning y Deep Learning. ¿Qué frase es correcta?",
+   o:["El DL usa redes neuronales multicapa y suele necesitar más datos que el ML","El ML trabaja con más datos que el DL y tiene muchas más capas","El DL usa algoritmos estadísticos y el ML, redes neuronales profundas","El ML y el DL son dos ramas independientes de la IA, sin ninguna relación entre ellas"],
+   e:"El DL es un subconjunto del ML que usa redes neuronales multicapa (métodos estocásticos), tiene muchas más capas y trabaja con conjuntos de datos más grandes."},
+  {cat:1, c:1, t:"La empresa de videojuegos «Pixelón» entrena a un personaje para que aprenda a superar niveles: gana puntos cuando avanza y los pierde cuando cae, sin ningún dato previo. ¿Qué tipo de aprendizaje usa?",
+   o:["Aprendizaje supervisado","Aprendizaje por refuerzo","Aprendizaje semi-supervisado","Aprendizaje por transferencia"],
+   e:"El agente empieza de cero y aprende con recompensas y penalizaciones: aprendizaje por refuerzo (juegos, navegación, conducción autónoma)."},
+  {cat:1, c:3, t:"El laboratorio «Biotron» tiene un modelo BERT ya entrenado con millones de textos y lo reentrena con 1.000 informes médicos para clasificarlos. ¿Qué tipo de aprendizaje utiliza?",
+   o:["Aprendizaje no supervisado","Aprendizaje por refuerzo con recompensas","Aprendizaje semi-supervisado con pocas etiquetas","Aprendizaje por transferencia"],
+   e:"Reentrenar en otro contexto un modelo ya entrenado (AlexNet, VGG16, ResNet50, BERT, GPT) es aprendizaje por transferencia: reduce mucho el tiempo de entrenamiento."},
+  {cat:2, c:0, t:"El gimnasio «Musculitos» quiere convertir la cuota mensual de sus socios en 4 tramos que tengan el mismo número de socios cada uno. ¿Qué técnica aplica?",
+   o:["Discretización de igual frecuencia","Discretización de mismo ancho","Codificación One-Hot de la cuota","Normalización min-max de cada cuota"],
+   e:"Igual frecuencia (igual alto) = N grupos con el mismo número de instancias. Mismo ancho = intervalos del mismo tamaño."},
+  {cat:2, c:1, t:"En los datos de «Musculitos» aparece el mismo socio con dos fechas de alta distintas. ¿Qué tipo de problema de calidad de datos es?",
+   o:["Datos incompletos","Datos incoherentes","Datos ruidosos","Datos normalizados de forma incorrecta"],
+   e:"Incoherentes = discrepancias o registros en conflicto. Incompletos = faltan valores; ruidosos = registros erróneos o atípicos."},
+  {cat:2, c:3, t:"La investigadora Rosa Datos quiere rellenar los valores faltantes de «peso» prediciéndolos con un modelo a partir de la altura y la edad. ¿Qué técnica de imputación usa?",
+   o:["Sustitución ficticia con un 0","Interpolación lineal en el tiempo","Sustitución por el valor más frecuente","Imputación por regresión"],
+   e:"Predecir el valor faltante con un modelo de regresión es la imputación por regresión. La interpolación es para numéricos y series temporales."},
+  {cat:2, c:2, t:"Para escalar los salarios, un analista mueve la coma decimal de todos los valores (25.000 → 2,5). ¿Qué técnica de normalización aplica?",
+   o:["Normalización min-max","Puntuación Z (Z-score)","Escalado decimal","Discretización de mismo ancho"],
+   e:"El escalado decimal mueve la coma decimal del valor del atributo. Min-max lleva a un intervalo como [0, 1] y Z-score resta la media y divide por la desviación."},
+  {cat:2, c:1, t:"Un hospital tiene 2 millones de registros y su ordenador no puede procesarlos todos, así que se queda con un subconjunto representativo. ¿Qué tarea de preprocesamiento realiza?",
+   o:["Limpieza de texto de los campos","Reducción de datos por muestreo de registros","Codificación categórica de los registros","Discretización de igual frecuencia de las variables"],
+   e:"La reducción de datos muestrea registros (o atributos) para manejar los datos con más facilidad."},
+  {cat:1, c:0, t:"El becario Gradientino dice que la backpropagation y el descenso de gradiente son lo mismo. ¿Qué le responderías?",
+   o:["Backpropagation calcula los gradientes y el descenso de gradiente los usa para actualizar los pesos","Que tiene razón: son dos nombres para el mismo algoritmo","El descenso de gradiente calcula los gradientes con la regla de la cadena y la backpropagation actualiza los pesos","Ninguno de los dos interviene en el entrenamiento"],
+   e:"Backpropagation propaga el error hacia atrás y calcula los gradientes con la regla de la cadena; el descenso de gradiente los usa para ajustar los pesos y minimizar el coste."},
+  {cat:1, c:2, t:"La panadería «Migas» entrena un modelo para predecir cuántas barras venderá cada día. Obtiene un error del 4 % en entrenamiento y del 5 % en validación. ¿Hay algún problema?",
+   o:["Está teniendo sobreajuste (overfitting)","Está teniendo bajo ajuste (underfitting)","Está entrenando correctamente","Algo falla: el error de validación nunca puede superar al de entrenamiento"],
+   e:"Error bajo en entrenamiento y parecido en validación: buen ajuste."},
+  {cat:1, c:3, t:"En otro modelo de «Migas», el error de entrenamiento sigue bajando en cada época, pero a partir de la época 30 el de validación empieza a subir. ¿Qué ocurre?",
+   o:["Tiene bajo ajuste y necesita entrenar más épocas","Ha alcanzado el desvanecimiento de gradiente","Está entrenando perfectamente y debe seguir más épocas","Empieza a sobreajustar: conviene usar menos épocas"],
+   e:"A la derecha del punto óptimo el error de test vuelve a subir mientras el de entrenamiento sigue bajando: overfitting. Una solución es usar menos épocas."},
+  {cat:3, c:1, t:"El banco «Pillín» quiere clasificar transacciones como fraudulentas o legítimas a partir de una tabla de datos, y ha elegido un Random Forest. ¿Ha hecho bien?",
+   o:["No, Random Forest solo sirve para problemas de regresión","Sí, Random Forest sirve para clasificación y regresión","No, Random Forest solo sirve para agrupamiento","No, debería haber usado una regresión lineal"],
+   e:"Random Forest es un ensemble de árboles de decisión válido para clasificación (por votación) y regresión (por promedio)."},
+  {cat:3, c:0, t:"¿Qué hiperparámetro del Random Forest de «Pillín» limita la profundidad de los árboles para evitar el sobreajuste?",
+   o:["max_depth","n_estimators","n_neighbors","epsilon"],
+   e:"max_depth fija la profundidad máxima. n_estimators es el número de árboles, n_neighbors es de KNN y epsilon, de la SVM de regresión."},
+  {cat:3, c:2, t:"La app de teclado «Escribín» quiere predecir la siguiente palabra que va a escribir un usuario a partir de las palabras anteriores. ¿Qué modelo encaja mejor?",
+   o:["Una red convolucional (CNN)","K-Means con un clúster por palabra","Una LSTM o una GRU","Una regresión lineal"],
+   e:"El texto es una secuencia en la que importa el orden: redes recurrentes (LSTM o GRU), usadas en NLP."},
+  {cat:3, c:3, t:"En «Escribín», el modelo debe elegir una sola palabra entre 10.000 posibles. ¿Qué función de activación pone en la capa de salida?",
+   o:["Sigmoide en una única neurona","Lineal","ReLU","Softmax"],
+   e:"Una clase entre muchas excluyentes: clasificación multiclase → softmax."},
+  {cat:3, c:1, t:"Las 10.000 palabras de «Escribín» están codificadas como números enteros, sin one-hot. ¿Qué función de coste conviene?",
+   o:["Binary Cross-Entropy con una sola neurona","Sparse Multiclass Cross-Entropy","Mean Squared Error","Hinge Loss"],
+   e:"La versión sparse hace el mismo cálculo sin one-hot, con objetivos enteros, y evita vectores enormes cuando hay muchas categorías."},
+  {cat:3, c:0, t:"La agencia de viajes «Maletón» quiere generar imágenes nuevas de destinos parecidas a las de su catálogo. ¿Qué modelo de los apuntes sirve para generar datos similares a los de entrada?",
+   o:["Un autoencoder variacional","Un KNN","Un Random Forest","Una regresión logística multiclase"],
+   e:"Una vez entrenado, el codificador de un autoencoder reduce dimensionalidad o, en los autoencoders variacionales, genera datos similares a los de entrada."},
+  {cat:3, c:2, t:"Señala la respuesta FALSA sobre DBSCAN:",
+   o:["Usa un radio ε y un número mínimo de puntos","Marca como ruido los puntos que no cumplen la densidad","Necesita saber el número de clústeres","Encuentra clústeres de formas y tamaños irregulares"],
+   e:"Es falsa: DBSCAN no fija el número de clústeres, lo deduce de la densidad. El que lo necesita es K-Means."},
+  {cat:3, c:3, t:"Un equipo de visión por computador entrena una red muy profunda, de más de 40 capas, y busca una activación suave y no monótona que iguale o supere a ReLU. ¿Cuál indican los apuntes?",
+   o:["Sigmoide","Lineal","Softmax en todas las capas","Swish"],
+   e:"Swish es suave y no monótona; iguala o supera a ReLU en redes profundas y se usa en modelos de más de 40 capas."},
+  {cat:4, c:0, t:"El filtro de spam «Correíto» obtiene TP = 45, FP = 5, FN = 15 y TN = 35. ¿Cuál es su precision?",
+   o:["0,90","0,75","0,80","0,82"],
+   e:"Precision = TP / (TP + FP) = 45 / 50 = 0,90. La accuracy es 80/100 = 0,80 y el recall, 45/60 = 0,75."},
+  {cat:4, c:1, t:"Con la misma matriz de «Correíto» (TP = 45, FP = 5, FN = 15, TN = 35), ¿cuál es su recall?",
+   o:["0,90","0,75","0,80","0,82"],
+   e:"Recall = TP / (TP + FN) = 45 / 60 = 0,75."},
+  {cat:4, c:2, t:"«Migas» compara dos modelos de regresión. El A obtiene un RMSE de 12 barras y un R² de 0,81; el B, un RMSE de 20 barras y un R² de 0,64. ¿Cuál debe escoger?",
+   o:["El B, porque su RMSE es mayor","Cualquiera, porque las dos métricas se contradicen entre sí","El A, porque tiene menos error y explica más variabilidad","Ninguno, porque el R² debería ser negativo"],
+   e:"Menor RMSE = menos error y R² más cercano a 1 = explica más variabilidad. Las dos métricas apuntan al A."},
+  {cat:4, c:3, t:"Un hospital segmenta tumores en imágenes y quiere medir cuánto se superpone la zona que predice el modelo con la zona real. ¿Qué métrica usa?",
+   o:["MAPE","R²","Índice silueta de los píxeles del tumor","Jaccard (Intersection over Union)"],
+   e:"Jaccard (IoU) = |A ∩ B| / |A ∪ B|: mide la superposición de conjuntos, útil en clasificación y segmentación."},
+  {cat:4, c:1, t:"Un modelo de clasificación devuelve probabilidades y el equipo quiere una métrica logarítmica que mida la discrepancia entre esas probabilidades y los valores reales. ¿Cuál?",
+   o:["Accuracy","Log Loss","Índice silueta","MAE"],
+   e:"Log Loss mide de forma logarítmica la discrepancia entre predicciones y valores reales; es muy importante con modelos de probabilidad."},
+  {cat:4, c:2, t:"Una empresa ha agrupado a sus clientes y quiere comparar, para cada cliente, su distancia media al propio clúster con la distancia media al clúster vecino más próximo. ¿Qué métrica usa?",
+   o:["SSB (Sum of Squared Between)","ARI (Adjusted Rand Index)","Índice silueta","R²"],
+   e:"El Silhouette Score compara a (distancia media al propio clúster) con b (distancia media al vecino más próximo). Va de −1 a 1."},
+  {cat:4, c:3, t:"Un analista con 50.000 registros quiere una validación cruzada con particiones aleatorias que le permita hacer subsampling. ¿Qué variante elige?",
+   o:["Leave One Out","Time Series Cross Validation","Stratified K-Fold estratificado por clases","Monte Carlo Cross Validation"],
+   e:"Monte Carlo combina la reorganización aleatoria de los datos con la validación cruzada y permite subsampling, útil con muchos datos. LOOCV sería carísimo con 50.000."},
+  {cat:4, c:0, t:"Un científico de datos reparte su dataset con un holdout 40:20:40 (entrenamiento, validación y prueba). ¿Ha cometido algún error?",
+   o:["No, 40:20:40 es uno de los repartos habituales del holdout","Sí, el test nunca puede tener el mismo tamaño que el entrenamiento","Sí, el holdout siempre debe ser 80:10:10","Sí, con un holdout no se puede tener conjunto de validación"],
+   e:"Los apuntes citan 60:20:20, 50:20:30 y 40:20:40 como porcentajes habituales del holdout."},
+  {cat:5, c:1, t:"El analista Bucles Pérez prueba distintos valores de k para un KNN con bucles for anidados, en un rango que él mismo decide. ¿Qué técnica de hiperparametrización usa?",
+   o:["Optimización bayesiana","Hiperparametrización manual","Optimización evolutiva por generaciones","AutoML"],
+   e:"Los apuntes describen el ajuste manual como ensayo y error o bucles for anidados en un rango delimitado por el experto."},
+  {cat:5, c:2, t:"En el KNN de Bucles Pérez, ¿el número de vecinos k es un parámetro o un hiperparámetro?",
+   o:["Un parámetro, porque el modelo lo aprende de los datos al entrenar","Un parámetro, igual que los pesos de una red neuronal","Un hiperparámetro: se fija fuera del entrenamiento","Ninguno de los dos: es una métrica de evaluación"],
+   e:"Los hiperparámetros son configuraciones externas que no se aprenden del dataset. Los pesos de una red, en cambio, son parámetros."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

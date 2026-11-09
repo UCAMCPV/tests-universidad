@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro 6 del parcial · Ingeniería del Conocimiento</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="IC · Simulacro 6">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Ingeniería del Conocimiento · Primer parcial · estilo «examen parcial»</span>
+    <h1>Simulacro 6 del examen parcial</h1>
+    <p class="lead">30 preguntas con cuatro opciones, como el examen parcial: casos con personajes, preguntas encadenadas sobre el mismo caso, cálculos rápidos y alguna «señala la falsa». Solo usa contenidos de los resúmenes de esta web. Las opciones van en orden fijo, como en el examen. Cada pregunta se corrige al responder y trae su explicación.</p>
+    <div class="note">Examen inventado a partir de los exámenes reales y de los apuntes de los Temas 1 a 2.4; no es un examen oficial. Antes de hacerlo, repasa la guía para el examen.</div>
+    <div class="actions-row"><a class="btn primary" href="ic-guia-examen.html">Guía para el examen</a><a class="btn" href="ic-simulacro-1.html">Simulacro 1</a><a class="btn" href="ic-simulacro-2.html">Simulacro 2</a><a class="btn" href="ic-simulacro-3.html">Simulacro 3</a><a class="btn" href="ic-simulacro-4.html">Simulacro 4</a><a class="btn" href="ic-simulacro-5.html">Simulacro 5</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Simulacro basado en el examen parcial, el Parcial 1 tipo A y los apuntes de Ingeniería del Conocimiento (Temas 1 a 2.4).</footer>
+</main>
+
+<script>
+/* Opciones en orden fijo (shuffle:false) y respuesta correcta indicada con c (0 = a, 1 = b, 2 = c, 3 = d). */
+window.TEST = {
+  id: "ic-simulacro-6",
+  shuffle: false,
+  cats: ["Tema 1 · IC y Sistemas Basados en Conocimiento","Tema 2 · IA, aprendizaje y entrenamiento","Tema 2.1 · Datos, EDA y preprocesamiento","Tema 2.2 · Modelos, activación y costo","Tema 2.3 · Evaluación y métricas","Tema 2.4 · Hiperparámetros"],
+  qs: [
+  {cat:1, c:2, t:"La plataforma «Pixelandia» quiere detectar automáticamente vídeos manipulados (deepfakes) entre millones de vídeos subidos cada día. ¿Qué tipo de algoritmo recomiendas?",
+   o:["Uno de Machine Learning con una regresión lineal","Uno de preprocesamiento de datos","Uno de Deep Learning","Ninguno de los anteriores"],
+   e:"Vídeo y enorme volumen de datos: problema complejo y no tabular → Deep Learning."},
+  {cat:1, c:3, t:"¿Qué ejemplo corresponde a cada concepto según la tabla de los apuntes (IA, Machine Learning y Deep Learning)?",
+   o:["IA: CNN; ML: sistema experto; DL: SVM","IA: SVM; ML: CNN; DL: un sistema experto","IA: CNN; ML: SVM; DL: sistema experto","IA: sistema experto; ML: SVM; DL: CNN"],
+   e:"Según la tabla: la IA incluye reglas y búsqueda (sistema experto), el ML algoritmos estadísticos (SVM, regresión, KNN) y el DL redes profundas (CNN, LSTM, autoencoder)."},
+  {cat:1, c:0, t:"La app de música «Notón» quiere crear canciones nuevas parecidas a las de su catálogo, que no tiene ninguna etiqueta. ¿Qué tipo de aprendizaje encaja?",
+   o:["Aprendizaje no supervisado","Aprendizaje supervisado","Aprendizaje por refuerzo","Aprendizaje por transferencia"],
+   e:"Sin etiquetas: no supervisado. Los apuntes incluyen en él el clustering, la reducción de dimensionalidad y los modelos generativos (datos sintéticos, imágenes nuevas)."},
+  {cat:1, c:1, t:"La empresa de mapas «Rutalia» tiene millones de trazas GPS, pero solo unas pocas tienen etiquetado el carril por el que iba el coche. ¿Qué tipo de aprendizaje encaja mejor?",
+   o:["Aprendizaje por refuerzo con recompensas","Aprendizaje semi-supervisado","Aprendizaje supervisado puro","Aprendizaje por transferencia únicamente"],
+   e:"Algunos datos etiquetados y muchos sin etiquetar: semi-supervisado. La detección de carriles en GPS es precisamente un ejemplo de los apuntes."},
+  {cat:2, c:0, t:"En un dataset de «Rutalia», el tiempo de un trayecto vale 30 s, con un mínimo de 10 s y un máximo de 50 s. ¿Qué valor toma tras una normalización min-max?",
+   o:["0,5","0,6","0,3","30"],
+   e:"x' = (x − mín) / (máx − mín) = (30 − 10) / (50 − 10) = 20 / 40 = 0,5."},
+  {cat:2, c:1, t:"Antes de entrenar un clasificador de fotos de setas, la micóloga Amanita revisa si hay suficientes fotos de cada especie y con variedad para generalizar. ¿Qué está haciendo?",
+   o:["Una codificación categórica de los nombres de cada especie","Una pregunta del EDA propia de visión artificial","Una limpieza de texto de los nombres","Una discretización de igual frecuencia"],
+   e:"El EDA se pregunta, en visión artificial, si hay muestras suficientes de cada clase y variedad para generalizar."},
+  {cat:2, c:3, t:"En la columna categórica «profesión» faltan valores y el analista decide rellenarlos con el texto «Desconocido». ¿Qué técnica de limpieza aplica?",
+   o:["Imputación por regresión","Interpolación polinomial","Eliminación de los registros","Sustitución ficticia"],
+   e:"La sustitución ficticia reemplaza el valor faltante por un valor ficticio: «Desconocido» en categorías o 0 en numéricos."},
+  {cat:2, c:2, t:"Durante el EDA de un modelo que concederá becas, se descubre que casi no hay ejemplos de alumnos de zonas rurales. ¿Qué riesgo señala el EDA?",
+   o:["Que los datos tengan demasiados valores ruidosos o incoherentes","Que haya que discretizar todas las variables","Que haya sesgo y el modelo discrimine a esa minoría","Que el modelo necesite más capas convolucionales"],
+   e:"Uno de los puntos del EDA es el sesgo: no incluir bien a las clases minoritarias puede hacer que el modelo las discrimine."},
+  {cat:2, c:3, t:"La red social «Chismes» quiere entrenar un modelo con los comentarios que escriben sus usuarios. ¿Qué tipo de datos son?",
+   o:["Texto estructurado (tabular)","Datos de audio","Datos de vídeo","Texto no estructurado"],
+   e:"Los comentarios de redes sociales, correos o documentos manuscritos son texto no estructurado; las bases de datos y hojas de cálculo, estructurado."},
+  {cat:1, c:0, t:"La pérdida de un modelo apenas baja desde hace 50 épocas y seguir entrenando cuesta más de lo que aporta. ¿Qué concepto describe esta situación?",
+   o:["La convergencia del entrenamiento","El desvanecimiento de gradiente","El sobreajuste del modelo","El bajo ajuste por falta de datos de entrenamiento"],
+   e:"La convergencia es el punto a partir del cual el error apenas baja y el coste de seguir entrenando supera el beneficio."},
+  {cat:1, c:1, t:"Un modelo con un Dropout muy alto muestra un error alto tanto en entrenamiento como en validación. ¿Qué debería hacerse?",
+   o:["Añadir todavía más Dropout y regularización","Quitar o reducir el Dropout y dar más capacidad","Reducir el número de épocas de entrenamiento del modelo","Nada: con Dropout el error alto es normal"],
+   e:"Error alto en ambos conjuntos = underfitting. Entre sus soluciones: más complejidad, más épocas y quitar o reducir el Dropout."},
+  {cat:1, c:2, t:"Un modelo tiene muchísimas features: unas parecen irrelevantes y otras están muy correlacionadas entre sí. ¿Qué regularización recomiendan los apuntes?",
+   o:["Lasso (L1), porque elimina las irrelevantes","Ridge (L2)","ElasticNet (L1 + L2)","Ninguna, porque la regularización empeora el sobreajuste"],
+   e:"ElasticNet combina Lasso y Ridge con un parámetro r: útil con muchas features, unas irrelevantes (L1) y otras correlacionadas (L2)."},
+  {cat:3, c:3, t:"Un hospital quiere predecir el nivel de glucosa de un paciente (un número) a partir de 10 variables clínicas, y ha elegido un KNN. ¿Ha hecho bien?",
+   o:["No, KNN solo sirve para clasificación","No, KNN es un algoritmo de agrupamiento","No, debería usar una regresión logística multiclase","Sí, KNN promedia los valores de sus k vecinos"],
+   e:"KNN sirve para clasificación (clase mayoritaria de los vecinos) y regresión (promedio o ponderación de sus valores)."},
+  {cat:3, c:1, t:"En el KNN del hospital, quieren que los vecinos más cercanos pesen más que los lejanos. ¿Qué valor del hiperparámetro weights deben usar?",
+   o:["uniform","distance","brute","manhattan"],
+   e:"weights = distance pondera por el inverso de la distancia; uniform da a todos la misma contribución. brute es un algoritmo y manhattan, una métrica."},
+  {cat:3, c:0, t:"Un analista sube mucho el hiperparámetro C de su SVM. ¿Qué efecto tiene, según los apuntes?",
+   o:["La frontera de decisión se vuelve más estricta","La frontera de decisión se vuelve más suave","Cambia el kernel de lineal a polinómico","Aumenta el número de vecinos considerados en la frontera"],
+   e:"C regula el equilibrio entre margen amplio y errores: un valor pequeño da una frontera más suave y uno grande, más estricta."},
+  {cat:3, c:2, t:"Señala la respuesta FALSA sobre la regresión logística:",
+   o:["Estima la probabilidad de pertenecer a una clase","Mapea una combinación lineal de características a un valor entre 0 y 1","Predice valores numéricos continuos, como un precio","Si la probabilidad supera un umbral (p. ej. 0,5), predice una clase"],
+   e:"Es falsa: pese a su nombre, la regresión logística es un clasificador binario. Para predecir un precio se usa una regresión lineal."},
+  {cat:3, c:1, t:"¿Qué función de activación usan habitualmente las capas ocultas de una red recurrente como la LSTM?",
+   o:["ReLU, como en las CNN","Tanh y/o sigmoide","Softmax en cada capa","Ninguna, porque no tienen activación"],
+   e:"Según los apuntes: capas ocultas de una CNN → ReLU; de una RNN → tanh y/o sigmoide (la capa LSTM usa tanh y sus puertas, sigmoide)."},
+  {cat:3, c:3, t:"Muchas neuronas ReLU de una red se quedan a cero porque reciben valores negativos. ¿Qué variante maneja esos negativos con max(0,01x, x)?",
+   o:["Sigmoide","Softmax","Lineal en todas las capas","Leaky ReLU"],
+   e:"Leaky ReLU es la mejora de ReLU que deja pasar una pequeña parte de los valores negativos."},
+  {cat:3, c:0, t:"Un equipo entrena un modelo generativo probabilístico y quiere medir cuánto difiere la distribución que genera de una distribución de referencia. ¿Qué función de coste usa?",
+   o:["Kullback-Leibler Divergence","Mean Absolute Error","Hinge Loss","Squared Hinge Loss (pérdida bisagra al cuadrado)"],
+   e:"La divergencia de Kullback-Leibler mide cuánto difiere una distribución de otra (0 = idénticas); se usa en modelos generativos probabilísticos."},
+  {cat:3, c:2, t:"Un equipo quiere una red recurrente para series temporales, pero más simple que una LSTM. ¿Cuál le recomiendas?",
+   o:["Una CNN","Un autoencoder","Una GRU","Un perceptrón multicapa sin capas ocultas"],
+   e:"La GRU es una variante de RNN más simple que la LSTM pero efectiva en secuencias (NLP y series temporales)."},
+  {cat:4, c:1, t:"Un modelo de cribado de cáncer obtiene TP = 18, FN = 2, FP = 30 y TN = 150. ¿Cuál es su recall?",
+   o:["0,38","0,90","0,84","0,53"],
+   e:"Recall = TP / (TP + FN) = 18 / 20 = 0,90. La precision es 18/48 ≈ 0,38 y la accuracy, 168/200 = 0,84."},
+  {cat:4, c:0, t:"Con esa matriz (recall 0,90 y precision ≈ 0,38), ¿es un buen modelo para el cribado de cáncer?",
+   o:["Sí, se le escapan pocos enfermos aunque dé falsas alarmas","No, porque la accuracy es la única métrica que importa","No, porque una precision baja siempre invalida un modelo médico","No se puede saber sin calcular el R²"],
+   e:"En el cáncer interesa minimizar los falsos negativos (recall alto), aunque haya falsos positivos que obliguen a hacer más pruebas."},
+  {cat:4, c:3, t:"¿Qué métrica de regresión penaliza más los errores grandes?",
+   o:["MAE","MAPE","Índice silueta","RMSE"],
+   e:"El RMSE (como el MSE) eleva los errores al cuadrado, así que castiga más los errores grandes que el MAE."},
+  {cat:4, c:2, t:"Un modelo de regresión obtiene un R² de 0,95. ¿Qué significa?",
+   o:["Que acierta el 95 % de las clases","Que su error medio es del 95 %","Que explica el 95 % de la variabilidad","Que el 95 % de los puntos están bien agrupados"],
+   e:"El R² es la proporción de la variabilidad de la variable dependiente explicada por el modelo; 1 sería un ajuste perfecto."},
+  {cat:4, c:1, t:"Una empresa ha agrupado a sus clientes con K-Means y no conoce ninguna etiqueta real. ¿Qué métricas puede usar?",
+   o:["ARI, porque es de validación externa","SSW, SSB y silueta","Accuracy y F1 Score de cada clúster","R² y MSE de los centroides"],
+   e:"Sin etiquetas solo sirve la validación interna: SSW, SSB y silueta. El ARI (validación externa) necesita conocer las etiquetas reales."},
+  {cat:4, c:3, t:"Un clasificador distingue tres especies de pingüinos. ¿Puede evaluarse con una matriz de confusión?",
+   o:["No, la matriz de confusión solo sirve para problemas binarios","No, en multiclase solo se puede usar el R²","Solo si antes se agrupan las especies con K-Means","Sí, la matriz de confusión puede ser binaria o multiclase"],
+   e:"Los apuntes indican que la matriz de confusión puede ser binaria o multiclase."},
+  {cat:4, c:0, t:"¿Cuál es la principal desventaja de la validación cruzada?",
+   o:["El tiempo de cómputo que requiere","Que no sirve con pocos datos","Que cada dato nunca llega a estar en el test","Que no permite medir la varianza entre conjuntos de prueba"],
+   e:"Sus ventajas: buena con pocos datos, cada dato aparece una vez en test y permite medir la varianza. Su desventaja: el tiempo de cómputo."},
+  {cat:4, c:2, t:"¿Qué problemas del holdout contrarresta la validación cruzada, según los apuntes?",
+   o:["Que haga falta un conjunto de test independiente","Que las métricas de regresión no funcionen bien","Que falten datos para separar o el entrenamiento quede con los «fáciles»","Que el modelo no pueda ajustar ningún hiperparámetro durante el entrenamiento"],
+   e:"El holdout puede quedarse sin datos suficientes para separar o dejar en entrenamiento solo los datos «fáciles» (o al revés); la validación cruzada contrarresta ambos."},
+  {cat:5, c:1, t:"¿Qué ventaja tiene el Random Search frente al Grid Search?",
+   o:["Evalúa todas las combinaciones posibles de la cuadrícula","Es más eficiente y a menudo da resultados iguales o mejores","Usa un modelo probabilístico que se actualiza en cada una de las evaluaciones","Combina y muta poblaciones de configuraciones"],
+   e:"Random Search elige combinaciones aleatorias: es más eficiente que la cuadrícula y a menudo igual o mejor. Las otras opciones describen Grid Search, la bayesiana y la evolutiva."},
+  {cat:5, c:0, t:"En una red neuronal, ¿cuál de estos elementos NO es un hiperparámetro?",
+   o:["Los pesos de las conexiones","El learning rate","El número de capas ocultas de la red","El batch size"],
+   e:"Los pesos son parámetros: se ajustan durante el entrenamiento. Learning rate, número de capas y batch size son hiperparámetros."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>
