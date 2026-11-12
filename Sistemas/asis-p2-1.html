@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test ASIS Práctica P2-1 · Introducción a Docker</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Práctica P2-1 · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Sistemas · Tema 2 · Práctica P2-1</span>
+    <h1>Test: Introducción a Docker</h1>
+    <p class="lead">35 preguntas de tres opciones. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="asis-p2-1-resumen.html">Ver el resumen</a><a class="btn" href="../index.html">Inicio</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en «Práctica P2-1 – Introducción a Docker» (Administración de Sistemas, Juan Morales García).</footer>
+</main>
+
+<script>
+/* La opción CORRECTA es siempre la primera (o[0]); el motor las baraja al mostrarlas. Tres opciones por pregunta: dos casi idénticas, y la correcta nunca es la más larga. */
+window.TEST = {
+  id: "asis-p2-1",
+  cats: [
+    "1. Primeros comandos",
+    "2. Ciclo de vida de un contenedor",
+    "3. Entrar en un contenedor",
+    "4. Imágenes y capas",
+    "5. Dockerfile",
+    "6. Ejercicios"
+  ],
+  qs: [
+  {cat:0, t:"Comando que muestra la versión del cliente y la del servidor (daemon) de Docker:",
+   o:["<code>docker version</code>","<code>docker --version</code>","<code>docker info</code>"],
+   e:"<code>docker version</code> muestra los bloques Client y Server. <code>docker --version</code> solo imprime una línea con la versión del cliente, y <code>docker info</code> da detalles de configuración."},
+  {cat:0, t:"¿Qué muestra <code>docker info</code>?",
+   o:["Detalles de la configuración de Docker","Detalles de la configuración de un contenedor","La lista de comandos disponibles"],
+   e:"docker info resume la configuración del sistema Docker (nº de contenedores e imágenes, drivers…). La de un contenedor concreto se ve con <code>docker container inspect</code>, y la lista de comandos ejecutando <code>docker</code> a secas."},
+  {cat:0, t:"Si se ejecuta <code>docker</code> sin ningún argumento:",
+   o:["Muestra la lista de comandos disponibles","Arranca el demonio de Docker en primer plano","Arranca el demonio de Docker en segundo plano"],
+   e:"Sin subcomando, docker imprime la ayuda con los comandos que tienes disponibles. No arranca nada."},
+  {cat:1, t:"En <code>docker container run --publish 80:80 --detach nginx</code>, <code>--detach</code> hace que:",
+   o:["El contenedor se ejecute en segundo plano","El contenedor se ejecute en primer plano, mostrando su log","El puerto 80 quede abierto solo dentro del contenedor"],
+   e:"--detach (-d) lanza el contenedor en segundo plano y devuelve la terminal. Sin él, el contenedor se queda en primer plano mostrando su salida."},
+  {cat:1, t:"En <code>--publish 80:80</code>, el primer 80 es:",
+   o:["El puerto del host y el segundo el del contenedor","El puerto del contenedor y el segundo el del host","El número máximo de conexiones admitidas por el host"],
+   e:"El formato es host:contenedor. Con <code>-p 8080:80</code>, el puerto 8080 del host llevaría al 80 del contenedor."},
+  {cat:1, t:"Paso 7: tras <code>docker container stop &lt;id&gt;</code> del único contenedor creado, ¿qué muestra <code>docker container ls</code>?",
+   o:["Nada, aunque el contenedor sigue existiendo","El contenedor, en la lista con el estado Exited","El contenedor, en la lista con el estado Paused"],
+   e:"<code>ls</code> sin opciones solo lista los contenedores en ejecución, así que no sale nada. El contenedor sigue existiendo y aparece con <code>ls -a</code> como Exited."},
+  {cat:1, t:"Comando que lista también los contenedores detenidos:",
+   o:["<code>docker container ls -a</code>","<code>docker container ls --quiet</code>","<code>docker image ls -a</code>"],
+   e:"<code>-a</code> (<code>--all</code>) añade los detenidos; <code>--quiet</code> solo muestra los ID de los que están en ejecución y <code>docker image ls</code> lista imágenes."},
+  {cat:1, t:"En <code>docker container run … --name webhost nginx</code>, <code>--name webhost</code> sirve para:",
+   o:["Referirse al contenedor sin usar su ID","Cambiar el hostname interno del contenedor","Cambiar el hostname interno de la imagen"],
+   e:"--name pone nombre al contenedor (si no, Docker inventa uno aleatorio) para usarlo en logs, top, stop, rm… El hostname es otra cosa (opción --hostname)."},
+  {cat:1, t:"Paso 10 del boletín: tras lanzar webhost, ¿cuántos contenedores muestra <code>docker container ls -a</code>?",
+   o:["Dos: el primer nginx, detenido, y webhost","Uno: webhost, porque el primero se paró","Dos: el primer nginx y webhost, ambos en marcha"],
+   e:"El primero solo se detuvo (sigue existiendo, Exited) y webhost está en marcha: <code>ls -a</code> muestra los dos. Además, dos contenedores no podrían publicar a la vez el puerto 80 del host."},
+  {cat:1, t:"Para ver el log de un contenedor que se ejecuta en segundo plano:",
+   o:["<code>docker container logs webhost</code>","<code>docker container top webhost</code>","<code>docker container stats webhost</code>"],
+   e:"logs muestra la salida del contenedor (los accesos de nginx); top, sus procesos; stats, el consumo de recursos."},
+  {cat:1, t:"<code>docker container top webhost</code> muestra:",
+   o:["Los procesos que corren dentro del contenedor","El consumo en vivo de CPU y memoria del contenedor","El consumo en vivo de CPU y red de todos ellos"],
+   e:"top lista los procesos del contenedor, como el comando top o ps. El consumo de recursos en vivo es <code>docker container stats</code>."},
+  {cat:1, t:"<code>docker container stats</code> sirve para:",
+   o:["Monitorizar en vivo el consumo de recursos","Monitorizar en vivo los procesos de un contenedor","Ver el historial de capas de una imagen"],
+   e:"stats muestra en tiempo real CPU, memoria, red y disco de los contenedores en marcha. Los procesos se ven con top y las capas con <code>docker image history</code>."},
+  {cat:1, t:"Intentas <code>docker container rm</code> sobre un contenedor que está en ejecución:",
+   o:["No se puede: hay que pararlo o usar <code>rm -f</code>","No se puede: hay que pararlo y borrar su imagen","Se borra, pero su imagen sigue en uso hasta reiniciar"],
+   e:"Un contenedor en marcha no se borra con rm: primero stop, o directamente <code>rm -f</code> (forzar). La imagen no tiene nada que ver."},
+  {cat:1, t:"Para borrar varios contenedores con un solo comando:",
+   o:["<code>docker container rm id1 id2 id3</code>","<code>docker container rm id1,id2,id3</code>","<code>docker image rm id1 id2 id3</code>"],
+   e:"rm admite varios ID o nombres separados por espacios en blanco. <code>docker image rm</code> borraría imágenes, no contenedores."},
+  {cat:2, t:"En <code>docker container run -it --name proxy nginx bash</code>, <code>-it</code> significa:",
+   o:["<code>-i</code> interactivo y <code>-t</code> terminal (pseudo-TTY)","<code>-i</code> interactivo y <code>-t</code> etiqueta de la imagen (tag)","<code>-i</code> ID del contenedor y <code>-t</code> tipo de imagen"],
+   e:"-i mantiene abierta la entrada estándar y -t asigna una terminal: juntos dan una shell interactiva. En <code>docker image build</code>, en cambio, -t es la etiqueta."},
+  {cat:2, t:"En <code>docker container run -it --name proxy nginx bash</code>, el argumento final <code>bash</code>:",
+   o:["Sustituye al comando por defecto de la imagen nginx","Se ejecuta tras el comando por defecto de la imagen nginx","Es el nombre que se da al nuevo contenedor"],
+   e:"Lo que va tras la imagen reemplaza a su comando por defecto: se abre bash y el servidor nginx no llega a arrancar. El nombre lo da --name (proxy)."},
+  {cat:2, t:"¿Qué ocurre al escribir <code>exit</code> en esa bash del contenedor proxy?",
+   o:["Se sale y el contenedor se detiene","Se sale y el contenedor sigue en marcha","Se sale y el contenedor se borra solo"],
+   e:"bash es el proceso principal del contenedor: al terminar, el contenedor se para. No se borra (eso requeriría rm, o haberlo lanzado con --rm)."},
+  {cat:2, t:"<code>docker container run -it --name ubuntu ubuntu</code> abre directamente una shell porque:",
+   o:["La imagen ubuntu arranca bash por defecto","La opción -it abre bash en cualquier imagen","La opción -it abre sh en cualquier imagen"],
+   e:"La imagen ubuntu arranca bash si no se indica otro comando; -it solo hace que esa shell sea interactiva, y --name solo nombra el contenedor."},
+  {cat:2, t:"Dentro del contenedor ubuntu, para instalar curl se ejecuta:",
+   o:["<code>apt-get update</code> y después <code>apt-get install curl -y</code>","<code>apt-get upgrade</code> y después <code>apt-get install curl -y</code>","<code>docker image pull curl</code> y después <code>docker container run curl</code>"],
+   e:"En un contenedor recién creado la lista de paquetes está vacía: primero <code>apt-get update</code> (actualiza la lista) y después install; -y responde «sí». upgrade solo actualiza lo ya instalado."},
+  {cat:2, t:"Tras salir con exit, ¿cómo vuelves a entrar en el mismo contenedor ubuntu?",
+   o:["<code>docker container start -ai ubuntu</code>","<code>docker container run -it ubuntu bash</code>","<code>docker container run -it ubuntu sh</code>"],
+   e:"start arranca el contenedor existente; -a engancha su salida y -i su entrada. Cualquier <code>run</code> crearía un contenedor nuevo y limpio."},
+  {cat:2, t:"Al volver a entrar con <code>docker container start -ai ubuntu</code>, ¿sigue instalado curl?",
+   o:["Sí: es el mismo contenedor, con sus cambios","No: al salir con exit se descartan los cambios","No: al hacer start se descartan los cambios"],
+   e:"Los cambios viven en la capa de escritura del contenedor mientras este exista; solo se pierden si se borra el contenedor o si se crea otro nuevo con run."},
+  {cat:3, t:"Para listar las imágenes que hay en el sistema:",
+   o:["<code>docker image ls</code>","<code>docker container ls -a</code>","<code>docker container ls -q</code>"],
+   e:"<code>docker image ls</code> lista imágenes (REPOSITORY, TAG, IMAGE ID…). Las otras dos listan contenedores: todos, o solo los ID de los que están en marcha."},
+  {cat:3, t:"<code>docker image pull nginx:1.11.9</code> descarga:",
+   o:["La versión 1.11.9 de nginx (etiqueta)","La versión latest de nginx (etiqueta)","El repositorio 1.11.9 del usuario nginx"],
+   e:"Tras los dos puntos va la etiqueta, normalmente la versión. Sin etiqueta se usaría latest."},
+  {cat:3, t:"<code>docker image history nginx:latest</code> sirve para:",
+   o:["Ver las capas de la imagen y qué instrucción creó cada una","Ver las capas de la imagen y qué contenedores la usan ahora","Ver las versiones (tags) de nginx descargadas"],
+   e:"history enumera las capas de la imagen y la instrucción del Dockerfile de la que sale cada una. inspect da los metadatos completos."},
+  {cat:3, t:"<code>docker image inspect nginx:latest</code> muestra:",
+   o:["Los metadatos de la imagen en JSON (capas, puertos…)","Los procesos que corren en los contenedores de esa imagen","Los procesos que corren en todos los contenedores del host"],
+   e:"inspect devuelve un JSON con la configuración de la imagen: capas, puertos expuestos, comando por defecto, variables de entorno… Los procesos se ven con <code>docker container top</code>."},
+  {cat:3, t:"Al descargar <code>mysql/mysql-server</code>, ¿qué indica el formato del nombre?",
+   o:["Que es una imagen no oficial: usuario/repositorio","Que es una imagen oficial de MySQL: usuario/repositorio","Que mysql-server es la etiqueta de la imagen mysql"],
+   e:"Las imágenes oficiales tienen solo nombre (nginx, mysql, ubuntu); las de usuarios u organizaciones llevan el prefijo usuario/repositorio. La etiqueta iría tras dos puntos."},
+  {cat:4, t:"En <code>docker image build -t sleepylinux .</code>, el punto final indica:",
+   o:["La carpeta actual, donde está el Dockerfile","La carpeta raíz del sistema, donde busca el Dockerfile","El final de la orden, como un punto y coma"],
+   e:"El punto es el contexto de construcción: el directorio actual, donde Docker busca el Dockerfile y los ficheros que copie."},
+  {cat:4, t:"En <code>docker image build -t sleepylinux .</code>, la opción <code>-t</code>:",
+   o:["Pone nombre (etiqueta) a la imagen creada","Abre una terminal (TTY) durante la construcción","Pone nombre (etiqueta) al contenedor creado"],
+   e:"En build, -t (--tag) nombra la imagen: sleepylinux. build no crea contenedores, y -t como terminal es la opción de run."},
+  {cat:4, t:"En sleepylinux, CMD indica los segundos que duerme el contenedor. Tras cambiarlo de 10000 a 10 y construir la imagen, <code>docker container run sleepylinux</code>:",
+   o:["Ejecuta el contenedor, que termina a los 10 segundos","Ejecuta el contenedor, que termina a los 10000 segundos","Deja el contenedor en segundo plano de forma indefinida"],
+   e:"El valor de CMD (10) es el argumento de sleep: el contenedor duerme 10 s y termina. Antes del cambio habría dormido 10000 s."},
+  {cat:4, t:"En sleepylinux, CMD solo guarda el número de segundos (argumento por defecto). ¿Qué hace <code>docker container run sleepylinux 5</code>?",
+   o:["El 5 sustituye al valor de CMD: duerme 5 segundos","El 5 se suma al valor de CMD: duerme 15 segundos","Docker ignora el 5 y duerme los 10 segundos de CMD"],
+   e:"Los argumentos escritos tras el nombre de la imagen reemplazan al CMD. Con sleep como punto de entrada, el contenedor duerme 5 s en lugar de 10."},
+  {cat:4, t:"¿Qué es un Dockerfile?",
+   o:["Un fichero con los pasos para construir una imagen","Un fichero con los pasos para construir un contenedor","Un fichero binario que guarda las capas de la imagen"],
+   e:"El Dockerfile es un fichero de texto con las instrucciones para construir la imagen (imagen base, comandos, CMD…); <code>docker image build</code> lo lee y genera las capas. Los contenedores se crean después, a partir de la imagen."},
+  {cat:5, t:"Ejercicio 1: descargar la última imagen del servidor de correo poste.io, sin crear ningún contenedor:",
+   o:["<code>docker image pull analogic/poste.io</code>","<code>docker container run analogic/poste.io</code>","<code>docker container create analogic/poste.io</code>"],
+   e:"pull solo descarga (sin etiqueta, latest). run y create crean un contenedor, que el ejercicio no pide en ese paso."},
+  {cat:5, t:"Ejercicio 3: arrancar en segundo plano un contenedor de poste.io llamado correo-fernando-terroso:",
+   o:["<code>docker container run -d --name correo-fernando-terroso analogic/poste.io</code>","<code>docker container run -it --name correo-fernando-terroso analogic/poste.io</code>","<code>docker container start -d correo-fernando-terroso analogic/poste.io</code>"],
+   e:"run crea y arranca; -d lo deja en segundo plano y --name le da el nombre. -it lo dejaría en primer plano, y start solo arranca contenedores ya creados (y no tiene -d)."},
+  {cat:5, t:"Ejercicio 6: tras parar el contenedor de correo, ¿con qué comprobamos que ya no se ejecuta?",
+   o:["<code>docker container ls</code>: ya no aparece","<code>docker container ls -a</code>: ya no aparece","<code>docker container top</code>: muestra cero procesos"],
+   e:"ls sin -a solo muestra los que están en marcha, así que el contenedor parado deja de aparecer. Con -a seguiría saliendo, como Exited."},
+  {cat:5, t:"Ejercicio 8: ejecutar directamente un nuevo contenedor de poste.io con la versión 2.2.24:",
+   o:["<code>docker container run -d analogic/poste.io:2.2.24</code>","<code>docker container run -d analogic/poste.io --tag 2.2.24</code>","<code>docker image pull analogic/poste.io:2.2.24</code>"],
+   e:"run descarga la imagen si no está y la ejecuta; la versión se indica como :etiqueta pegada al nombre. pull solo descargaría."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

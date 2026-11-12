@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Práctica P2-2 · Almacenamiento en Docker</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Práctica P2-2 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 2 · Práctica P2-2</span>
+  <h1>Resumen: Introducción al almacenamiento en Docker</h1>
+  <p class="lead">Guía de la práctica: por qué se pierden los datos de un contenedor y cómo conservarlos con volúmenes (anónimos y con nombre) y con bind mounts, con las respuestas a las preguntas del boletín.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-p2-2.html">Hacer el test</a><a class="btn" href="asis-tema-2-resumen.html">Resumen del Tema 2</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Persistencia</a>
+  <a href="#sec1">Volúmenes</a>
+  <a href="#sec2">Con nombre y compartidos</a>
+  <a href="#sec3">Bind mounting</a>
+  <a href="#sec4">Erratas y chuleta</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. El problema: los datos del contenedor son efímeros</h2>
+  <div class="bloque">
+    <h4>Por qué hace falta gestionar el almacenamiento</h4>
+    <p>Un contenedor es la imagen (capas de solo lectura) más una <b>capa de escritura propia</b>. Lo que la aplicación escribe ahí <b>sobrevive a parar y arrancar</b> el contenedor, pero <b>desaparece al borrarlo</b>. Para que los datos (por ejemplo, una base de datos) no dependan del contenedor, se guardan <b>fuera, en el host</b>. La práctica ve las dos formas:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th></th><th>Volumen (<i>volume</i>)</th><th>Bind mount</th></tr>
+      <tr><td><b>Qué es</b></td><td>Almacenamiento que <b>crea y gestiona Docker</b> en su propia zona del host</td><td>Una <b>carpeta concreta del host</b>, elegida por ti, montada en el contenedor</td></tr>
+      <tr><td><b>Sintaxis</b></td><td><code>-v nombre:/ruta/en/contenedor</code> (o sin <code>-v</code>, anónimo)</td><td><code>-v /ruta/del/host:/ruta/en/contenedor</code></td></tr>
+      <tr><td><b>Dónde está en el host</b></td><td>Lo decide Docker (campo <i>Source</i> / <i>Mountpoint</i>, p. ej. <code>/var/lib/docker/volumes/…/_data</code>)</td><td>Donde tú digas (en la práctica, <code>$(pwd)</code>)</td></tr>
+      <tr><td><b>En la práctica</b></td><td>Datos de MySQL en <code>/var/lib/mysql</code></td><td>Web de nginx en <code>/usr/share/nginx/html</code></td></tr>
+    </table></div>
+<pre>HOST                                          CONTENEDOR
+/var/lib/docker/volumes/mysql-db/_data  ──►  /var/lib/mysql          (volumen con nombre)
+/home/docker/EjemplosDocker/dockerfile-sample-2 ──► /usr/share/nginx/html  (bind mount)</pre>
+    <div class="key">Los volúmenes <b>sobreviven al contenedor</b>: parar o borrar el contenedor no los borra. Hay que eliminarlos expresamente (<code>docker volume rm</code> o <code>docker volume prune</code>).</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. Volúmenes (pasos 1-12)</h2>
+  <div class="bloque">
+    <h4>Comandos</h4>
+<pre>docker volume prune                          # 1: borra volúmenes sin usar heredados
+docker pull mysql                            # 2: imagen oficial de MySQL (= docker image pull)
+docker image inspect mysql                   # 3: tiene un apartado "Volumes"
+docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql   # 4
+docker container ls                          # 5: está en marcha
+docker container inspect mysql               # 6: apartados "Volumes" y "Mounts"
+docker volume ls                             # 7: aparece un volumen
+docker volume inspect &lt;nombre_del_volumen&gt;   # 8: detalle del volumen</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Opción</th><th>Qué hace</th></tr>
+      <tr><td><code>-d</code></td><td>Segundo plano</td></tr>
+      <tr><td><code>--name mysql</code></td><td>Nombre del contenedor</td></tr>
+      <tr><td><code>-e VAR=valor</code> (<code>--env</code>)</td><td>Define una <b>variable de entorno</b> dentro del contenedor. <code>MYSQL_ALLOW_EMPTY_PASSWORD=True</code> deja arrancar MySQL con el usuario root sin contraseña (válido solo para pruebas)</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Qué se observa</h4>
+    <ul>
+      <li><b>Paso 3</b>: la imagen de MySQL <b>declara un volumen</b> para sus datos (<code>/var/lib/mysql</code>); por eso <code>docker image inspect</code> tiene el apartado <i>Volumes</i>. Cada contenedor que se cree sin indicar otra cosa recibe un <b>volumen anónimo</b> para esa ruta.</li>
+      <li><b>Paso 6</b>: en <i>Mounts</i>, el parámetro <b>Source</b> es la <b>ruta dentro del host</b> donde se está almacenando el volumen; <i>Destination</i> es la ruta dentro del contenedor (<code>/var/lib/mysql</code>).</li>
+      <li><b>Paso 7</b>: <code>docker volume ls</code> muestra el volumen con un nombre aleatorio largo (64 caracteres hexadecimales).</li>
+    </ul>
+    <div class="warn">El boletín inspecciona el volumen con «sus primeros tres dígitos». A diferencia de contenedores e imágenes, Docker busca los volúmenes por su <b>nombre completo</b>: si responde «No such volume», copia el nombre entero de <code>docker volume ls</code>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Respuestas a las preguntas del boletín</h4>
+    <ul>
+      <li><b>Paso 9</b> (repetir con <code>mysql2</code>): hay <b>dos volúmenes distintos</b>, uno anónimo por contenedor. <b>¿Cómo distinguir cuál es de cuál?</b> <code>docker volume ls</code> solo muestra el driver y el nombre aleatorio; hay que mirar <code>docker container inspect</code> de cada contenedor (<i>Mounts</i> → <i>Name</i>/<i>Source</i>). La solución cómoda es <b>ponerles nombre</b> (paso 13).</li>
+      <li><b>Paso 11</b> (tras parar <code>mysql</code> y <code>mysql2</code>): <b>siguen los dos volúmenes</b>. Parar un contenedor no toca sus volúmenes (el boletín pregunta por «los dos contenedores», pero se refiere a los volúmenes; los contenedores también siguen, detenidos).</li>
+      <li><b>Paso 12</b> (tras <code>docker container rm mysql mysql2</code>): <code>docker volume ls</code> <b>sigue mostrando los dos volúmenes</b>. Sobreviven a sus contenedores: los datos persisten aunque el contenedor ya no exista.</li>
+    </ul>
+    <div class="note">Desde Docker 23, <code>docker volume prune</code> solo borra por defecto los volúmenes <b>anónimos</b> sin usar; para incluir los que tienen nombre se añade <code>-a</code>. Nunca borra volúmenes que esté usando un contenedor.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Volúmenes con nombre y compartidos (pasos 13-16)</h2>
+  <div class="bloque">
+    <h4>Poner nombre al volumen</h4>
+<pre>docker container run -d --name mysql  -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker volume ls     # 14: aparece el volumen "mysql-db"
+docker container run -d --name mysql3 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v mysql-db:/var/lib/mysql mysql
+docker volume ls     # 16: ¿hay un volumen nuevo? No</pre>
+    <ul>
+      <li><code>-v mysql-db:/var/lib/mysql</code>: a la izquierda el <b>nombre del volumen</b>, a la derecha la <b>ruta dentro del contenedor</b>.</li>
+      <li>Nombrarlo <b>facilita identificarlo y asociarlo a su contenedor</b>, y permite reutilizar los datos en otro contenedor.</li>
+      <li>Un volumen con nombre <b>se crea solo si no existe</b>; si ya existe, se monta el mismo. Así <b>varios contenedores pueden compartir el mismo volumen</b>.</li>
+      <li><b>Paso 16</b>: <b>no se crea un volumen nuevo</b>; <code>mysql3</code> usa el <code>mysql-db</code> que ya existía.</li>
+    </ul>
+    <div class="note">Docker deja compartir el volumen, pero dos servidores MySQL no pueden usar a la vez el mismo directorio de datos: lo normal es que <code>mysql3</code> se detenga con un error de bloqueo de InnoDB. Compruébalo con <code>docker container ls -a</code> y <code>docker container logs mysql3</code>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Bind mounting (pasos 17-20)</h2>
+  <div class="bloque">
+    <h4>Servir con nginx una carpeta del host</h4>
+<pre>cd /home/docker/EjemplosDocker/dockerfile-sample-2
+docker container run -d --name nginx -p 80:80 -v $(pwd):/usr/share/nginx/html nginx
+# navegador → http://localhost : ahora se sirve la web de dockerfile-sample-2
+touch test.txt                                # crea el fichero vacío
+echo "hola esto es una prueba" &gt; test.txt     # escribe el texto (sobrescribe)
+# navegador → http://localhost/test.txt : aparece al momento</pre>
+    <ul>
+      <li><code>$(pwd)</code>: la shell lo sustituye por la <b>ruta del directorio actual del host</b> antes de ejecutar docker. Como a la izquierda de <code>:</code> hay una ruta del host, es un <b>bind mount</b>.</li>
+      <li><code>/usr/share/nginx/html</code> es la carpeta <b>desde la que nginx sirve las páginas</b>. El bind mount la sustituye por la carpeta del host, así que <b>la página por defecto cambia</b> por la de <code>dockerfile-sample-2</code>.</li>
+      <li>Los cambios en la carpeta del host <b>se ven al instante</b> dentro del contenedor (y al revés): no hace falta reiniciar el contenedor ni reconstruir la imagen.</li>
+      <li><code>&gt;</code> escribe en el fichero sustituyendo su contenido; <code>&gt;&gt;</code> añadiría al final.</li>
+    </ul>
+    <div class="warn">Si sigue en marcha otro contenedor que publica el puerto 80 (por ejemplo, <code>webhost</code> de la práctica P2-1), <code>-p 80:80</code> fallará: páralo antes.</div>
+    <div class="key"><b>Volumen</b> = lo gestiona Docker; ideal para los datos de una aplicación (MySQL). <b>Bind mount</b> = carpeta concreta del host; ideal para editar ficheros y verlos al momento (la web de nginx).</div>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">5. Erratas del boletín, chuleta e ideas clave</h2>
+  <div class="bloque">
+    <h4>Erratas</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>En el boletín</th><th>Correcto</th></tr>
+      <tr><td><code>docker volumen prune</code>, <code>docker volumen ls</code>, <code>docker volumen inspect</code></td><td><code>docker volume …</code> (con «volumen» Docker responde que el comando no existe)</td></tr>
+      <tr><td><code>–d</code>, <code>-–name</code>, <code>–name</code>, <code>–e</code>, <code>–v</code>, <code>–p</code> (guion largo «–»)</td><td><code>-d</code>, <code>--name</code>, <code>-e</code>, <code>-v</code>, <code>-p</code></td></tr>
+      <tr><td>Paso 11: «¿seguimos teniendo los dos contenedores?»</td><td>Se refiere a los dos <b>volúmenes</b></td></tr>
+      <tr><td>Comillas tipográficas en <code>echo “hola…”</code></td><td>Comillas rectas: <code>echo "hola esto es una prueba"</code></td></tr>
+      <tr><td>«contendor»; «Ir de nuevo al na Ir de nuevo al navegador»</td><td>«contenedor»; texto duplicado</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Chuleta</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Quiero…</th><th>Comando</th></tr>
+      <tr><td>Listar / inspeccionar volúmenes</td><td><code>docker volume ls</code> / <code>docker volume inspect &lt;nombre&gt;</code></td></tr>
+      <tr><td>Borrar los volúmenes sin usar</td><td><code>docker volume prune</code></td></tr>
+      <tr><td>Ver qué volumen usa un contenedor</td><td><code>docker container inspect &lt;contenedor&gt;</code> → <i>Mounts</i></td></tr>
+      <tr><td>Volumen con nombre</td><td><code>-v mysql-db:/var/lib/mysql</code></td></tr>
+      <tr><td>Bind mount de la carpeta actual</td><td><code>-v $(pwd):/usr/share/nginx/html</code></td></tr>
+      <tr><td>Pasar una variable de entorno</td><td><code>-e MYSQL_ALLOW_EMPTY_PASSWORD=True</code></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Ideas clave para el examen</h4>
+    <ul>
+      <li>La capa de escritura del contenedor se pierde al <b>borrarlo</b> (no al pararlo): los datos importantes van en volúmenes o bind mounts.</li>
+      <li>Sin nombre → <b>volumen anónimo</b> (uno por contenedor, difícil de identificar). Con <code>-v nombre:ruta</code> → <b>volumen con nombre</b>, reutilizable y compartible.</li>
+      <li>Parar o borrar contenedores <b>no borra sus volúmenes</b>.</li>
+      <li>En <i>Mounts</i>: <b>Source</b> = ruta en el host; <b>Destination</b> = ruta en el contenedor.</li>
+      <li><b>Bind mount</b>: ruta del host a la izquierda de <code>:</code>; los cambios se ven al momento.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-p2-2.html">Hacer el test</a><a class="btn" href="asis-tema-3-resumen.html">Siguiente: resumen del Tema 3</a></div>
+  Basado en «Práctica P2-2 – Introducción al almacenamiento en Docker» (Administración de Sistemas, Juan Morales García).
+</footer>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Tema 3.1 · Bosques y dominios de Active Directory</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3.1 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+  <h1>Resumen: Bosques y dominios de Active Directory</h1>
+  <p class="lead">Cómo se organiza una infraestructura Active Directory: el dominio, el árbol de dominios y el bosque, y por qué la clave está en si el espacio de nombres es continuo o no.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-tema-3-1.html">Hacer el test</a><a class="btn" href="asis-tema-3-resumen.html">Resumen del Tema 3</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Jerarquía y dominio</a>
+  <a href="#sec1">Árbol de dominios</a>
+  <a href="#sec2">Bosque</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. La jerarquía de Active Directory y el dominio</h2>
+  <div class="bloque">
+    <h4>Una jerarquía de entidades seguras</h4>
+    <p>Una infraestructura Active Directory funciona según una <b>jerarquía</b> que representa una <b>entidad segura que alberga usuarios y equipos</b>. Esa infraestructura forma un árbol compuesto de <b>dominios</b>, <b>árboles de dominio</b> o <b>bosques</b>.</p>
+    <p>Los distintos dominios se comunican entre sí mediante <b>relaciones de confianza</b>.</p>
+<pre>BOSQUE              un único esquema · su primer dominio = dominio raíz del bosque
+ └── ÁRBOL(ES)      dominios con un espacio de nombres continuo
+      └── DOMINIOS  entidad administrativa y de seguridad (usuarios, equipos, directivas)
+          ↔ comunicados entre sí por relaciones de confianza</pre>
+  </div>
+  <div class="bloque">
+    <h4>Dominio</h4>
+    <p>Un dominio es una <b>entidad administrativa</b> de Active Directory dentro de la que se comparten ciertas funcionalidades y características.</p>
+    <ul>
+      <li>Es una <b>entidad de seguridad</b> que <b>alberga usuarios y equipos</b>.</li>
+      <li>Representa un <b>perímetro en el que se definen las directivas</b>.</li>
+    </ul>
+    <p>Ejemplo del documento: el dominio <code>Nextinfo.priv</code>, dibujado como un triángulo aislado.</p>
+    <div class="key">Dominio = límite administrativo y de seguridad: dentro de él están los usuarios y equipos y se definen las directivas.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. Árbol de dominios</h2>
+  <div class="bloque">
+    <h4>Dominios que comparten un espacio de nombres</h4>
+    <p>Un árbol es un conjunto de dominios que <b>comparten un mismo espacio de nombres</b>: varios dominios que utilizan un <b>espacio de nombres continuo</b> forman un árbol.</p>
+    <ul>
+      <li>Un dominio puede tener <b>subdominios</b> y así se construye el árbol (ejemplos del documento: <code>us.Nextinfo.priv</code>, <code>es.Nextinfo.priv</code>).</li>
+      <li>El <b>dominio raíz</b> es el que está en la <b>cima del árbol</b>.</li>
+    </ul>
+<pre>Nextinfo.priv                    ← dominio raíz (cima del árbol)
+ └── es.Nextinfo.priv             ← subdominio de Nextinfo.priv
+      └── mail.es.Nextinfo.priv   ← subdominio de es.Nextinfo.priv</pre>
+    <div class="note">Cada subdominio añade su etiqueta delante del nombre de su padre (<code>es.</code> + <code>Nextinfo.priv</code>): por eso el espacio de nombres es <b>continuo</b>.</div>
+    <div class="warn">Si el espacio de nombres <b>no es continuo</b>, ya no hablamos de un árbol, sino de un <b>bosque</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Bosque</h2>
+  <div class="bloque">
+    <h4>Agrupación de dominios con un único esquema</h4>
+    <ul>
+      <li>Un bosque es una <b>agrupación de varios dominios</b> Active Directory y posee un <b>único esquema</b>.</li>
+      <li>El <b>primer dominio</b> instalado en un bosque se llama <b>dominio raíz del bosque</b>.</li>
+      <li>Varios <b>árboles</b> de dominio cuyo espacio de nombres <b>no es continuo</b> representan un bosque.</li>
+    </ul>
+<pre>                         BOSQUE
+           ┌───────────────┴───────────────┐
+     Nextinfo.priv                   Infonext.local
+           │                               │
+   es.Nextinfo.priv                es.Infonext.local
+       (árbol 1)                       (árbol 2)</pre>
+    <div class="key">Los dos árboles del ejemplo no comparten espacio de nombres (<code>Nextinfo.priv</code> frente a <code>Infonext.local</code>), pero pertenecen al mismo bosque y, por tanto, comparten un <b>único esquema</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Ideas clave para el examen</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Nivel</th><th>Qué es</th><th>Rasgo que lo identifica</th></tr>
+      <tr><td><b>Dominio</b></td><td>Entidad administrativa y de seguridad</td><td>Alberga usuarios y equipos; perímetro donde se definen las directivas</td></tr>
+      <tr><td><b>Árbol</b></td><td>Conjunto de dominios y subdominios</td><td>Espacio de nombres <b>continuo</b>; su cima es el dominio raíz</td></tr>
+      <tr><td><b>Bosque</b></td><td>Agrupación de varios dominios (o árboles)</td><td><b>Un único esquema</b>; árboles con espacios de nombres no continuos; su primer dominio es el dominio raíz del bosque</td></tr>
+    </table></div>
+    <ul>
+      <li>Los dominios se comunican mediante <b>relaciones de confianza</b>.</li>
+      <li>Espacio de nombres continuo → <b>árbol</b>; no continuo → <b>bosque</b>.</li>
+      <li>Dominio raíz <b>del árbol</b> = el de la cima; dominio raíz <b>del bosque</b> = el primero que se instaló en el bosque.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-tema-3-1.html">Hacer el test</a><a class="btn" href="asis-tema-3-2-resumen.html">Siguiente: 3.2 · Presentación de Active Directory</a></div>
+  Basado en «Bosques y dominios Active Directory» (Administración de Sistemas, ampliación del Tema 3; Ediciones ENI).
+</footer>
+</main>
+
+</body>
+</html>

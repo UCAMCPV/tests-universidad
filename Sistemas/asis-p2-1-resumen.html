@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Práctica P2-1 · Introducción a Docker</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Práctica P2-1 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 2 · Práctica P2-1</span>
+  <h1>Resumen: Introducción a Docker (contenedores, imágenes y Dockerfile)</h1>
+  <p class="lead">Guía de la práctica: primeros comandos, ciclo de vida de un contenedor, entrar en él, imágenes y capas, y construir una imagen con un Dockerfile. Incluye las respuestas a las preguntas del boletín y una propuesta para los ejercicios.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-p2-1.html">Hacer el test</a><a class="btn" href="asis-tema-2-resumen.html">Resumen del Tema 2</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Primeros comandos</a>
+  <a href="#sec1">Ciclo de vida</a>
+  <a href="#sec2">Entrar en un contenedor</a>
+  <a href="#sec3">Imágenes y capas</a>
+  <a href="#sec4">Dockerfile</a>
+  <a href="#sec5">Ejercicios</a>
+  <a href="#sec6">Erratas y chuleta</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. Primeros comandos y forma de las órdenes</h2>
+  <div class="bloque">
+    <h4>Objetivo y primeros pasos</h4>
+    <p>El boletín es una <b>primera aproximación a la virtualización por contenedores con Docker</b>, sobre la máquina virtual <b>UbuntuDocker</b> de las prácticas.</p>
+<pre>docker version   # versión del CLIENTE y del SERVIDOR (daemon) de Docker
+docker info      # detalles de la configuración: nº de contenedores e imágenes, drivers…
+docker           # sin argumentos: lista de comandos disponibles</pre>
+    <div class="key">El comando <code>docker</code> es el <b>cliente</b>; el trabajo lo hace el <b>servidor</b> (daemon). Por eso <code>docker version</code> muestra dos bloques, Client y Server. (<code>docker --version</code>, con guiones, solo imprime una línea con la versión del cliente.)</div>
+  </div>
+  <div class="bloque">
+    <h4>La forma <code>docker &lt;objeto&gt; &lt;acción&gt;</code></h4>
+    <p>El boletín usa la sintaxis por objetos: primero <b>sobre qué</b> se actúa y después <b>qué</b> se hace.</p>
+<pre>docker  container  run     [opciones]  imagen  [comando]
+docker  container  ls | stop | logs | top | stats | rm | start
+docker  image      ls | pull | history | inspect | build
+docker  volume     ls | inspect | prune            (práctica P2-2)</pre>
+    <div class="note">Docker también admite las formas cortas clásicas (<code>docker run</code>, <code>docker ps</code>, <code>docker images</code>, <code>docker pull</code>). Hacen lo mismo; la forma por objetos es más explícita.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. Ciclo de vida de un contenedor (pasos 4-16)</h2>
+  <div class="bloque">
+    <h4>Arrancar, listar, parar, inspeccionar y borrar</h4>
+<pre>docker container run --publish 80:80 --detach nginx   # 1.er contenedor: servidor web nginx
+docker container ls                                    # contenedores EN EJECUCIÓN
+docker container stop &lt;id_del_contenedor&gt;              # lo para (pero sigue existiendo)
+docker container ls                                    # ya no aparece…
+docker container ls -a                                 # …con -a sí: todos los creados
+docker container run --publish 80:80 --detach --name webhost nginx
+docker container logs webhost                          # log del servidor en segundo plano
+docker container top webhost                           # procesos dentro del contenedor
+docker container stats                                 # uso de recursos en vivo (Ctrl+C sale)
+docker container rm &lt;id1&gt; &lt;id2&gt; …                     # borra (IDs separados por espacios)
+docker container rm -f &lt;id&gt;                            # fuerza el borrado de uno en marcha</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Opción</th><th>Forma larga</th><th>Qué hace</th></tr>
+      <tr><td><code>-p 80:80</code></td><td><code>--publish</code></td><td>Publica un puerto con el formato <b>host:contenedor</b>: lo que llega al 80 del host va al 80 del contenedor</td></tr>
+      <tr><td><code>-d</code></td><td><code>--detach</code></td><td>Ejecuta el contenedor en <b>segundo plano</b> y devuelve el control de la terminal (imprime el ID)</td></tr>
+      <tr><td><code>--name webhost</code></td><td>—</td><td>Da un <b>nombre</b> al contenedor; si no, Docker genera uno aleatorio</td></tr>
+      <tr><td><code>-a</code> (en <code>ls</code>)</td><td><code>--all</code></td><td>Lista <b>todos</b> los contenedores, también los detenidos</td></tr>
+      <tr><td><code>-f</code> (en <code>rm</code>)</td><td><code>--force</code></td><td>Borra el contenedor <b>aunque esté en ejecución</b></td></tr>
+    </table></div>
+    <p>Con el nginx publicado en el puerto 80 puedes abrir <code>http://localhost</code> en la máquina virtual y ver su página de bienvenida.</p>
+  </div>
+  <div class="bloque">
+    <h4>Respuestas a las preguntas del boletín</h4>
+    <ul>
+      <li><b>Paso 7</b> (tras <code>stop</code>, <code>ls</code> no muestra nada): <code>ls</code> sin opciones solo lista los contenedores <b>en ejecución</b>; el parado sigue existiendo y aparece con <code>ls -a</code> como <i>Exited</i>.</li>
+      <li><b>Paso 10</b> («¿Cuántos contenedores veremos con <code>docker container ls -a</code>?»): <b>dos</b>. El primer nginx (detenido, con nombre aleatorio) y <code>webhost</code> (en marcha). Además, el primero tenía que estar parado: dos contenedores no pueden publicar a la vez el mismo puerto 80 del host.</li>
+      <li><b>Paso 15</b>: <code>rm</code> no deja borrar el contenedor que está en marcha; hay que <b>pararlo antes</b> o usar <code>rm -f</code>.</li>
+      <li><b>Paso 16</b>: tras borrarlos, <code>docker container ls -a</code> ya no muestra ninguno.</li>
+    </ul>
+    <div class="key"><b>stop ≠ rm.</b> Parar conserva el contenedor y sus cambios; borrar lo elimina. <code>logs</code> = salida del contenedor, <code>top</code> = sus procesos, <code>stats</code> = consumo de CPU, memoria, red y disco en vivo.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Entrar en un contenedor (pasos 17-22)</h2>
+  <div class="bloque">
+    <h4>Una shell dentro del contenedor</h4>
+<pre>docker container run -it --name proxy nginx bash   # bash EN LUGAR de nginx; exit lo detiene
+docker container run -it --name ubuntu ubuntu       # la imagen ubuntu arranca bash por defecto
+apt-get update                                      # (dentro) actualiza la lista de paquetes
+apt-get install curl -y                             # (dentro) instala curl sin preguntar
+exit                                                # sale y DETIENE el contenedor
+docker container start -ai ubuntu                   # vuelve a arrancarlo y se engancha a él</pre>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Opción</th><th>Significado</th></tr>
+      <tr><td><code>-i</code> (<code>--interactive</code>)</td><td>Mantiene abierta la <b>entrada estándar</b>: puedes escribir órdenes</td></tr>
+      <tr><td><code>-t</code> (<code>--tty</code>)</td><td>Asigna una <b>terminal</b> (pseudo-TTY). Juntas, <code>-it</code> dan una shell interactiva</td></tr>
+      <tr><td><code>start -a</code> (<code>--attach</code>)</td><td>Conecta la salida del contenedor a tu terminal</td></tr>
+      <tr><td><code>start -i</code> (<code>--interactive</code>)</td><td>Conecta tu teclado a su entrada</td></tr>
+      <tr><td><code>apt-get … -y</code></td><td>Responde «sí» automáticamente a la confirmación</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Qué pasa en cada paso</h4>
+    <ul>
+      <li>Lo que se escribe <b>después del nombre de la imagen</b> (<code>bash</code>) <b>sustituye al comando por defecto</b> de esa imagen: en el contenedor <code>proxy</code> se abre bash y el servidor nginx no llega a arrancar.</li>
+      <li>bash es entonces el <b>proceso principal</b>: al hacer <code>exit</code>, el proceso termina y <b>el contenedor se detiene</b> (no se borra).</li>
+      <li>La imagen <code>ubuntu</code> tiene bash como comando por defecto, por eso no hace falta escribirlo.</li>
+      <li><code>docker container start -ai ubuntu</code> arranca <b>el mismo contenedor</b>: <b>curl sigue instalado</b>, porque los cambios viven en la capa de escritura del contenedor mientras este exista. <code>docker container run -it --name ubuntu ubuntu</code> intentaría crear uno nuevo, limpio, y además fallaría porque el nombre <code>ubuntu</code> ya está ocupado.</li>
+    </ul>
+    <div class="warn"><code>-t</code> no significa lo mismo en todos los comandos: en <code>run</code> es <b>terminal</b> (TTY); en <code>docker image build -t</code> es la <b>etiqueta</b> (tag) de la imagen.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Imágenes y capas (pasos 23-27)</h2>
+  <div class="bloque">
+    <h4>Comandos de imágenes</h4>
+<pre>docker image ls                         # imágenes del sistema (REPOSITORY, TAG, IMAGE ID…)
+docker image pull nginx:1.11.9          # otra versión de nginx → nombre:etiqueta
+docker image history nginx:latest       # capas de la imagen y la instrucción que creó cada una
+docker image inspect nginx:latest       # metadatos en JSON (capas, puertos, comando, entorno…)
+docker image pull mysql/mysql-server    # imagen NO oficial → usuario/repositorio</pre>
+    <ul>
+      <li><b>Etiqueta (tag)</b>: lo que va tras los dos puntos, normalmente la versión. Si no se indica, se usa <code>latest</code>. <code>nginx:1.11.9</code> y <code>nginx:latest</code> son imágenes distintas del mismo repositorio.</li>
+      <li><b>Capas</b>: una imagen es una pila de capas de solo lectura. <code>history</code> las enumera; <code>inspect</code> da todos los metadatos.</li>
+      <li><b>Oficiales y no oficiales</b>: las oficiales tienen solo nombre (<code>nginx</code>, <code>mysql</code>, <code>ubuntu</code>); las de usuarios u organizaciones llevan prefijo. Por eso, tras el paso 26, <code>docker image ls</code> muestra el repositorio como <b>usuario/repositorio</b> (<code>mysql/mysql-server</code>).</li>
+    </ul>
+    <div class="key">Imagen = plantilla de solo lectura (capas). Contenedor = imagen + una capa de escritura propia en ejecución. De una imagen salen tantos contenedores como quieras.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">5. Dockerfile: construir «sleepylinux» (pasos 28-34)</h2>
+  <div class="bloque">
+    <h4>Pasos</h4>
+<pre>cd /home/docker/EjemplosDocker/dockerfile-sample-4
+# abrir el Dockerfile (Sublime Text) y cambiar el valor de CMD de 10000 a 10
+docker image build -t sleepylinux .   # construye la imagen; -t = nombre, . = carpeta actual
+docker image ls                       # aparece la nueva imagen sleepylinux
+docker container run sleepylinux      # duerme 10 s y termina
+docker container run sleepylinux 5    # el 5 sustituye al CMD → duerme 5 s</pre>
+    <ul>
+      <li><code>docker image build</code> crea una imagen a partir de un <b>Dockerfile</b> (fichero de texto con las instrucciones).</li>
+      <li><code>-t sleepylinux</code> (<code>--tag</code>) le pone <b>nombre</b> (y etiqueta, <code>latest</code> si no se indica).</li>
+      <li>El <b>punto final</b> es el <b>contexto de construcción</b>: la carpeta actual, donde está el Dockerfile y los ficheros que pueda copiar.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Paso 34: ¿qué pasa con <code>docker container run sleepylinux 5</code>?</h4>
+    <p><b>CMD</b> define lo que se ejecuta <b>por defecto</b> y <b>se sustituye por los argumentos escritos tras el nombre de la imagen</b>. Como el CMD de este Dockerfile solo contiene un número (10000, luego 10), ese número es el argumento de <code>sleep</code>, que queda fijado como punto de entrada (ENTRYPOINT). Un Dockerfile con ese comportamiento sería:</p>
+<pre>FROM ubuntu              # imagen base (la del ejemplo puede ser otra)
+ENTRYPOINT ["sleep"]     # comando fijo
+CMD ["10"]               # argumento por defecto (antes 10000)</pre>
+    <p>Así, <code>run sleepylinux</code> ejecuta <code>sleep 10</code> y <code>run sleepylinux 5</code> ejecuta <code>sleep 5</code>: el contenedor <b>termina a los 5 segundos</b> en lugar de a los 10.</p>
+    <div class="note">Si el CMD fuera la orden completa (<code>CMD ["sleep", "10"]</code>, sin ENTRYPOINT), el 5 sustituiría a toda la orden y Docker intentaría ejecutar un programa llamado «5», con error. Que CMD solo guarde el número indica que <code>sleep</code> va en el ENTRYPOINT.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">6. Ejercicios: propuesta de solución</h2>
+  <div class="bloque">
+    <h4>Un comando por paso (propuesta)</h4>
+    <p>El boletín pide resolver cada paso con <b>un único comando</b>. La imagen del servidor de correo poste.io en Docker Hub es <code>analogic/poste.io</code>. Sustituye <code>fernando-terroso</code> por tu nombre y apellidos.</p>
+<pre>1. docker image pull analogic/poste.io                  # última imagen (etiqueta latest)
+2. docker image history analogic/poste.io               # sus capas
+3. docker container run -d --name correo-fernando-terroso analogic/poste.io
+4. docker container ls                                  # aparece en ejecución
+5. docker container stop correo-fernando-terroso
+6. docker container ls                                  # ya no aparece
+7. docker container ls -a                               # todos, en marcha o no
+8. docker container run -d analogic/poste.io:2.2.24     # run descarga la versión si no está</pre>
+    <ul>
+      <li>Paso 9: guardar los comandos en <code>tarea-Docker-1-nombre-apellidos.txt</code> en el escritorio.</li>
+      <li>No borres los contenedores: al listar todos (<code>docker container ls -a</code>) deben aparecer los creados.</li>
+      <li>En el paso 8, <code>-d</code> no lo exige el enunciado, pero mantiene el contenedor en segundo plano como en el paso 3.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec6">
+  <h2 class="cat-title">7. Erratas del boletín, chuleta e ideas clave</h2>
+  <div class="bloque">
+    <h4>Erratas</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>En el boletín</th><th>Correcto</th></tr>
+      <tr><td><code>–a</code>, <code>rm –f</code>, <code>–it –-name</code>, <code>–y</code>, <code>start –ai</code>, <code>build –t</code> (guion largo «–»)</td><td><code>-a</code>, <code>rm -f</code>, <code>-it --name</code>, <code>-y</code>, <code>start -ai</code>, <code>build -t</code>: guion normal, y dos guiones en las opciones largas. Copiados con «–», la shell no los reconoce como opciones</td></tr>
+      <tr><td>«ejecutar algunos parámetros <b>centro</b> del mismo»</td><td>«ejecutar algunos comandos <b>dentro</b> del mismo»</td></tr>
+      <tr><td>«contendor», «con con la versión»</td><td>«contenedor», «con la versión»</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Chuleta</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Quiero…</th><th>Comando</th></tr>
+      <tr><td>Crear y arrancar un contenedor en segundo plano con nombre y puerto</td><td><code>docker container run -d -p 80:80 --name web nginx</code></td></tr>
+      <tr><td>Ver los que están en marcha / todos</td><td><code>docker container ls</code> / <code>docker container ls -a</code></td></tr>
+      <tr><td>Parar / volver a arrancar con la terminal enganchada</td><td><code>docker container stop web</code> / <code>docker container start -ai ubuntu</code></td></tr>
+      <tr><td>Log, procesos, recursos</td><td><code>logs</code>, <code>top</code>, <code>stats</code></td></tr>
+      <tr><td>Borrar (forzando si está en marcha)</td><td><code>docker container rm -f web</code></td></tr>
+      <tr><td>Shell interactiva en un contenedor nuevo</td><td><code>docker container run -it ubuntu</code></td></tr>
+      <tr><td>Descargar una versión concreta</td><td><code>docker image pull nginx:1.11.9</code></td></tr>
+      <tr><td>Ver capas / metadatos de una imagen</td><td><code>docker image history</code> / <code>docker image inspect</code></td></tr>
+      <tr><td>Construir una imagen desde la carpeta actual</td><td><code>docker image build -t nombre .</code></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Ideas clave para el examen</h4>
+    <ul>
+      <li><code>ls</code> = en marcha; <code>ls -a</code> = todos. Un contenedor parado sigue existiendo hasta <code>rm</code>.</li>
+      <li><code>-p host:contenedor</code>, <code>-d</code> segundo plano, <code>--name</code> nombre, <code>-it</code> shell interactiva, <code>rm -f</code> forzar, <code>start -ai</code> volver a entrar.</li>
+      <li>Lo escrito tras la imagen sustituye a su comando por defecto (CMD).</li>
+      <li>Etiqueta = versión (<code>:1.11.9</code>, por defecto <code>latest</code>); <code>usuario/repositorio</code> = imagen no oficial.</li>
+      <li><code>build -t nombre .</code>: <code>-t</code> pone el nombre y el punto es la carpeta del Dockerfile.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-p2-1.html">Hacer el test</a><a class="btn" href="asis-p2-2-resumen.html">Siguiente: práctica P2-2</a></div>
+  Basado en «Práctica P2-1 – Introducción a Docker» (Administración de Sistemas, Juan Morales García).
+</footer>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test ASIS Tema 3.1 · Bosques y dominios de Active Directory</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3.1 · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+    <h1>Test: Bosques y dominios de Active Directory</h1>
+    <p class="lead">13 preguntas de tres opciones. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="asis-tema-3-1-resumen.html">Ver el resumen</a><a class="btn" href="../index.html">Inicio</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en «Bosques y dominios Active Directory» (Administración de Sistemas, ampliación del Tema 3; Ediciones ENI).</footer>
+</main>
+
+<script>
+/* La opción CORRECTA es siempre la primera (o[0]); el motor las baraja al mostrarlas. Tres opciones por pregunta: dos casi idénticas, y la correcta nunca es la más larga. */
+window.TEST = {
+  id: "asis-tema-3-1",
+  cats: [
+    "1. Jerarquía y dominio",
+    "2. Árbol de dominios",
+    "3. Bosque"
+  ],
+  qs: [
+  {cat:0, t:"Según el documento, ¿cómo se comunican entre sí los distintos dominios de una infraestructura Active Directory?",
+   o:["Mediante relaciones de confianza","Compartiendo usuarios locales en cada equipo","Compartiendo usuarios locales en cada dominio"],
+   e:"Los dominios se comunican mediante relaciones de confianza. Mantener usuarios locales en cada máquina es propio de un grupo de trabajo, no de Active Directory."},
+  {cat:0, t:"¿Qué describe mejor a un dominio de Active Directory?",
+   o:["Un perímetro de seguridad en el que se definen las directivas","Un perímetro de seguridad en el que se define el esquema del bosque","Un conjunto de árboles con espacios de nombres no continuos"],
+   e:"El dominio es la entidad de seguridad y el perímetro donde se definen las directivas. El esquema es único para todo el bosque, y los árboles con espacios de nombres no continuos forman un bosque."},
+  {cat:0, t:"Según el documento, una infraestructura Active Directory forma un árbol compuesto de:",
+   o:["Dominios, árboles de dominio o bosques","Dominios, árboles de dominio o grupos de trabajo","Equipos, impresoras y carpetas compartidas"],
+   e:"La jerarquía de AD se construye con dominios, árboles de dominio y bosques. Un grupo de trabajo es una agrupación de igual a igual, ajena a Active Directory."},
+  {cat:0, t:"Como entidad de seguridad, un dominio alberga:",
+   o:["Usuarios y equipos","Usuarios y esquemas","Árboles y bosques"],
+   e:"El dominio alberga usuarios y equipos. El esquema es del bosque, y los árboles y bosques están por encima del dominio en la jerarquía."},
+  {cat:1, t:"¿Qué caracteriza a un árbol de dominios?",
+   o:["Sus dominios comparten un espacio de nombres continuo","Sus dominios comparten un espacio de nombres no continuo","Sus dominios no pueden tener subdominios propios"],
+   e:"Un árbol agrupa dominios que comparten un espacio de nombres continuo (padre y subdominios). Si no es continuo, se trata de un bosque."},
+  {cat:1, t:"En un árbol de dominios, el dominio raíz es:",
+   o:["El dominio que ocupa la cima del árbol","El dominio hijo que ocupa la base del árbol","Cualquier dominio con una relación de confianza"],
+   e:"El dominio raíz es el de la cima (en el ejemplo, <code>Nextinfo.priv</code>); los que cuelgan de él son sus subdominios."},
+  {cat:1, t:"¿Cuál de estos pares de dominios pertenece a un mismo árbol?",
+   o:["<code>Nextinfo.priv</code> y <code>es.Nextinfo.priv</code>","<code>Nextinfo.priv</code> y <code>es.Infonext.local</code>","<code>Infonext.local</code> y <code>Nextinfo.priv</code>"],
+   e:"<code>es.Nextinfo.priv</code> es subdominio de <code>Nextinfo.priv</code>: espacio de nombres continuo. <code>Nextinfo.priv</code> e <code>Infonext.local</code> (y sus hijos) son árboles distintos del mismo bosque."},
+  {cat:1, t:"En el ejemplo del documento, <code>mail.es.Nextinfo.priv</code> es, respecto a <code>es.Nextinfo.priv</code>:",
+   o:["Un dominio hijo dentro del mismo árbol","Un dominio padre dentro del mismo árbol","Un árbol independiente del mismo bosque"],
+   e:"<code>mail.es.Nextinfo.priv</code> añade una etiqueta delante de <code>es.Nextinfo.priv</code>: es su subdominio (hijo) y sigue en el mismo árbol."},
+  {cat:1, t:"Si varios árboles de dominio tienen espacios de nombres que no son continuos entre sí, hablamos de:",
+   o:["Un bosque de Active Directory","Un árbol con dos dominios raíz","Un árbol con dos dominios padre"],
+   e:"Varios árboles cuyo espacio de nombres no es continuo forman un bosque. Un árbol tiene, por definición, un espacio de nombres continuo con una sola cima."},
+  {cat:2, t:"Un bosque de Active Directory posee:",
+   o:["Un único esquema para todos sus dominios","Un único esquema para cada uno de sus árboles","Un único espacio de nombres continuo"],
+   e:"El bosque tiene un único esquema, compartido por todos sus dominios y árboles (no uno por árbol). Lo que no tiene por qué ser único es el espacio de nombres: puede reunir varios árboles."},
+  {cat:2, t:"¿Cómo se llama el primer dominio que se instala en un bosque?",
+   o:["Dominio raíz del bosque","Dominio maestro de esquema","Dominio maestro de nombres"],
+   e:"El primer dominio instalado es el dominio raíz del bosque. «Maestro de esquema» o «de nombres» suenan a funciones de un controlador de dominio, no a nombres de dominio."},
+  {cat:2, t:"En el ejemplo del documento, los árboles <code>Nextinfo.priv</code> e <code>Infonext.local</code>:",
+   o:["Son del mismo bosque y comparten el esquema","Son del mismo árbol y comparten el dominio raíz","Pertenecen a bosques distintos sin relación"],
+   e:"Sus espacios de nombres no son continuos, así que son dos árboles; como pertenecen al mismo bosque, comparten su único esquema."},
+  {cat:2, t:"¿Qué diferencia hay entre el dominio raíz de un árbol y el dominio raíz del bosque?",
+   o:["El del árbol es su cima; el del bosque, el primer dominio instalado","El del árbol es su cima; el del bosque, el dominio con más usuarios","Ninguna: son dos nombres para el mismo concepto"],
+   e:"Dominio raíz del árbol = el de la cima de ese árbol. Dominio raíz del bosque = el primer dominio que se instaló en el bosque."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

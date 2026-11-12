@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Tema 3.3 · Controladores de dominio</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3.3 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+  <h1>Resumen: Controladores de dominio</h1>
+  <p class="lead">Tipos de controlador de dominio, los cinco roles FSMO y cómo localizarlos, el catálogo global, la actualización de un DC a Windows Server 2016 y el clonado de un DC virtualizado.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-tema-3-3.html">Hacer el test</a><a class="btn" href="asis-tema-3-resumen.html">Resumen del Tema 3</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">DC y tipos</a>
+  <a href="#sec1">Roles FSMO</a>
+  <a href="#sec2">Ver y transferir roles</a>
+  <a href="#sec3">Catálogo global</a>
+  <a href="#sec4">Elevar un DC</a>
+  <a href="#sec5">Clonar un DC</a>
+  <a href="#claves">Ideas clave</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. El controlador de dominio y sus tipos</h2>
+  <div class="bloque">
+    <h4>¿Qué es un controlador de dominio (DC)?</h4>
+    <p>Un servidor con <b>Windows Server</b> en el que un administrador ha <b>implementado y configurado los servicios de dominio Active Directory</b> (AD DS).</p>
+    <p>Hay <b>dos tipos</b>:</p>
+    <ul>
+      <li><b>Controladores de dominio en escritura</b> (los «normales»).</li>
+      <li><b>Controladores de dominio de solo lectura</b>: <b>RODC</b>, <i>Read Only Domain Controller</i>.</li>
+    </ul>
+    <p>Cada DC tiene una función dentro del dominio. Además de aportar <b>seguridad adicional</b> y <b>redundancia del servicio Active Directory</b>, un DC puede alojar funciones esenciales para el directorio:</p>
+    <ul>
+      <li>Los <b>roles de maestro de operaciones</b>, o roles <b>FSMO</b> (<i>Flexible Single Master Operation</i>).</li>
+      <li>El <b>catálogo global</b>.</li>
+    </ul>
+<pre>Controlador de dominio = Windows Server + AD DS implementado y configurado
+ ├── Tipos ............ en escritura · de solo lectura (RODC)
+ └── Puede alojar ..... roles FSMO (maestros de operaciones) · catálogo global</pre>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. Los cinco roles FSMO (maestros de operaciones)</h2>
+  <div class="bloque">
+    <h4>Mapa de los cinco roles</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Rol</th><th>Exclusivo en</th><th>Para qué sirve</th></tr>
+      <tr><td><b>Controlador de esquema</b></td><td>El <b>bosque</b></td><td>Único DC que puede <b>modificar el esquema</b></td></tr>
+      <tr><td><b>Maestro de nomenclatura de dominios</b></td><td>El <b>bosque</b></td><td><b>Agregar o eliminar dominios</b> del bosque</td></tr>
+      <tr><td><b>Maestro RID</b></td><td><b>Cada dominio</b></td><td>Repartir <b>grupos de RID</b> a los DC para que los <b>SID</b> sean únicos</td></tr>
+      <tr><td><b>Maestro de infraestructura</b></td><td><b>Cada dominio</b></td><td>Seguir a los <b>miembros de grupos que vienen de otros dominios</b></td></tr>
+      <tr><td><b>Emulador PDC</b> (<i>Primary Domain Controller</i>)</td><td><b>Cada dominio</b></td><td>Compatibilidad, contraseñas, GPO, <b>reloj</b> y <b>bloqueo de cuentas</b></td></tr>
+    </table></div>
+    <div class="key"><b>2 de bosque + 3 de dominio.</b> Esquema y nomenclatura son únicos en todo el bosque; RID, infraestructura y emulador PDC hay uno en cada dominio.</div>
+    <p>Lo más rápido para saber qué DC tiene cada rol es el comando DOS:</p>
+<pre>netdom query fsmo</pre>
+  </div>
+  <div class="bloque">
+    <h4>Controlador de esquema (bosque)</h4>
+    <ul>
+      <li>Todos los DC del bosque tienen una <b>réplica de solo lectura del esquema</b>; <b>solo el controlador de esquema puede cambiarlo</b>.</li>
+      <li>Para modificar el esquema o instalar una aplicación que lo modifique, se recomienda hacerlo <b>en el controlador de esquema</b>; si no, los cambios se <b>envían al controlador de esquema</b> para que los grabe.</li>
+      <li>Debe estar en un DC que actúe como <b>catálogo global</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Maestro de nomenclatura de dominios (bosque)</h4>
+    <ul>
+      <li>Sirve para <b>agregar o eliminar dominios en el bosque</b>.</li>
+      <li>Al agregar o eliminar un dominio <b>debe estar accesible</b>; si no, <b>la operación falla</b>.</li>
+      <li>También debe estar en un DC que actúe como <b>catálogo global</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Maestro RID (dominio)</h4>
+    <p>RID = <i>Relative IDentifier</i>. Interviene en la generación de los <b>SID</b> (identificadores de seguridad) de las entidades de seguridad: <b>usuarios, grupos y equipos</b>.</p>
+    <ul>
+      <li>El SID debe ser <b>único en el dominio</b>, y cualquier DC puede crear objetos: hace falta un mecanismo que lo garantice.</li>
+      <li>Cada DC genera el SID <b>añadiendo un RID al SID del dominio</b>.</li>
+      <li>El maestro RID <b>asigna grupos de RID únicos a cada DC</b>; así cada DC sabe que sus SID no se repiten.</li>
+      <li>Cuando un DC <b>agota su grupo de RID</b>, pide uno nuevo al DC que tiene el rol de maestro RID.</li>
+    </ul>
+<pre>SID de un objeto = SID del dominio + RID
+
+Maestro RID ──grupo de RID──► DC1 · DC2 · DC3 …
+DC sin RID libres ──petición──► Maestro RID ──nuevo grupo──► DC</pre>
+    <div class="key">Analogía del documento: el maestro RID es <b>«un servidor DHCP para los SID»</b>. DHCP reparte IP únicas a los equipos; el maestro RID reparte grupos de RID a los DC.</div>
+    <div class="note">Según el documento, se recomienda ubicar el <b>maestro de nomenclatura de dominios</b> y el <b>maestro RID</b> en el <b>mismo controlador de dominio</b>. (En la práctica también es habitual juntar los dos roles de bosque, esquema y nomenclatura, por un lado, y RID con emulador PDC por otro; para el examen, quédate con lo que dice el documento.)</div>
+  </div>
+  <div class="bloque">
+    <h4>Maestro de infraestructura (dominio)</h4>
+    <ul>
+      <li>Actúa sobre todo en entornos de <b>varios dominios</b>: actualiza la lista de grupos que contienen <b>usuarios de otro dominio</b>.</li>
+      <li>Es una especie de <b>dispositivo de seguimiento</b> de los miembros de grupos de otros dominios.</li>
+      <li>Si esos miembros se <b>renombran o eliminan</b>, el maestro de infraestructura del grupo actualiza el atributo <b>Miembro</b> del grupo (el que se ve en la pestaña «Miembro de» de una cuenta de usuario).</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Emulador PDC (dominio)</h4>
+    <p>Realiza varias funciones cruciales en el dominio:</p>
+    <ol>
+      <li><b>Emula un controlador principal de dominio</b> (PDC) para la <b>compatibilidad ascendente</b>.</li>
+      <li>Participa en la gestión especial de la <b>actualización de las contraseñas</b> del dominio.</li>
+      <li>Gestiona la <b>actualización de las directivas de grupo</b> del dominio.</li>
+      <li>Proporciona el <b>reloj principal</b> del dominio.</li>
+      <li>Gestiona el <b>bloqueo de las cuentas</b>.</li>
+    </ol>
+    <div class="warn">No confundas: <b>repartir RID</b> es del maestro RID; <b>agregar o eliminar dominios</b> es del maestro de nomenclatura. El emulador PDC es el de <b>hora, contraseñas, bloqueos y GPO</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Ver y transferir los roles</h2>
+  <div class="bloque">
+    <h4>Qué consola muestra cada rol</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Roles</th><th>Consola</th><th>Dónde</th></tr>
+      <tr><td>Maestro RID, emulador PDC y maestro de infraestructura</td><td><b>Usuarios y equipos de Active Directory</b></td><td>Clic derecho en el <b>dominio</b> → <b>Maestro de operaciones</b></td></tr>
+      <tr><td>Maestro de nomenclatura de dominios</td><td><b>Dominios y confianzas de Active Directory</b></td><td>Clic derecho en el <b>nodo raíz</b> de la consola → <b>Maestro de operaciones</b></td></tr>
+      <tr><td>Controlador de esquema</td><td><b>Esquema de Active Directory</b></td><td>Clic derecho en el <b>nodo raíz</b> de la consola → <b>Maestro de operaciones</b></td></tr>
+      <tr><td>Los cinco a la vez</td><td>Línea de comandos</td><td><code>netdom query fsmo</code></td></tr>
+    </table></div>
+    <p>Cada ventana de <b>Maestro de operaciones</b> sirve además para <b>transferir el rol a otro controlador de dominio</b>.</p>
+    <div class="warn">El documento escribe «Dominios y Usuarios y equipos de Active Directory» para el maestro de nomenclatura: es una errata. La consola es <b>Dominios y confianzas de Active Directory</b> (la misma que se usa en 3.4 para elevar niveles funcionales).</div>
+  </div>
+  <div class="bloque">
+    <h4>La consola del esquema no aparece por defecto</h4>
+    <p>Para añadir <b>Esquema de Active Directory</b> como complemento de una consola MMC, antes hay que registrar su DLL:</p>
+<pre>regsvr32 schmmgmt.dll</pre>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Catálogo global (GC)</h2>
+  <div class="bloque">
+    <h4>Qué es</h4>
+    <ul>
+      <li>Una <b>partición de Active Directory</b> con información sobre <b>todos los objetos del directorio</b>.</li>
+      <li>En realidad es una <b>réplica parcial</b> de esos objetos, para que cualquier usuario pueda recuperar información en <b>todo el bosque</b>.</li>
+      <li>Funciona como un <b>índice</b> para ubicar objetos en el directorio.</li>
+      <li>Un DC que incluye el catálogo global se llama <b>servidor de catálogo global</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Para qué se usa</h4>
+    <ul>
+      <li>Encontrar <b>cualquier objeto del bosque</b>.</li>
+      <li>Los procesos de <b>inicio de sesión interdominio</b>.</li>
+      <li>Verificar la <b>pertenencia de una cuenta a un grupo universal</b>.</li>
+      <li>Sin servidor de catálogo global, aplicaciones como la mensajería <b>Microsoft Exchange</b> no podrían funcionar.</li>
+    </ul>
+    <div class="warn">Si en un entorno de <b>varios dominios</b> no hay ningún DC con catálogo global, <b>el inicio de sesión es imposible</b>, y el aviso es engañoso: dice que <b>el nombre del dominio o la contraseña no son correctos</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Comprobarlo y configurarlo</h4>
+    <ul>
+      <li>El <b>primer DC instalado en un bosque</b> es servidor de catálogo global <b>de forma predeterminada</b>.</li>
+      <li><b>Comprobar:</b> consola <b>Sitios y servicios de Active Directory</b> → propiedades del servidor → el campo <b>Tipo de DC</b> muestra «Catálogo global».</li>
+      <li><b>Activarlo:</b> en <b>Sitios y servicios de Active Directory</b>, desplegar el servidor → propiedades de <b>NTDS Settings</b> → marcar <b>Catálogo global</b>.</li>
+      <li>En un entorno de <b>un único dominio</b>, Microsoft recomienda que <b>todos los DC sean catálogo global</b>.</li>
+      <li>Para saber si un <b>atributo</b> se copia en el GC: MMC <b>Esquema de Active Directory</b> → propiedades del atributo → opción <b>Replicar este atributo en el catálogo global</b>.</li>
+    </ul>
+    <p>Al convertir un DC en catálogo global, el servidor DNS del dominio actualiza los registros <b>SRV <code>_gc</code></b> para anunciar a los clientes que ese DC responde a las peticiones de catálogo global:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Puerto</th><th>Uso</th></tr>
+      <tr><td><b>389</b></td><td>LDAP predeterminado (cualquier DC)</td></tr>
+      <tr><td><b>3268</b></td><td>Peticiones de <b>catálogo global</b> (además del 389)</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">5. Elevar el nivel de un controlador de dominio</h2>
+  <div class="bloque">
+    <h4>De Windows Server 2012 R2 a Windows Server 2016</h4>
+    <ol>
+      <li>Montar la imagen ISO o insertar los medios de <b>Windows Server 2016</b> para iniciar la actualización.</li>
+      <li>Elegir entre <b>conservar los archivos personales y las aplicaciones</b> o <b>no conservar nada</b>.</li>
+      <li>Al ser un DC, <b>primero hay que preparar los servicios de dominio AD</b>: abrir PowerShell en la carpeta de los medios <code>D:\support\adprep</code> y ejecutar, en este orden:
+<pre>.\adprep.exe /forestprep
+.\adprep.exe /domainprep</pre></li>
+      <li>La actualización se realiza después de <b>comprobar el espacio disponible en disco</b>.</li>
+    </ol>
+    <div class="key">Orden de <code>adprep</code>: <b>primero el bosque</b> (<code>/forestprep</code>), <b>después el dominio</b> (<code>/domainprep</code>).</div>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">6. Clonar un controlador de dominio virtualizado</h2>
+  <div class="bloque">
+    <h4>Requisitos</h4>
+    <ul>
+      <li>Disponible <b>desde Windows Server 2012</b>, para DC <b>virtualizados</b>.</li>
+      <li>El <b>nivel funcional del dominio</b> debe ser como mínimo <b>Windows Server 2012</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Preparación (en el DC de origen)</h4>
+    <ol>
+      <li><b>Hipervisor compatible con los ID de generación de la máquina virtual</b>: se comprueba en la documentación del fabricante. <b>No es imprescindible Hyper-V.</b></li>
+      <li><b>Autorizar al DC de origen</b>: necesita el permiso <b>«Permitir a un DC crear un clon de sí mismo»</b>, y su cuenta debe ser miembro del grupo <b>Controladores de dominio clonables</b>, que está en el contenedor <b>Users</b>. Ejemplo para DC1:
+<pre>Get-ADComputer DC1 | %{Add-ADGroupMember "cloneable domain controllers" $_.samaccountname}</pre></li>
+      <li><b>Eliminar servicios y programas incompatibles</b>: <code>Get-ADComputerServiceAccount</code> muestra las cuentas de servicio autónomas del dominio que usa el servidor; si hay alguna, se desinstala con <code>Uninstall-ADServiceAccount</code> (se puede reinstalar cuando el servidor vuelva a estar en línea).</li>
+      <li><b>Crear el archivo <code>DCCloneConfig.xml</code></b>, imprescindible: indica, por ejemplo, el <b>nuevo nombre del servidor</b> y su <b>dirección IP</b>. Se crea con <code>New-ADDCCloneConfigFile</code>, que, salvo que se use <code>-Offline</code>, <b>comprueba en el servidor de origen los requisitos previos</b> (p. ej. la pertenencia al grupo de clonables). Si hay aplicaciones o servicios potencialmente incompatibles, se añade también <code>CustomDCCloneAllowList.xml</code>.</li>
+      <li><b>Dejar el DC de origen sin conexión</b>: basta con <b>apagar la máquina</b>.</li>
+    </ol>
+    <div class="note">En el PDF el comando aparece con comillas «» (<code>«cloneable domain controllers»</code>); en PowerShell se escriben comillas rectas <code>"…"</code>.</div>
+  </div>
+  <div class="bloque">
+    <h4>El clonado</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Método</th><th>Cuándo se recomienda</th><th>Detalle</th></tr>
+      <tr><td><b>Copiar los discos a mano</b></td><td>DC de origen con <b>una única unidad</b></td><td>Copiar <b>todos</b> los discos de la VM, prioritariamente el del <b>sistema</b></td></tr>
+      <tr><td><b>Exportar la máquina virtual</b></td><td>DC con <b>varias unidades</b> o <b>hardware virtualizado complejo</b></td><td><b>Eliminar antes las instantáneas</b>: no sirven y eliminarían parámetros y datos si se usaran</td></tr>
+    </table></div>
+    <p>Después se <b>crea una VM nueva</b>, asociándola al disco copiado o <b>importando</b> el DC exportado, y basta con <b>arrancarla</b> para que empiece el clonado.</p>
+<pre>Hipervisor con ID de generación de VM
+  └─► DC origen en «Controladores de dominio clonables»
+        └─► quitar cuentas de servicio incompatibles
+              └─► New-ADDCCloneConfigFile → DCCloneConfig.xml
+                    └─► apagar el DC origen
+                          └─► copiar discos | exportar VM → VM nueva → arrancar = clon</pre>
+  </div>
+</section>
+
+<section class="cat" id="claves">
+  <h2 class="cat-title">Ideas clave para el examen</h2>
+  <div class="bloque">
+    <ul>
+      <li>DC = Windows Server con <b>AD DS</b>; dos tipos: <b>en escritura</b> y <b>RODC</b>.</li>
+      <li><b>FSMO = 5 roles</b>: esquema y nomenclatura (<b>bosque</b>); RID, infraestructura y emulador PDC (<b>dominio</b>). Se consultan con <code>netdom query fsmo</code>.</li>
+      <li>Maestro RID = «<b>DHCP de los SID</b>»: reparte grupos de RID; SID = SID del dominio + RID.</li>
+      <li>Emulador PDC: compatibilidad, contraseñas, GPO, <b>reloj</b> y <b>bloqueo de cuentas</b>.</li>
+      <li>Consolas: <b>Usuarios y equipos</b> (RID, PDC, infraestructura) · <b>Dominios y confianzas</b> (nomenclatura) · <b>Esquema</b> (esquema, tras <code>regsvr32 schmmgmt.dll</code>).</li>
+      <li>Catálogo global: <b>réplica parcial</b> de todo el bosque, puerto <b>3268</b> (más el 389), registros <b>SRV <code>_gc</code></b>; se activa en <b>NTDS Settings</b>; sin GC en multidominio <b>no se puede iniciar sesión</b>.</li>
+      <li>Actualizar un DC: <code>adprep /forestprep</code> y luego <code>/domainprep</code>.</li>
+      <li>Clonar: desde <b>WS 2012</b>, nivel de dominio ≥ 2012, grupo <b>Controladores de dominio clonables</b>, <code>DCCloneConfig.xml</code>, DC origen <b>apagado</b>; copiar discos (una unidad) o exportar (varias, sin instantáneas).</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-tema-3-3.html">Hacer el test</a><a class="btn" href="asis-tema-3-4-resumen.html">Siguiente: 3.4 · Niveles funcionales</a></div>
+  Basado en «Tema 3.3 – Controladores de dominio (ampliación)» (Administración de Sistemas; extracto de Ediciones ENI).
+</footer>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Práctica P2-0 · Introducción a Amazon Web Services</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Práctica P2-0 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 2 · Práctica P2-0</span>
+  <h1>Resumen: Introducción a Amazon Web Services (EC2)</h1>
+  <p class="lead">Guía de la práctica: crear la cuenta de AWS, lanzar en EC2 la máquina virtual Debian que se usa en las prácticas y conectarse a ella por SSH con el par de claves.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-p2-0.html">Hacer el test</a><a class="btn" href="asis-tema-2-resumen.html">Resumen del Tema 2</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Objetivo y conceptos</a>
+  <a href="#sec1">Crear la cuenta</a>
+  <a href="#sec2">Consola, región y EC2</a>
+  <a href="#sec3">Lanzar la instancia</a>
+  <a href="#sec4">Conectarse por SSH</a>
+  <a href="#sec5">Erratas e ideas clave</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. Objetivo y conceptos</h2>
+  <div class="bloque">
+    <h4>Qué se hace en la práctica</h4>
+    <p>Es una <b>primera aproximación a la creación de máquinas virtuales en Amazon Web Services (AWS) mediante el servicio EC2</b>. En concreto se crea la <b>máquina virtual Linux Debian</b> que se usará durante las prácticas.</p>
+<pre>Cuenta AWS ─► Consola ─► región Europe (Paris) ─► EC2 ─► Launch instance
+                                                        │
+             nombre · Debian 11 · par de claves (.pem) · 20 GB
+                                                        ▼
+                         instancia en marcha ─► ssh -i clave.pem usuario@DNS</pre>
+  </div>
+  <div class="bloque">
+    <h4>Vocabulario de EC2</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Término</th><th>Qué es</th><th>En la práctica</th></tr>
+      <tr><td><b>EC2</b></td><td>Servicio de AWS de <b>servidores virtuales en la nube</b> («Virtual Servers in the Cloud»)</td><td>Se busca «EC2» en la consola</td></tr>
+      <tr><td><b>Instancia</b></td><td>Una <b>máquina virtual</b> lanzada en EC2</td><td><code>Debian-&lt;MisIniciales&gt;</code></td></tr>
+      <tr><td><b>AMI</b> (Amazon Machine Image)</td><td>Imagen con el sistema operativo desde la que se lanza la instancia</td><td>Debian 11</td></tr>
+      <tr><td><b>Tipo de instancia</b></td><td>Tamaño de la VM (CPU y memoria)</td><td>El que viene por defecto (t2.micro, de la capa gratuita)</td></tr>
+      <tr><td><b>Región</b></td><td>Ubicación geográfica donde se crean los recursos</td><td>Europe (Paris)</td></tr>
+      <tr><td><b>Grupo de seguridad</b></td><td>Cortafuegos virtual: reglas del tráfico que puede llegar a la instancia</td><td>El que crea el asistente (SSH permitido)</td></tr>
+      <tr><td><b>Par de claves</b></td><td>Clave pública (queda en la instancia) + clave privada (fichero que descargas)</td><td><code>claves-debian-&lt;misiniciales&gt;</code>, RSA, <code>.pem</code></td></tr>
+      <tr><td><b>Volumen</b> (EBS)</td><td>Disco de la instancia</td><td>20 GB (gp2) como volumen raíz</td></tr>
+    </table></div>
+    <div class="note">Una instancia EC2 es <b>IaaS</b>: alquilas la infraestructura (VM, red y disco) y administras tú el sistema operativo. Es el paso de la virtualización «en casa» a la virtualización en la nube que cuenta el Tema 2.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. Crear la cuenta de AWS</h2>
+  <div class="bloque">
+    <h4>Pasos del registro</h4>
+    <ol>
+      <li>Ir a <code>aws.amazon.com/console</code> y elegir <b>crear cuenta</b>.</li>
+      <li><b>Sign up for AWS</b>: en <i>Root user email address</i> se pone la <b>cuenta de la UCAM</b> y en <i>AWS account name</i> el nombre de usuario → <b>Verify email address</b> (el correo queda verificado).</li>
+      <li>Se establece la <b>contraseña del usuario raíz</b> (<i>Root user password</i>) → <i>Continue (step 1 of 5)</i>.</li>
+      <li><b>Contact Information</b>: a «How do you plan to use AWS?» se responde <b>Personal</b> (<i>for your own projects</i>), no <i>Business</i> (<i>for your work, school or organization</i>).</li>
+      <li><b>Billing Information</b>: hay que introducir una <b>tarjeta de crédito o débito válida</b>.</li>
+      <li><b>Confirm your identity</b>: se confirma la identidad con un <b>código por SMS al móvil</b> (la otra opción es una llamada de voz) y un captcha.</li>
+      <li><b>Select a support plan</b>: se elige el plan <b>básico y gratuito</b> (<i>Basic support – Free</i>).</li>
+      <li>Mensaje <b>Congratulations</b>: la cuenta se activa en unos minutos y llega un correo cuando termina → <b>Go to the AWS Management Console</b>.</li>
+    </ol>
+    <div class="key">En las prácticas se usan <b>siempre los programas gratuitos de AWS</b>. La tarjeta es obligatoria, pero AWS no cobra el uso que quede por debajo de los límites de la capa gratuita (<i>Free Tier</i>); como mucho retiene temporalmente <b>1 USD durante 3-5 días</b> para verificar la identidad.</div>
+  </div>
+  <div class="bloque">
+    <h4>Capa gratuita y planes de soporte (capturas del boletín)</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Ofertas gratuitas</th><th>Duración</th></tr>
+      <tr><td><b>Always free</b></td><td>No caduca</td></tr>
+      <tr><td><b>12 months free</b></td><td>12 meses desde la fecha de alta</td></tr>
+      <tr><td><b>Trials</b></td><td>Desde que se activa el servicio concreto</td></tr>
+    </table></div>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Plan de soporte</th><th>Precio</th><th>Para quién</th></tr>
+      <tr><td><b>Basic support</b> (el que se elige)</td><td>Gratis</td><td>Usuarios que empiezan; autoservicio 24x7 y consultas de cuenta y facturación</td></tr>
+      <tr><td>Developer support</td><td>Desde 29 $/mes</td><td>Desarrolladores que experimentan con AWS</td></tr>
+      <tr><td>Business support</td><td>Desde 100 $/mes</td><td>Cargas de producción; soporte técnico 24x7 con respuesta en 1 hora</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Iniciar sesión, región y panel de EC2</h2>
+  <div class="bloque">
+    <h4>Entrar en la consola</h4>
+    <p>En <b>Sign in</b> se selecciona <b>Root user</b> y se introduce el <b>correo usado para registrarse</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Tipo de usuario</th><th>Qué es</th></tr>
+      <tr><td><b>Root user</b></td><td>Propietario de la cuenta: hace tareas que requieren <b>acceso sin restricciones</b></td></tr>
+      <tr><td><b>IAM user</b></td><td>Usuario creado <b>dentro de la cuenta</b> para las tareas diarias</td></tr>
+    </table></div>
+    <p>Al entrar aparece <b>Console Home</b>, con los servicios visitados recientemente (IAM, EC2, S3, RDS, Lambda…) y la bienvenida a AWS.</p>
+  </div>
+  <div class="bloque">
+    <h4>Región y panel de EC2</h4>
+    <ol>
+      <li>Lo primero: cambiar la <b>región geográfica</b> (arriba a la derecha) a <b>Europe (Paris)</b>.</li>
+      <li>En el buscador se escribe <b>EC2</b> («Virtual Servers in the Cloud»), que lleva al <b>panel de control de EC2</b> (instancias, pares de claves, grupos de seguridad, volúmenes…).</li>
+      <li>En <b>Security Groups</b> aparece el <b>grupo de seguridad por defecto</b>, que dará acceso a la máquina virtual.</li>
+      <li>En el panel izquierdo, <b>Instances</b>: todavía no hay ninguna instancia en esta región → <b>Lanzar instancia</b> (<i>Launch instances</i>).</li>
+    </ol>
+    <div class="warn">Los recursos de EC2 son <b>de una región</b>: si la consola está en otra región, la lista sale vacía («You do not have any instances in this region»). Las capturas del boletín están hechas en <i>Europe (London)</i>, pero la práctica pide <b>París</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Lanzar la instancia Debian</h2>
+  <div class="bloque">
+    <h4>El formulario «Launch an instance»</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Apartado</th><th>Valor en la práctica</th><th>Comentario</th></tr>
+      <tr><td><b>Name</b></td><td><code>Debian-&lt;MisIniciales&gt;</code></td><td>Identifica tu instancia</td></tr>
+      <tr><td><b>Application and OS Images (AMI)</b></td><td><b>Debian 11</b></td><td>Las capturas muestran Ubuntu 20.04: sigue el texto</td></tr>
+      <tr><td><b>Instance type</b></td><td>Por defecto</td><td>t2.micro, incluida en la capa gratuita</td></tr>
+      <tr><td><b>Key pair</b></td><td>Enlace «crear nuevo par de claves»</td><td>Ver el bloque siguiente</td></tr>
+      <tr><td><b>Network settings</b></td><td>Por defecto</td><td>Crea un grupo de seguridad (<code>launch-wizard-1</code>) que permite SSH</td></tr>
+      <tr><td><b>Configure storage</b></td><td><b>20 GB</b> (gp2, volumen raíz)</td><td>El asistente propone 8 GiB</td></tr>
+    </table></div>
+    <p>El resto de opciones se deja <b>por defecto</b> y se pulsa <b>Launch instance</b>; después, <b>View all instances</b>.</p>
+  </div>
+  <div class="bloque">
+    <h4>Crear el par de claves</h4>
+    <ul>
+      <li>Nombre: <code>claves-debian-&lt;misiniciales&gt;</code>.</li>
+      <li><b>Key pair type: RSA</b> (la alternativa es ED25519, que no se admite en instancias Windows).</li>
+      <li><b>Private key file format: .pem</b>, para OpenSSH (la alternativa <code>.ppk</code> es para PuTTY).</li>
+      <li><b>Create key pair</b> → se descarga el fichero <code>.pem</code> con la <b>clave privada</b> a tu ordenador.</li>
+    </ul>
+    <div class="key">Guarda el <code>.pem</code> en un lugar seguro: <b>es la llave para entrar por SSH</b>. La clave pública queda en la instancia; la privada solo la tienes tú.</div>
+  </div>
+  <div class="bloque">
+    <h4>Lo que avisa el asistente</h4>
+    <ul>
+      <li>El grupo de seguridad nuevo permite <b>SSH desde Anywhere (<code>0.0.0.0/0</code>)</b>, es decir, desde <b>cualquier dirección IP</b>. La consola recomienda limitar las reglas a IP conocidas. También ofrece permitir HTTP y HTTPS desde Internet (para servidores web).</li>
+      <li><b>Capa gratuita del primer año</b>: 750 horas al mes de t2.micro (o t3.micro donde no haya t2.micro), 30 GB de almacenamiento EBS, 2 millones de E/S, 1 GB de instantáneas y 100 GB de transferencia a Internet. Los 20 GB del disco quedan dentro de los <b>30 GB de EBS gratuitos</b>.</li>
+      <li>Tras lanzarla, la consola sugiere crear <b>alertas de facturación</b> para recibir un correo si los cargos estimados superan una cantidad (por ejemplo, al salir de la capa gratuita).</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">5. Ver la instancia y conectarse por SSH</h2>
+  <div class="bloque">
+    <h4>Estado de la instancia</h4>
+    <p>En la lista de instancias aparece la nueva VM; <b>al comienzo su estado indica «Inicializando»</b> (<i>Initializing</i>) y en unos minutos está lista. En el detalle se ven el ID de instancia, el tipo, la zona de disponibilidad, la <b>IP pública y el DNS público</b> y la IP privada (172.31.x.x, solo accesible dentro de la red de AWS).</p>
+  </div>
+  <div class="bloque">
+    <h4>Conexión desde tu máquina</h4>
+    <p>Se copia la <b>IP pública</b> (o el DNS público) de la instancia, se abre un terminal de comandos (<i>cmd</i>) en la máquina local y se ejecuta:</p>
+<pre>ssh -i &lt;fichero.pem&gt; debian@&lt;nombreDNS&gt;
+     │   │              │      └─ DNS público (o IP pública) de la instancia
+     │   │              └─ usuario de la VM
+     │   └─ clave privada descargada al crear el par de claves
+     └─ -i: «identity file», el fichero de identidad</pre>
+    <p>El botón <b>Connect</b> del panel muestra lo mismo. Tiene las pestañas <i>EC2 Instance Connect</i>, <i>Session Manager</i>, <b>SSH client</b> y <i>EC2 Serial Console</i>. En <b>SSH client</b> indica los pasos: abrir un cliente SSH, localizar la clave privada, ejecutar <code>chmod 400 &lt;clave&gt;.pem</code> si hace falta (para que la clave no sea legible por otros; SSH rechaza claves con permisos demasiado abiertos) y el comando <code>ssh -i</code> de ejemplo con el usuario y el DNS exactos.</p>
+    <div class="note">El boletín escribe el usuario <code>debian</code>. En las AMI oficiales de Debian el usuario por defecto suele ser <code>admin</code>: si <code>debian@</code> no funciona, usa el que muestre la pestaña <b>SSH client</b> de <i>Connect</i>.</div>
+    <div class="key">Con eso <b>ya hay acceso a la línea de comandos de la máquina virtual en la nube</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">6. Erratas del boletín e ideas clave</h2>
+  <div class="bloque">
+    <h4>Erratas y detalles a tener en cuenta</h4>
+    <ul>
+      <li>«una primera aproximación <b>la</b> creación» → «a la creación»; «Para loguearnos <b>ya</b> acceder» → «y acceder»; «vamos a <b>dejar poner</b> 20 GB» → «vamos a poner 20 GB».</li>
+      <li>El texto pide copiar la IP pública, pero el comando usa <code>&lt;nombreDNS&gt;</code>: sirven las dos.</li>
+      <li>Las capturas muestran la región de Londres y una AMI de Ubuntu; la práctica es en <b>París</b> con <b>Debian 11</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Ideas clave para el examen</h4>
+    <ul>
+      <li><b>EC2</b> = máquinas virtuales en la nube; una <b>instancia</b> es una VM lanzada desde una <b>AMI</b>.</li>
+      <li>Registro: correo UCAM como <b>usuario raíz</b>, cuenta <b>Personal</b>, tarjeta válida, verificación por <b>SMS</b> y plan <b>Basic (gratuito)</b>.</li>
+      <li>Antes de crear nada, región <b>Europe (Paris)</b>: los recursos son por región.</li>
+      <li>Instancia <code>Debian-&lt;MisIniciales&gt;</code>, <b>Debian 11</b>, par de claves <b>RSA + .pem</b>, <b>20 GB</b> de disco y el resto por defecto.</li>
+      <li>El grupo de seguridad hace de cortafuegos; <code>0.0.0.0/0</code> = cualquier IP.</li>
+      <li>Conexión: <code>ssh -i clave.pem usuario@DNS-o-IP-pública</code>; el botón <b>Connect</b> da el comando exacto.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-p2-0.html">Hacer el test</a><a class="btn" href="asis-p2-1-resumen.html">Siguiente: práctica P2-1</a></div>
+  Basado en «Práctica P2-0 – Introducción a Amazon Web Services» (Administración de Sistemas, Juan Morales García).
+</footer>
+</main>
+
+</body>
+</html>

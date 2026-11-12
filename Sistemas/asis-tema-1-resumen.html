@@ -14,177 +14,334 @@
 <div class="page-head">
   <span class="eyebrow">Administración de Sistemas · Tema 1</span>
   <h1>Resumen: Sistemas de Información</h1>
-  <p class="lead">SI, dato e información, TIC, calidad de la información, CPD, evolución hasta cloud y el papel del SysAdmin y DevOps.</p>
+  <p class="lead">SI y TIC, dato, información y conocimiento, calidad de la información, el CPD y su evolución hasta el cloud, el administrador de sistemas y DevOps.</p>
   <div class="actions-row"><a class="btn primary" href="asis-tema-1.html">Hacer el test</a><a class="btn" href="../index.html">Inicio</a></div>
 </div>
 
 <nav class="toc" id="toc">
-  <a href="#sec0">SI y conocimiento</a>
-  <a href="#sec1">TIC y calidad</a>
-  <a href="#sec2">CPD</a>
-  <a href="#sec3">Evolución y cloud</a>
-  <a href="#sec4">SysAdmin y DevOps</a>
+  <a href="#sec0">SI y TIC</a>
+  <a href="#sec1">Datos y conocimiento</a>
+  <a href="#sec2">Calidad</a>
+  <a href="#sec3">CPD</a>
+  <a href="#sec4">Evolución y cloud</a>
+  <a href="#sec5">SysAdmin</a>
+  <a href="#sec6">Futuro y DevOps</a>
+  <a href="#ampliacion">Ampliación</a>
 </nav>
 
 <section class="cat" id="sec0">
-  <h2 class="cat-title">1. Sistema de Información, datos y conocimiento</h2>
+  <h2 class="cat-title">1. Sistemas de información y TIC</h2>
   <div class="bloque">
-    <h4>¿Qué es un Sistema de Información?</h4>
-    <p>Conjunto de elementos interrelacionados cuya finalidad es <b>capturar datos, almacenarlos y transformarlos</b> para dar la información adecuada, a la persona adecuada y en el momento adecuado, permitiéndole decidir u operar.</p>
-<pre>DATOS
-  │
-  ▼
-┌─────────┐
-│ Entrada │
-└────┬────┘
-     ▼
-┌────────────┐
-│ Procesado  │
-└─────┬──────┘
-      ▼
-┌────────┐
-│ Salida │
-└────────┘
-      │
-      ▼
-INFORMACIÓN ÚTIL</pre>
-    <div class="key">Antes la estrategia empresarial decidía la tecnología; <b>hoy las TIC también condicionan la estrategia</b>.</div>
+    <h4>Por qué importan</h4>
+    <p>El tema arranca con las tarjetas mecanografiadas de la Biblioteca de Nueva York y una frase: <i>«Google te puede devolver 100.000 respuestas, un librero te devolverá la correcta»</i> (o al menos te indicará el camino). Lo que cuenta es la información adecuada, no la cantidad.</p>
+    <ul>
+      <li>Los SI tienen un papel cada vez más importante en las organizaciones.</li>
+      <li>La <b>globalización</b> y el tránsito hacia una <b>economía más basada en el conocimiento</b> han cambiado las empresas: las TIC son ahora un <b>elemento esencial</b>.</li>
+    </ul>
+    <div class="key"><b>Antes</b>, la estrategia empresarial decidía las tecnologías. <b>Ahora</b>, las TIC condicionan la estrategia empresarial.</div>
   </div>
   <div class="bloque">
-    <h4>Dato, información y conocimiento</h4>
-    <ul>
-      <li><b>Dato:</b> hecho bruto sin procesar (<code>37</code>). Por sí solo apenas significa nada.</li>
-      <li><b>Información:</b> datos procesados, agregados y presentados de forma útil. <b>Datos dotados de relevancia</b> (<code>37 → «Hoy se han vendido 37 ordenadores»</code>).</li>
-      <li><b>Conocimiento:</b> información transformada mediante <b>experiencia e interpretación</b> (normalmente en la mente humana). Ej. tienda: «se vendieron 37 portátiles» → «las ventas subieron un 23 %» → «deberíamos aumentar el stock».</li>
-    </ul>
-<pre>DATOS ──procesamiento──► INFORMACIÓN ──experiencia──► CONOCIMIENTO</pre>
-    <div class="note">El conocimiento depende sobre todo de las dimensiones <b>humana y organizativa</b> del SI.</div>
+    <h4>¿Qué es un Sistema de Información?</h4>
+    <p>Conjunto de elementos interrelacionados cuyo cometido es <b>capturar datos, almacenarlos y transformarlos</b> para entregar la información <b>oportuna y precisa</b>, con la presentación y el formato adecuados, <b>a la persona que la necesita</b> dentro de la organización, <b>justo en el momento</b> en que la necesita. Así esa persona podrá <b>tomar una decisión o realizar alguna operación</b>.</p>
+  </div>
+  <div class="bloque">
+    <h4>Las TIC cambian las bases de la competencia (tres formas)</h4>
+    <ol>
+      <li><b>Crean ventajas competitivas</b>: dan a las empresas nuevas «armas» para superar a sus rivales.</li>
+      <li><b>Cambian la estructura empresarial de un sector</b> y las reglas de la competencia.</li>
+      <li><b>Facilitan la implantación de nuevos negocios</b> basados en la información.</li>
+    </ol>
+  </div>
+  <div class="bloque">
+    <h4>Perspectiva multidisciplinar: tres dimensiones</h4>
+    <p>Planificar y diseñar los SI exige una perspectiva <b>multidisciplinar</b>: el SI queda en el centro de tres dimensiones.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Dimensión</th><th>Se ocupa de</th></tr>
+      <tr><td><b>Humana</b></td><td>Las personas que usan, administran o interpretan el sistema</td></tr>
+      <tr><td><b>Tecnológica</b></td><td>Hardware, software, redes y almacenamiento</td></tr>
+      <tr><td><b>Organizativa</b></td><td>Procesos, estructura y funcionamiento de la organización</td></tr>
+    </table></div>
   </div>
 </section>
 
 <section class="cat" id="sec1">
-  <h2 class="cat-title">2. TIC en la organización y calidad de la información</h2>
+  <h2 class="cat-title">2. Datos, información y conocimiento</h2>
   <div class="bloque">
-    <h4>Las TIC y la competencia</h4>
-    <p>Las TIC modifican la competencia de tres formas: <b>crean ventajas competitivas</b>, <b>modifican la estructura del sector</b> y <b>permiten nuevos modelos de negocio basados en información</b>.</p>
-    <p>Diseñar un SI exige una visión <b>multidisciplinar</b>:</p>
-    <div class="tbl-wrap"><table class="tbl">
-      <tr><th>Dimensión</th><th>Se ocupa de</th></tr>
-      <tr><td><b>Humana</b></td><td>Personas que usan, administran o interpretan el sistema</td></tr>
-      <tr><td><b>Tecnológica</b></td><td>Hardware, software, redes, almacenamiento</td></tr>
-      <tr><td><b>Organizativa</b></td><td>Procesos, estructura y funcionamiento de la organización</td></tr>
-    </table></div>
+    <h4>Datos frente a información</h4>
+    <ul>
+      <li><b>Datos:</b> hechos recogidos en la organización que <b>todavía están sin procesar</b>. Son <b>elementos simbólicos</b> (letras, números). Ejemplo: <code>37</code>.</li>
+      <li><b>Información:</b> se obtiene cuando esos hechos se <b>procesan, agregan y presentan</b> de la manera adecuada para que sean útiles a alguien dentro de la organización. Son <b>«datos dotados de relevancia»</b>. Ejemplo: «hoy se han vendido 37 ordenadores».</li>
+    </ul>
+<pre>Entrada ──► Procesado ──► Salida
+   ▲            ▲            ▲
+   └────────────┴────────────┘
+   ¡Almacenamiento centralizado!</pre>
+    <p>Las tres fases del SI se apoyan en un <b>almacenamiento centralizado</b>.</p>
   </div>
   <div class="bloque">
-    <h4>Calidad de la información: 9 propiedades</h4>
-    <p><b>Más información no es mejor información.</b> El exceso dificulta decidir; el valor del SI está en cómo lo usa la organización.</p>
-    <div class="tbl-wrap"><table class="tbl">
-      <tr><th>Propiedad</th><th>Significado</th><th>Ejemplo</th></tr>
-      <tr><td><b>Exactitud</b></td><td>Precisa y sin errores</td><td>Saldo bancario correcto</td></tr>
-      <tr><td><b>Comprensión</b></td><td>Entendible por el usuario</td><td>Informe claro</td></tr>
-      <tr><td><b>Completitud</b></td><td>Incluye los hechos importantes</td><td>Informe financiero con todos los gastos</td></tr>
-      <tr><td><b>Economicidad</b></td><td>Coste menor que el beneficio</td><td>No gastar 10.000 € para ahorrar 100 €</td></tr>
-      <tr><td><b>Confianza</b></td><td>Datos y fuentes fiables</td><td>BBDD validada</td></tr>
-      <tr><td><b>Relevancia</b></td><td>Útil para decidir</td><td>Ventas al responsable comercial</td></tr>
-      <tr><td><b>Nivel de detalle</b></td><td>Adecuado a la decisión</td><td>Dirección: resúmenes; técnico: logs</td></tr>
-      <tr><td><b>Oportunidad</b></td><td>Llega a tiempo a quien la necesita</td><td>Alerta inmediata de caída</td></tr>
-      <tr><td><b>Verificabilidad</b></td><td>Se puede contrastar</td><td>Rastrear el origen de una cifra</td></tr>
-    </table></div>
-    <div class="warn"><b>Correcta ≠ buena.</b> 10.000 métricas exactas al director, o un cuadro de mando sobrecargado, son mala información aunque sean correctas.</div>
+    <h4>Cuidado con el exceso</h4>
+    <ul>
+      <li>El <b>exceso de información</b> puede causar problemas: se convierte en <b>un obstáculo en vez de una ayuda</b> para la toma de decisiones.</li>
+      <li>El verdadero valor de un SI <b>no está en su complejidad ni en la calidad del propio sistema</b>, sino en la <b>utilización que la organización haga de él</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Información frente a conocimiento</h4>
+    <ul>
+      <li>Igual que la información se obtiene de los datos, la información se <b>transforma en conocimiento a partir de la experiencia</b>.</li>
+      <li>El conocimiento se produce <b>de forma invisible en la mente humana</b>.</li>
+      <li>Se apoya más en la parte <b>organizativa y humana</b> del SI que en la tecnológica.</li>
+      <li>Existe una <b>escasez de SI orientados a la gestión del conocimiento</b>.</li>
+    </ul>
+<pre>DATOS ──(procesar, agregar, presentar)──► INFORMACIÓN
+INFORMACIÓN ──(experiencia)──► CONOCIMIENTO</pre>
+    <div class="note">Ejemplo de tienda: «se vendieron 37 portátiles» es información; «deberíamos aumentar el stock», la conclusión que alguien saca con su experiencia, es conocimiento.</div>
   </div>
 </section>
 
 <section class="cat" id="sec2">
-  <h2 class="cat-title">3. Centro de Procesamiento de Datos (CPD)</h2>
+  <h2 class="cat-title">3. Calidad de la información</h2>
   <div class="bloque">
-    <h4>¿Qué es un CPD?</h4>
-    <p>Instalación que alberga los sistemas para <b>procesar, almacenar y transmitir</b> información, manteniéndolos disponibles y protegidos. No es «una habitación con servidores»: necesita <b>energía fiable, temperatura y humedad controladas</b>.</p>
-<pre>CPD
- ├── Cómputo (servidores) · Almacenamiento · Comunicaciones (red)
- └── Infraestructura física: energía + refrigeración + seguridad</pre>
+    <h4>Las nueve características de la información</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Característica</th><th>Definición del tema</th><th>Ejemplo</th></tr>
+      <tr><td><b>1. Exactitud</b></td><td>Precisa y libre de errores</td><td>Saldo bancario correcto</td></tr>
+      <tr><td><b>2. Comprensión</b></td><td>Inteligible para el usuario</td><td>Informe que se entiende sin ayuda</td></tr>
+      <tr><td><b>3. Completitud</b></td><td>Contiene todos los hechos que pudieran ser importantes</td><td>Informe financiero con todos los gastos</td></tr>
+      <tr><td><b>4. Economicidad</b></td><td>Obtenerla cuesta menos que el beneficio que aporta</td><td>No gastar 10.000 € para ahorrar 100 €</td></tr>
+      <tr><td><b>5. Confianza</b></td><td>Se le puede dar crédito: se garantiza la calidad de los datos y de las fuentes</td><td>Base de datos validada</td></tr>
+      <tr><td><b>6. Relevancia</b></td><td>Útil para la toma de decisiones</td><td>Ventas para el responsable comercial</td></tr>
+      <tr><td><b>7. Nivel de detalle</b></td><td>El indicado para la decisión a la que se destina</td><td>Dirección: resúmenes; técnico: logs</td></tr>
+      <tr><td><b>8. Oportunidad</b></td><td>Se entrega a la persona que corresponde (y, por la definición de SI, cuando la necesita)</td><td>Alerta inmediata de caída al responsable</td></tr>
+      <tr><td><b>9. Verificabilidad</b></td><td>Puede contrastarse y comprobarse</td><td>Rastrear el origen de una cifra</td></tr>
+    </table></div>
+    <div class="warn"><b>Correcta ≠ buena.</b> Una información exacta puede ser mala información si llega en exceso, con un nivel de detalle que no corresponde o a quien no la necesita.</div>
   </div>
   <div class="bloque">
-    <h4>Componentes y redundancia</h4>
-    <ul>
-      <li>Servidores, almacenamiento, telecomunicaciones.</li>
-      <li>Fuentes eléctricas redundantes, respaldo (<b>UPS</b> + <b>generador</b>), conexiones redundantes.</li>
-      <li>Climatización (<b>CRAC</b>), detección de incendios, seguridad, <b>LAN/WAN/SAN</b>.</li>
-    </ul>
-    <div class="key">La redundancia evita que <b>un único fallo tumbe el servicio</b>: el UPS aguanta el corte breve y el generador toma el relevo si continúa.</div>
+    <h4>Ejercicios de clase: ¿qué característica falla?</h4>
+    <p>Las diapositivas plantean tres casos sin dar la solución. Respuesta razonada:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Problema</th><th>Característica afectada</th></tr>
+      <tr><td>Los datos de origen no se registran adecuadamente porque hay frecuentes errores administrativos</td><td><b>Exactitud</b>: los datos nacen con errores (y eso arrastra también la confianza)</td></tr>
+      <tr><td>Un cuadro de mando para la dirección aporta excesiva información, difícil de manejar, e impide centrarse en lo clave</td><td><b>Nivel de detalle</b> inadecuado para la decisión (exceso de información)</td></tr>
+      <tr><td>Un sistema de precios tan complejo que ni los responsables comerciales saben justificar algunas diferencias; inoperativo en la práctica</td><td><b>Comprensión</b>: no es inteligible ni para sus propios usuarios</td></tr>
+    </table></div>
   </div>
 </section>
 
 <section class="cat" id="sec3">
-  <h2 class="cat-title">4. Evolución histórica, cloud y consolidación</h2>
+  <h2 class="cat-title">4. El Centro de Procesamiento de Datos (CPD)</h2>
   <div class="bloque">
-    <h4>La cadena de evolución</h4>
-<pre>MAINFRAME → MINICOMPUTADORES → CLIENTE-SERVIDOR → COMPUTACIÓN
-DISTRIBUIDA → GRID → CLUSTERS → VIRTUALIZACIÓN → CLOUD → CONSOLIDACIÓN</pre>
+    <h4>Muchos nombres, una definición</h4>
+    <p>«Centro de datos» tiene multitud de significados. Nombres habituales: <b>centro de datos, sala de datos, granja de datos, almacén de datos, sala de ordenadores y sala de servidores</b>.</p>
+    <p>Definición de la <b>Agencia de Protección Ambiental de EE. UU. (EPA)</b>, en dos partes:</p>
+    <ol>
+      <li><b>Equipamiento electrónico</b> para procesamiento (<b>servidores</b>), almacenamiento (<b>equipo de almacenamiento</b>) y comunicaciones (<b>equipo de red</b>). En conjunto, <b>procesa, almacena y transmite información digital</b>.</li>
+      <li><b>Equipamiento especializado</b> para mantener una <b>energía fiable y de alta calidad</b>, y <b>control ambiental</b> para mantener la <b>temperatura y la humedad</b> adecuadas.</li>
+    </ol>
+<pre>CPD
+ ├── Cómputo (servidores) · Almacenamiento · Comunicaciones (red)
+ └── Infraestructura física: energía fiable + control ambiental + seguridad</pre>
+  </div>
+  <div class="bloque">
+    <h4>Qué contiene</h4>
+    <p>Edificio o sala de gran tamaño con mucho equipamiento informático y electrónico:</p>
+    <ul>
+      <li>Sistemas de <b>telecomunicaciones</b> y de <b>almacenamiento</b>.</li>
+      <li><b>Fuentes de corriente redundadas y de backup</b>.</li>
+      <li><b>Conexiones de comunicaciones también redundadas</b>.</li>
+      <li><b>Control ambiental</b>: aire acondicionado y detección de incendios.</li>
+      <li>Varios <b>dispositivos de seguridad</b>.</li>
+    </ul>
+    <p>Se crean y mantienen para <b>tener acceso a la información necesaria para las operaciones</b> de la organización.</p>
+    <div class="key">La redundancia evita que <b>un único fallo tumbe el servicio</b>: ante un corte, la UPS mantiene el suministro de inmediato y el generador toma el relevo si el corte continúa.</div>
+  </div>
+  <div class="bloque">
+    <h4>Componentes que muestran las figuras del tema</h4>
     <div class="tbl-wrap"><table class="tbl">
-      <tr><th>Etapa</th><th>Idea clave</th></tr>
-      <tr><td><b>Mainframe</b></td><td>Grandes ordenadores en sala, potentes, varios SO a la vez. Problema: <b>coste elevadísimo</b></td></tr>
-      <tr><td><b>Minicomputadores (70-80s)</b></td><td>Más pequeños, baratos y menos exigentes. Permiten <b>descentralizar</b></td></tr>
-      <tr><td><b>Cliente-servidor</b></td><td>PCs piden, servidor sirve. <b>Cliente solicita, servidor proporciona</b></td></tr>
-      <tr><td><b>Distribuida</b></td><td>Ordenadores <b>independientes en red</b> hacia un objetivo común. Libertad, pero <b>complejidad</b> (distintos dueños y SO). La <b>paralela</b> es trabajo simultáneo sobre un problema</td></tr>
-      <tr><td><b>Grid (años 90)</b></td><td><b>Agrega</b> recursos de muchos ordenadores por Internet como un supercomputador</td></tr>
-      <tr><td><b>Clusters (mediados 90s)</b></td><td>Ordenadores en <b>red de alta velocidad vistos como una unidad</b>; hardware convencional; rendimiento, eficiencia, disponibilidad</td></tr>
-      <tr><td><b>Proliferación</b></td><td>Más apps → más servidores → más que administrar → <b>complejidad y coste</b></td></tr>
-      <tr><td><b>Virtualización</b></td><td>VM software sobre <b>host</b> para varios <b>guest</b> con su SO</td></tr>
+      <tr><th>Sigla o elemento</th><th>Qué es</th><th>Grupo</th></tr>
+      <tr><td><b>UPS</b> (Uninterruptible Power Supply)</td><td>Sistema de alimentación ininterrumpida (SAI)</td><td>Energía</td></tr>
+      <tr><td><b>Generador eléctrico</b></td><td>Sostiene el suministro en cortes largos</td><td>Energía</td></tr>
+      <tr><td><b>CRAC</b> (Computer Room Air Conditioning)</td><td>Climatización de la sala de ordenadores</td><td>Clima</td></tr>
+      <tr><td><b>Cableado</b></td><td>Cables de potencia y de telecomunicaciones</td><td>TI</td></tr>
+      <tr><td><b>LAN</b> / <b>WAN</b></td><td>Red de área local / red de área amplia</td><td>TI</td></tr>
+      <tr><td><b>Servidores</b> y <b>almacenamiento</b></td><td>Procesan y guardan los datos</td><td>TI</td></tr>
+      <tr><td><b>SAN</b> (Storage Area Network)</td><td>Red dedicada al almacenamiento</td><td>TI</td></tr>
     </table></div>
   </div>
   <div class="bloque">
-    <h4>Cloud Computing y consolidación</h4>
-    <p><b>Cloud:</b> recursos por Internet, flexibles y de <b>pago por consumo</b>.</p>
+    <h4>Tipos de instalación y organización física</h4>
+    <p>Clasificación por tamaño que recoge el tema (EPA, 2007):</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Tipo</th><th>Servidores por instalación</th><th>Superficie típica</th></tr>
+      <tr><td>Server closet (armario)</td><td>1–2</td><td>menos de 19 m²</td></tr>
+      <tr><td>Server room (sala)</td><td>3–36</td><td>menos de 46 m²</td></tr>
+      <tr><td>Localized data center</td><td>36–300</td><td>menos de 93 m²</td></tr>
+      <tr><td>Midtier data center</td><td>300–800</td><td>menos de 465 m²</td></tr>
+      <tr><td>Enterprise-class data center</td><td>800–2000 o más</td><td>465 m² o más</td></tr>
+    </table></div>
     <ul>
-      <li><b>IaaS:</b> alquilo infraestructura (VMs + red + almacenamiento).</li>
-      <li><b>PaaS:</b> alquilo plataforma para desarrollar/ejecutar.</li>
-      <li><b>SaaS:</b> uso directamente el software.</li>
+      <li>Cada armario se localiza por <b>coordenadas de una cuadrícula</b> de la sala (p. ej. <code>AH-05</code>).</li>
+      <li><b>Pasillos fríos y calientes</b>: los equipos toman aire frío y expulsan aire caliente; los pasillos se contienen para que <b>el aire caliente no se mezcle con el frío</b>.</li>
+      <li>El CRAC (apoyado por un <b>chiller</b>) impulsa el aire frío por el <b>suelo técnico</b>, que sale por <b>rejillas</b> frente a los equipos; el aire caliente vuelve al CRAC. Cuanta más distancia, menos aire llega.</li>
+      <li>El <b>cableado de potencia y de telecomunicaciones</b> se organiza junto a las filas de armarios.</li>
     </ul>
-    <p>La tendencia cierra el círculo con la <b>consolidación</b>: menos dispositivos → menos que administrar → más eficiencia. Los <b>CPD modulares</b> (en 2007 una innovación; ej. <b>Proyecto Natick</b> de Microsoft bajo el océano) son parte de esa historia.</p>
   </div>
 </section>
 
 <section class="cat" id="sec4">
-  <h2 class="cat-title">5. SysAdmin, BYOD y DevOps</h2>
+  <h2 class="cat-title">5. Evolución del CPD: del mainframe al cloud</h2>
   <div class="bloque">
-    <h4>¿Quién es el SysAdmin?</h4>
-    <p>Persona que <b>administra y configura los sistemas y resuelve los problemas</b>. Sabe de hardware, software, datos y usuarios; decide con responsabilidad sobre información crítica.</p>
-    <h4>Las 8 estrategias (muy examen)</h4>
-    <ol>
-      <li>Planificar antes de cambiar.</li>
-      <li>Cambios <b>reversibles</b> (backup/rollback).</li>
-      <li>Cambios <b>incrementales</b>.</li>
-      <li>Probar repetidamente <b>antes</b> de producción.</li>
-      <li>Entender cómo funcionan los sistemas.</li>
-      <li>Precaución <b>antes</b> de modificar.</li>
-      <li>Probar <b>después</b> de modificar.</li>
-      <li><b>Cuaderno de bitácora</b> de operaciones.</li>
-    </ol>
-    <div class="key">Regla mental: <b>planifica → hazlo reversible → cambia poco a poco → prueba → documenta</b>. Lo contrario (actualizar producción a ciegas y no saber qué cambió) es mala administración.</div>
+    <h4>La cadena de evolución</h4>
+<pre>MAINFRAME → MINICOMPUTADORES (años 70 y 80) → CLIENTE-SERVIDOR
+→ COMPUTACIÓN PARALELA Y DISTRIBUIDA → GRID (cima en los 90)
+→ CLUSTERS (mediados de los 90) → PROLIFERACIÓN DE SERVIDORES
+→ VIRTUALIZACIÓN → CLOUD → CPD MODULAR (2007) → CONSOLIDACIÓN</pre>
   </div>
   <div class="bloque">
-    <h4>Primera línea, BYOD y futuro</h4>
+    <h4>Mainframes y minicomputadores</h4>
     <ul>
-      <li><b>Primera línea de respuesta:</b> hasta un problema pequeño puede causar inactividad, pérdida de productividad o brechas. No ignorar incidencias. Equilibrio: <b>autoridad + responsabilidad ↔ servicio + cooperación</b>.</li>
-      <li><b>BYOD</b> (trae tu propio dispositivo): más variedad que gestionar; equilibrar <b>herramientas/productividad y seguridad</b>. Formación continua y voz en decisiones estratégicas.</li>
-      <li><b>Futuro:</b> cloud y automatización mueven al SysAdmin hacia desarrollo, ingeniería y escala, pero <b>sin eliminar el control humano</b>.</li>
+      <li><b>Mainframe:</b> computadora de gran tamaño ubicada en <b>salas exclusivas</b>, capaz de <b>ejecutar a la vez varios sistemas operativos</b>, funcionando como varias máquinas virtuales. Gran potencia y velocidad.</li>
+      <li>Su <b>principal problema: el elevado coste</b>, tanto en desembolso inicial como en puesta en marcha. Eso empujó hacia plataformas más rápidas y baratas.</li>
+      <li><b>Minicomputadores (años 70 y 80):</b> alternativa al mainframe; <b>más pequeños, más baratos</b> y sin necesidad de una ubicación tan específica.</li>
     </ul>
   </div>
   <div class="bloque">
-    <h4>DevOps (desde ~2008)</h4>
-    <p>Desarrollo y sistemas vivían separados y el código que iba bien en desarrollo fallaba en producción (<b>entornos distintos</b>). <b>DevOps los acerca con colaboración</b>: los devs entienden administración y los admins programan.</p>
-    <p>Principios: testeo automático, workflows e <b>infraestructura automáticos</b>, partes pequeñas, acercar entornos, <b>código que define la infraestructura</b>, despliegue multi-infra y documentación cuidadosa.</p>
-    <div class="key">DevOps = <b>cambio de mentalidad + nuevas herramientas + nuevas capacidades</b>. No es solo instalar herramientas.</div>
+    <h4>Cliente-servidor, computación paralela y distribuida</h4>
+    <ul>
+      <li>Los <b>terminales</b> del mainframe se reemplazaron por <b>redes de ordenadores personales conectados a servidores</b>: arquitectura <b>cliente-servidor</b> (el cliente solicita, el servidor proporciona).</li>
+      <li><b>Computación paralela:</b> muchos dispositivos trabajan <b>simultáneamente en la resolución de un problema</b>.</li>
+      <li><b>Computación distribuida:</b> <b>ordenadores independientes</b> conectados por una <b>red de comunicaciones</b> trabajan en un <b>objetivo común</b>. Los sistemas operativos están disponibles como <b>pequeños servidores de bajo coste</b> y las aplicaciones se comparten entre estaciones de trabajo, que pasan a ser servidores para muchos usuarios.</li>
+    </ul>
+    <div class="warn">Dio mucha <b>libertad</b>, pero también <b>complejidad creciente</b>: dispersión y entornos caóticos, cada propietario gestionaba su minicomputador como quería y cada vendedor tenía su propio sistema operativo. Fue el <b>comienzo de la computación distribuida moderna</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Grid y clusters</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th></th><th>Grid Computing</th><th>Cluster</th></tr>
+      <tr><td><b>Época</b></td><td>Cima en los años 90</td><td>Aparecen a mediados de los 90</td></tr>
+      <tr><td><b>Idea</b></td><td>Usa las comunicaciones por <b>Internet</b> y todos los recursos de varios ordenadores para funcionar como un <b>supercomputador</b></td><td>Ordenadores unidos por una <b>red de alta velocidad</b> que se ven como <b>una única unidad</b></td></tr>
+      <tr><td><b>Uso u objetivo</b></td><td>Una <b>única aplicación</b> que necesita gran cantidad de recursos dedicados</td><td>Mejorar <b>rendimiento, eficiencia y disponibilidad</b>, y es más económico que computadores individuales</td></tr>
+      <tr><td><b>Hardware</b></td><td>—</td><td>Componentes básicos de PC capaces de ejecutar Unix, <b>adaptadores Ethernet estándar</b>, sin hardware personalizado: <b>fácilmente reproducible</b></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Proliferación de servidores y virtualización</h4>
+    <p>La libertad de diseño permitió sacar aplicaciones al mercado con rapidez (gran ventaja competitiva), pero con un coste considerable:</p>
+<pre>más servidores en el CPD → más complejidad de gestión → más coste de gestión global</pre>
+    <p>Entonces aparece la <b>virtualización</b>: una <b>máquina virtual</b> es una implementación de una máquina <b>en software</b> que ejecuta programas como si fuera una máquina física. Los recursos físicos de la máquina <b>anfitriona (host)</b> se comparten entre varias <b>máquinas huéspedes (guest)</b>, cada una con su propio sistema operativo (se desarrolla en el Tema 2).</p>
+  </div>
+  <div class="bloque">
+    <h4>Cloud, CPD modular y consolidación</h4>
+    <p><b>Nube (cloud):</b> utilización de recursos <b>a través de Internet</b>, de forma <b>flexible</b>, <b>pagando únicamente por el consumo</b> efectuado.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Modelo</th><th>Qué se contrata</th></tr>
+      <tr><td><b>IaaS</b> (Infrastructure as a Service)</td><td>Infraestructura: máquinas virtuales, red y almacenamiento</td></tr>
+      <tr><td><b>PaaS</b> (Platform as a Service)</td><td>Plataforma para desarrollar y ejecutar aplicaciones</td></tr>
+      <tr><td><b>SaaS</b> (Software as a Service)</td><td>Software que se usa directamente (p. ej. correo web)</td></tr>
+    </table></div>
+    <ul>
+      <li><b>2007: el CPD modular</b>, una de las innovaciones recientes más importantes. Ejemplo: el <b>Proyecto Natick</b> de Microsoft, un CPD modular para instalar <b>en el océano</b>.</li>
+      <li><b>Hoy la tendencia vuelve a ser la consolidación</b>, para minimizar la complejidad del CPD: menos dispositivos → menos formas de gestionarlos → infraestructura más simple → gestión más eficiente.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">6. El administrador de sistemas</h2>
+  <div class="bloque">
+    <h4>¿Quién es y qué se espera de él?</h4>
+    <ul>
+      <li>Persona encargada de <b>administrar y configurar el sistema</b> y de <b>arreglar los problemas informáticos</b>.</li>
+      <li><b>Lo ideal:</b> una persona dedicada solo a la administración. <b>En ocasiones</b>, alguien la compagina con su trabajo.</li>
+    </ul>
+    <p>Se espera de él:</p>
+    <ul>
+      <li><b>Amplios conocimientos de todo el sistema</b>: hardware, software, datos y usuarios.</li>
+      <li><b>Capacidad reconocida para tomar decisiones</b>.</li>
+      <li><b>Ambición y espíritu de superación</b>.</li>
+      <li><b>Eficacia y moral irreprochables</b>.</li>
+      <li><b>Responsabilidad</b>: trabaja con datos muy importantes y hay un jefe por encima.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Estrategias del administrador (muy de examen)</h4>
+    <ol>
+      <li><b>Planearlo</b> antes de hacer los cambios.</li>
+      <li>Hacer los cambios <b>reversibles</b>.</li>
+      <li>Realizar los cambios <b>incrementalmente</b>.</li>
+      <li><b>Probarlo, probarlo y probarlo</b> antes de hacerlo público.</li>
+      <li><b>Conocer cómo funcionan realmente</b> las cosas.</li>
+    </ol>
+    <p>Al realizar una modificación: <b>precaución antes</b> y <b>testear después</b>. Es recomendable llevar un <b>cuaderno de bitácora</b> de las operaciones.</p>
+    <div class="key">Equilibrio del puesto: <b>autoridad y responsabilidad</b> por un lado, <b>servicio y cooperación</b> por otro. Regla mental: planifica → hazlo reversible → cambia poco a poco → prueba → documenta.</div>
+  </div>
+  <div class="bloque">
+    <h4>Primer nivel de respuesta, BYOD y formación</h4>
+    <ul>
+      <li>Los administradores suelen ser el <b>«primer nivel de respuesta»</b> ante una crisis tecnológica, grande o pequeña («¡Ayuda! ¡Mi correo electrónico no funciona!»).</li>
+      <li><b>Son los usuarios</b> quienes hacen más complicado su trabajo.</li>
+      <li>Da igual lo pequeñas que sean las quejas: si no se resuelven pronto generan <b>tiempo de inactividad</b> y pueden tener <b>repercusiones graves en la seguridad</b> de la empresa.</li>
+      <li><b>BYOD</b> (<i>bring your own device</i>): controlar una amplia variedad de dispositivos y <b>garantizar la seguridad</b> mientras los empleados cuentan con las herramientas que necesitan. ¡Ojo con las <b>brechas de seguridad</b>!</li>
+      <li>Deben participar en <b>reuniones y sesiones de formación</b> para estar al día de los proyectos de la compañía y <b>ayudar en las decisiones estratégicas</b>.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec6">
+  <h2 class="cat-title">7. El futuro del administrador y DevOps</h2>
+  <div class="bloque">
+    <h4>Cloud y automatización</h4>
+    <ul>
+      <li>Gracias al <b>Cloud Computing</b>, su función tiene <b>otra escala</b> y se dirige más hacia el <b>desarrollo de sistemas y la ingeniería</b>; por eso cambian las habilidades requeridas.</li>
+      <li><b>Más automatización, pero sigue siendo necesario el control humano</b> (como el piloto en la cabina de un avión).</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>El problema: desarrollo y sistemas separados</h4>
+    <ul>
+      <li>Los equipos de <b>desarrollo</b> ven que su código tarda mucho en llegar a producción y, al desplegarlo, aparecen <b>errores imprevistos</b>: se desarrolló en un <b>entorno distinto al de producción</b>.</li>
+      <li>Los equipos de <b>administración</b> tienen que <b>ajustar el código</b> para que encaje en el entorno de producción.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>DevOps (surge en 2008)</h4>
+    <p>Metodologías que <b>acercan los dos equipos</b>: el trabajo se hace de forma <b>colaborativa</b>, los desarrolladores conocen el mundo de los administradores y viceversa, y <b>los administradores necesitan ahora conocimientos de programación</b>.</p>
+    <p>DevOps implica:</p>
+    <ul>
+      <li><b>Testeo de código automático</b>, <b>workflows automáticos</b> (reuniones entre personal) e <b>infraestructura automática</b>.</li>
+      <li>Desarrollar el software en <b>partes más pequeñas</b> en vez de en grandes bloques.</li>
+      <li><b>Entorno de desarrollo = entorno de producción</b>.</li>
+      <li>Los desarrolladores escriben <b>código de gestión</b> que indica cómo deben construirse los elementos: permite <b>desplegar en cualquier tipo de infraestructura</b>.</li>
+      <li>Exige una <b>documentación muy cuidadosa</b> del código.</li>
+    </ul>
+    <div class="key">¿Cómo se instaura DevOps? <b>Cambio de mentalidad + nuevas herramientas + nuevas capacidades</b>. No basta con instalar herramientas.</div>
+  </div>
+  <div class="bloque">
+    <h4>La cadena de herramientas del ejemplo</h4>
+<pre>código nuevo → Jenkins (prueba el código)
+             → GitHub (registra todos los cambios del código)
+             → Chef / Puppet / SaltStack (despliegue en los servidores)
+             → logs del sistema y de las aplicaciones → New Relic (monitorización)</pre>
   </div>
   <div class="bloque">
     <h4>Hilo conductor del tema</h4>
-    <p>La organización necesita información para decidir → viene de datos → los SI los gestionan → la infraestructura vive en CPD → evoluciona de mainframes a virtualización y cloud → alguien debe administrarla (SysAdmin) → y su evolución lo acerca a automatización, programación y DevOps.</p>
+    <p>La organización necesita información para decidir → viene de datos → los SI la gestionan con calidad → la infraestructura vive en el CPD → que evoluciona del mainframe a la virtualización, el cloud y la consolidación → alguien la administra (SysAdmin) → y su futuro es más automatización, programación y DevOps, sin perder el control humano.</p>
+  </div>
+</section>
+
+<section class="cat" id="ampliacion">
+  <h2 class="cat-title">Ampliación del tema</h2>
+  <div class="bloque">
+    <h4>Tipos de clústers y tecnologías asociadas</h4>
+    <p>Desarrolla los clusters que este tema presenta en la evolución del CPD: alto rendimiento (HPC), alto rendimiento de tareas (HTC), alta disponibilidad (HA), balanceo de carga (LB) y almacenamiento distribuido.</p>
+    <div class="btnrow"><a class="btn" href="asis-tema-1-clusters-resumen.html">Resumen</a><a class="btn" href="asis-tema-1-clusters.html">Test</a></div>
   </div>
 </section>
 
 <footer class="page-foot">
-  <div class="next"><a class="btn primary" href="asis-tema-1.html">Hacer el test</a><a class="btn" href="asis-tema-2-resumen.html">Siguiente: resumen del Tema 2</a></div>
-  Basado en los apuntes «Sistemas – Unidad 1 – Tema 1 – Sistemas de Información».
+  <div class="next"><a class="btn primary" href="asis-tema-1.html">Hacer el test</a><a class="btn" href="asis-tema-1-clusters-resumen.html">Siguiente: ampliación · Tipos de clústers</a></div>
+  Basado en «Tema 1 – Sistemas de Información» (Administración de Sistemas, Juan Morales García).
 </footer>
 </main>
 

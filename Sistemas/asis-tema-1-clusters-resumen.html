@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Tema 1 · Ampliación: tipos de clústers y tecnologías asociadas</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 1 · Ampliación: clústers · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 1 · Ampliación</span>
+  <h1>Resumen: Tipos de clústers y tecnologías asociadas</h1>
+  <p class="lead">Las cinco arquitecturas de clúster del documento (HPC, HTC, alta disponibilidad, balanceo de carga y almacenamiento distribuido): qué optimiza cada una, cuándo aplica, con qué tecnologías se monta y en qué casos se usa.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-tema-1-clusters.html">Hacer el test</a><a class="btn" href="asis-tema-1-resumen.html">Resumen del Tema 1</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Qué es un clúster</a>
+  <a href="#sec1">HPC</a>
+  <a href="#sec2">HTC</a>
+  <a href="#sec3">Alta disponibilidad</a>
+  <a href="#sec4">Balanceo de carga</a>
+  <a href="#sec5">Almacenamiento distribuido</a>
+  <a href="#sec6">Comparativa y glosario</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. Qué es un clúster</h2>
+  <div class="bloque">
+    <h4>Definición y principio operativo</h4>
+    <p>Un <b>clúster</b> es un conjunto de computadoras interconectadas, llamadas <b>nodos</b>, que trabajan conjuntamente <b>como una única unidad cohesionada</b> para lograr objetivos concretos.</p>
+    <p>Su principio operativo es la <b>computación distribuida</b>: la potencia de cálculo, la capacidad de almacenamiento o la disponibilidad de los servicios se reparten entre muchos componentes. Así se superan los límites de los sistemas <b>monolíticos</b> cuando se exige <b>velocidad, volumen o continuidad operativa</b>.</p>
+    <div class="note">En el Tema 1 los clústers aparecen a mediados de los 90 como ordenadores unidos por una red de alta velocidad que se perciben como una sola unidad. Este documento amplía ese punto con sus cinco tipologías.</div>
+  </div>
+  <div class="bloque">
+    <h4>Las cinco tipologías y qué optimiza cada una</h4>
+    <p>De cada tipología el documento estudia la <b>definición</b>, la <b>aplicabilidad</b> (cuándo usarla), las <b>tecnologías de implementación</b> y los <b>casos de uso</b>, con la justificación arquitectónica de cada uno.</p>
+<pre>¿Qué necesito?
+ ├─ Resolver rápido UNA tarea muy acoplada ......... HPC → mínima latencia (TTS)
+ ├─ Terminar MUCHAS tareas independientes .......... HTC → máximo throughput
+ ├─ Que el servicio no se caiga .................... HA  → RTO/RPO ≈ 0 (failover)
+ ├─ Absorber mucho tráfico entrante ................ LB  → escalabilidad horizontal
+ └─ Guardar datos masivos con resiliencia .......... Almacenamiento distribuido (SDS)</pre>
+    <div class="key">Elegir arquitectura es un <b>compromiso entre velocidad, volumen, disponibilidad y eficiencia de recursos</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. HPC: Computación de Alto Rendimiento</h2>
+  <div class="bloque">
+    <h4>Definición y objetivo: el tiempo de solución</h4>
+    <p>La <b>HPC</b> (<i>High Performance Computing</i>) usa arquitecturas de <b>procesamiento paralelo</b> que suman la potencia de varios sistemas de alta capacidad para resolver <b>problemas complejos</b> de ciencia, ingeniería y negocios.</p>
+    <p>Su foco no es la potencia de cálculo bruta, sino <b>minimizar el <i>Time to Solution</i> (TTS)</b>. Para ello hay que optimizar la <b>comunicación entre nodos</b> priorizando la <b>baja latencia</b>, y sobresalir en grandes volúmenes de datos y en cálculos de <b>alta precisión en coma flotante</b>.</p>
+  </div>
+  <div class="bloque">
+    <h4>Cuándo aplica: acoplamiento fuerte</h4>
+    <p>Cuando las tareas son <b>muy interdependientes</b> (acoplamiento fuerte): la evolución del estado de un nodo depende de la información de sus vecinos, así que la velocidad de cálculo y una comunicación rapidísima son indispensables.</p>
+    <div class="warn">Una <b>latencia alta paralizaría el clúster</b>: los nodos tendrían que esperar para sincronizarse. HPC es la elección para problemas que <b>no pueden dividirse en tareas completamente independientes</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Tecnologías de implementación</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Pieza</th><th>Qué se usa</th><th>Para qué</th></tr>
+      <tr><td><b>Hardware</b></td><td>CPU multinúcleo y, a menudo, aceleradores <b>GPU</b> o <b>FPGA</b></td><td>Cálculo intensivo en coma flotante. La arquitectura puede ser <b>homogénea</b> (nodos de capacidad similar) o <b>heterogénea</b></td></tr>
+      <tr><td><b>Red de interconexión</b></td><td><b>InfiniBand</b> u <b>OmniPath</b></td><td>Comunicación de alta velocidad y <b>ultrabaja latencia</b> entre nodos</td></tr>
+      <tr><td><b>Entorno de ejecución</b></td><td><b>MPI</b> (<i>Message Passing Interface</i>), estándar de facto</td><td>Que los procesos fuertemente acoplados <b>compartan datos y se sincronicen</b>: base del paralelismo distribuido</td></tr>
+      <tr><td><b>Gestión de recursos</b></td><td>Planificadores (<i>schedulers</i>) <b>Slurm</b> o <b>PBS/Torque</b></td><td>Gestionar la <b>cola de trabajos</b> y asignar los recursos de forma eficiente</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>HPC en la nube</h4>
+    <p>Mantener un clúster HPC propio con el hardware y el software al día es un <b>gasto continuo y significativo</b>. La nube ofrece <b>aprovisionamiento dinámico y escalado elástico</b>: se accede a estos servicios sin construir un centro de datos propio y se aumenta o reduce el uso de recursos sin esfuerzo.</p>
+    <div class="warn">Se externaliza la gestión del <b>hardware</b>, pero no la complejidad del entorno: el usuario sigue teniendo que <b>personalizar el sistema operativo y el software preinstalado</b> para su carga de trabajo.</div>
+  </div>
+  <div class="bloque">
+    <h4>Casos de uso</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Caso</th><th>Por qué HPC</th></tr>
+      <tr><td><b>Simulación acoplada:</b> modelado climático y dinámica de fluidos computacional (<b>CFD</b>)</td><td>El espacio físico se divide en una <b>malla</b> y cada punto depende de sus vecinos: los procesos de regiones adyacentes se comunican constantemente y de forma síncrona por MPI. Con latencia alta, los nodos pasarían el tiempo esperando y se anularía la ganancia del paralelismo.</td></tr>
+      <tr><td><b>Materiales a escala atómica:</b> cálculos de primeros principios (<b>DFT</b>, Teoría del Funcional de la Densidad)</td><td>Modelan el comportamiento cuántico de la materia para investigar nuevos materiales: <b>operaciones matriciales masivas</b> y <b>precisión extrema en coma flotante</b>. La potencia agregada reparte el cálculo entre núcleos y nodos y reduce mucho el tiempo de descubrimiento.</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. HTC: Computación de Alto Rendimiento de Tareas</h2>
+  <div class="bloque">
+    <h4>Definición: cambia la métrica</h4>
+    <p>La <b>HTC</b> (<i>High Throughput Computing</i>) se diferencia de HPC en la <b>métrica que optimiza</b>: HPC minimiza el tiempo de solución de <b>una única tarea</b>; HTC maximiza el <b>throughput</b>, el <b>volumen de tareas completadas con éxito por unidad de tiempo</b>.</p>
+    <p>Está diseñada para <b>grandes lotes de trabajos débilmente acoplados</b>: no necesitan comunicarse ni sincronizarse entre sí durante la ejecución.</p>
+  </div>
+  <div class="bloque">
+    <h4>Cuándo aplica</h4>
+    <p>Cuando el problema se divide en <b>miles o millones de tareas completamente independientes</b>. No importa la velocidad de cada tarea, sino terminar el <b>mayor número total</b> en un periodo dado.</p>
+    <p>Por eso puede aprovechar recursos de forma <b>oportunista</b>: estaciones de trabajo o clústers <b>heterogéneos y menos costosos</b> que los de HPC, porque la comunicación de baja latencia <b>no es un factor limitante</b>.</p>
+  </div>
+  <div class="bloque">
+    <h4>Tecnologías de implementación</h4>
+    <ul>
+      <li><b>Arquitectura:</b> recursos a menudo heterogéneos, priorizando aprovechar todo el tiempo de CPU disponible.</li>
+      <li><b>Gestión de cargas de trabajo:</b> la suite <b>HTCondor</b> (HTCSS, <i>HTCondor Software Suite</i>) es la tecnología líder. Automatiza y gestiona cargas de alto throughput y aprovecha todos los recursos disponibles, incluso los dispersos.</li>
+      <li><b>Técnicas de robustez:</b> <b>checkpointing</b> y <b>migración de trabajos</b>. Las tareas se detienen y se reanudan en otros nodos de forma transparente para el usuario, lo que permite manejar fallos o reasignar recursos.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>HPC frente a HTC: velocidad o volumen</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Aspecto</th><th>HPC</th><th>HTC</th></tr>
+      <tr><td><b>Optimiza</b></td><td>Velocidad: mínima <b>latencia</b> y mínimo tiempo de solución</td><td>Volumen: máximo <b>throughput</b></td></tr>
+      <tr><td><b>Acoplamiento</b></td><td>Fuerte (tareas interdependientes)</td><td>Débil (tareas independientes)</td></tr>
+      <tr><td><b>Red de ultrabaja latencia</b></td><td>Imprescindible (es el recurso caro)</td><td>Innecesaria</td></tr>
+      <tr><td><b>Pieza clave</b></td><td>Interconexión rápida y MPI</td><td>Sistema de colas (<i>scheduler</i>) robusto que exprima la CPU</td></tr>
+      <tr><td><b>Latencia al arrancar cada trabajo</b></td><td>No es la cuestión: importa la sincronización</td><td>Se tolera aunque sea alta</td></tr>
+    </table></div>
+    <div class="key"><b>Latencia</b> = retraso en la comunicación (el tiempo que tardan los datos en transferirse por la red). <b>Throughput</b> = volumen de datos o tareas que llegan a destino con éxito por unidad de tiempo.</div>
+  </div>
+  <div class="bloque">
+    <h4>Casos de uso</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Caso</th><th>Por qué HTC</th></tr>
+      <tr><td><b>Simulaciones de Monte Carlo</b> y análisis de grandes conjuntos de datos científicos (astrofísica, física de partículas; p. ej. el observatorio de neutrinos <b>IceCube</b>)</td><td>La misma simulación se ejecuta miles de veces variando los parámetros de entrada para calcular probabilidades y <b>reducir la incertidumbre estadística</b>. Cada ejecución es independiente: se reparte en una «granja» de cómputo (a menudo con HTCondor) para obtener el mayor número de resultados al día. La comunicación rápida (MPI) no hace falta.</td></tr>
+      <tr><td><b>Descubrimiento de fármacos</b> y <b>cribado virtual</b> masivo (<i>virtual screening</i>)</td><td>Se simula el acoplamiento (<i>docking</i>) de <b>millones de compuestos químicos</b> a una <b>proteína objetivo</b>. La simulación de cada compuesto es independiente, así que los laboratorios maximizan el throughput de pruebas moleculares y aceleran el descubrimiento.</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Clústers de Alta Disponibilidad (HA)</h2>
+  <div class="bloque">
+    <h4>Definición y objetivos</h4>
+    <p>Arquitecturas <b>redundantes</b> cuyo propósito primordial es asegurar la <b>continuidad operativa</b> y mitigar el impacto de un fallo del sistema primario mediante la <b>conmutación por error (<i>failover</i>) automática y transparente</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Objetivo</th><th>Qué mide</th></tr>
+      <tr><td><b>RTO</b> (<i>Recovery Time Objective</i>)</td><td>El <b>tiempo máximo</b> aceptable para restaurar las funciones del negocio tras una interrupción o desastre</td></tr>
+      <tr><td><b>RPO</b> (<i>Recovery Point Objective</i>)</td><td>La <b>pérdida máxima de datos</b>, medida en tiempo, que es tolerable tras la interrupción</td></tr>
+    </table></div>
+    <div class="key">Un diseño HA busca un <b>RTO y un RPO lo más cercanos posible a cero</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Cuándo aplica</h4>
+    <p>En recursos y servicios de <b>misión crítica</b>, donde la inactividad tiene un coste significativo (financiero, reputacional u operativo): <b>bases de datos transaccionales</b>, <b>servicios de autenticación corporativos</b>, <b>servidores de correo</b> y <b>sistemas de archivos esenciales</b> con acceso 24/7.</p>
+  </div>
+  <div class="bloque">
+    <h4>Tecnologías de implementación</h4>
+    <p>La HA se basa en la redundancia del sistema primario con un componente en <b>espera (<i>standby</i>)</b> que puede activarse de inmediato. La conmutación por error se articula con dos piezas:</p>
+    <ul>
+      <li><b>Corosync:</b> capa de <b>pertenencia y comunicación</b> del clúster (<b>heartbeat</b>). Permite que cada nodo monitorice el estado de los demás.</li>
+      <li><b>Pacemaker:</b> <b>gestor de recursos de alto nivel</b> (de código abierto). Usa la información de Corosync para conocer la salud de los servicios y <b>automatizar el failover</b>, moviendo los recursos a un nodo superviviente.</li>
+    </ul>
+<pre>Corosync: heartbeat ─► «¿quién sigue vivo?»
+                              │
+Pacemaker: decide y mueve los recursos
+                              │
+ Nodo A (activo) ✗ falla      ▼
+ Nodo B (standby) ◄── los servicios migran aquí = FAILOVER</pre>
+    <p>En bases de datos:</p>
+    <ul>
+      <li><b>Oracle RAC</b> (<i>Real Application Clusters</i>, propietario) ofrece failover, incluida la función <b>TAF</b> (<i>Transparent Application Failover</i>), que da soporte a la migración tras error de <b>transacciones de solo lectura</b>.</li>
+      <li><b>Pacemaker y Corosync</b> también configuran la HA de bases de datos empresariales como <b>SQL Server en Linux</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Modos operativos: Activo-Pasivo y Activo-Activo</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Modo</th><th>Nodos activos</th><th>Nodos pasivos</th><th>Beneficio principal</th><th>Inconvenientes</th></tr>
+      <tr><td><b>Activo-Pasivo</b></td><td>1</td><td>1 o más (<i>standby</i>)</td><td>Simplicidad en la gestión del estado; failover limpio</td><td><b>Baja utilización de recursos</b>: el nodo pasivo está inactivo</td></tr>
+      <tr><td><b>Activo-Activo</b></td><td>Todos</td><td>0</td><td>Redundancia más <b>throughput</b> y mejores tiempos de respuesta</td><td><b>Más complejidad</b> para gestionar la concurrencia y la consistencia de los datos</td></tr>
+    </table></div>
+    <div class="key">Elegir modo es un compromiso entre la <b>eficiencia de los recursos</b> (Activo-Activo los usa todos) y la <b>complejidad de mantener la coherencia de los datos</b> (Activo-Pasivo la simplifica).</div>
+  </div>
+  <div class="bloque">
+    <h4>Casos de uso</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Caso</th><th>Qué aporta la HA</th></tr>
+      <tr><td><b>Servidores de bases de datos transaccionales</b> (Oracle RAC, SQL Server)</td><td>Un fallo puede suponer una detención costosa o pérdida de datos si el failover no es instantáneo. Con Oracle RAC, o SQL Server con Pacemaker/Corosync en Linux, si cae un nodo el servicio <b>migra automáticamente a un nodo secundario</b>. Las transacciones de escritura pueden tener que <b>reenviarse</b>, pero la inactividad se reduce drásticamente.</td></tr>
+      <tr><td><b>Mantenimiento de sistemas de archivos de misión crítica</b> (p. ej. <b>BeeGFS</b>)</td><td>Hay que actualizar periódicamente paquetes como Pacemaker y Corosync, y apagar todo el clúster es inaceptable en 24/7. La HA permite una <b>actualización gradual</b>: cada nodo pasa a <i>standby</i>, sus servicios se mueven a otro nodo y se actualizan sus paquetes. Requisito: el clúster debe estar <b>sano y operativo</b> antes de empezar; el failover se usa de forma controlada.</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Failover y failback</h4>
+    <ul>
+      <li><b>Failover</b> (conmutación por error): el sistema redundante cambia de forma <b>automática y transparente</b> a un sistema de respaldo fiable (en espera) cuando falla el primario, minimizando el impacto en el usuario.</li>
+      <li><b>Failback:</b> devolver los servicios y la carga del <b>nodo secundario</b> (el que se activó en el failover) al <b>primario original</b>, una vez reparado y verificado. Es el paso final para restaurar la configuración original y el uso óptimo de los recursos.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">5. Clústers de Balanceo de Carga (LB)</h2>
+  <div class="bloque">
+    <h4>Definición y cuándo aplica</h4>
+    <p>El <b>balanceo de carga</b> (<i>Load Balancing</i>) distribuye el <b>tráfico de red entrante</b> (p. ej. solicitudes de clientes) entre un conjunto de <b>servidores backend</b> (los nodos del clúster) para mejorar la <b>capacidad de respuesta</b>, la <b>escalabilidad horizontal</b> y la <b>disponibilidad</b> de las aplicaciones.</p>
+    <p>Aplica a cualquier servicio expuesto a <b>mucho tráfico externo</b>, sobre todo <b>aplicaciones web, streaming o APIs</b>, con miles de solicitudes por segundo. Evita que un servidor concreto se convierta en un <b>cuello de botella</b> y añade redundancia.</p>
+  </div>
+  <div class="bloque">
+    <h4>Software balanceador</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Solución</th><th>Rasgos</th></tr>
+      <tr><td><b>HAProxy</b></td><td>Muy centrado y especializado en <b>balanceo de carga y proxy</b></td></tr>
+      <tr><td><b>NGINX / NGINX Plus</b></td><td>Más funciones, entre ellas <b>servidor web</b>, que HAProxy no tiene. <b>NGINX Plus</b> añade distribución dinámica avanzada, como la <b>división de tráfico</b></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Algoritmos de reparto</h4>
+    <ul>
+      <li><b>Estáticos:</b> p. ej. el <b>turno rotativo ponderado</b> (<i>Weighted Round-Robin</i>): cada servidor tiene un <b>peso fijo</b> según su capacidad o prioridad, y los más potentes reciben más tráfico.</li>
+      <li><b>Dinámicos:</b> miran el <b>estado actual</b> de los servidores (carga, número de conexiones activas) antes de enrutar.</li>
+    </ul>
+    <div class="note">Los balanceadores modernos son más que repartidores: <b>monitorizan el tráfico</b>, <b>bloquean contenido malicioso</b> y pueden redirigir automáticamente el tráfico de ataque a través de <b>grupos de firewalls de red</b>. Por eso son un componente crítico de <b>seguridad perimetral</b> y gobernanza del tráfico.</div>
+  </div>
+  <div class="bloque">
+    <h4>Casos de uso</h4>
+    <p><b>Aplicaciones web y APIs masivas y elásticas</b> (comercio electrónico, redes sociales): escalan <b>en horizontal</b>, añadiendo o quitando servidores backend según la demanda. Si falla un nodo, el servicio no se interrumpe: el tráfico se redirige a los <b>servidores restantes</b>.</p>
+    <p><b>Canary testing y Blue/Green deployment</b> en entornos de integración y despliegue continuo (<b>CI/CD</b>) con microservicios (p. ej. <b>Kubernetes</b>): con NGINX Plus y el módulo <code>ngx_http_split_clients_module</code> se divide el tráfico de forma dinámica para validar una versión nueva con tráfico real.</p>
+<pre>                ┌── 90 % ──► Clúster 1 · versión estable
+Usuarios ──► NGINX Plus
+                └── 10 % ──► Clúster 2 · versión nueva
+¿Falla la nueva? → proporción 100:0 al instante (todo a la estable)</pre>
+    <div class="key"><b>Canary testing</b>: una fracción pequeña del tráfico prueba la versión nueva. Se habla de <b>Blue/Green</b> cuando hay <b>dos entornos iguales</b>, uno con la versión estable y otro con la nueva.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">6. Clústers de Almacenamiento Distribuido</h2>
+  <div class="bloque">
+    <h4>Definición y cuándo aplica</h4>
+    <p>Arquitectura de <b>Software Defined Storage (SDS)</b> en la que los datos se <b>reparten y se replican</b> entre muchos nodos interconectados. El conjunto funciona como <b>una única entidad de almacenamiento lógico</b> con alta capacidad, redundancia y escalabilidad masiva. Su resiliencia se basa en la <b>abstracción del hardware subyacente</b>.</p>
+    <p>Aplica cuando hay que gestionar volúmenes enormes de datos (a menudo <b>petabytes</b>) o cuando se quiere una solución que combine interfaces de <b>bloques, objetos y archivos</b>. Es fundamental en <b>Big Data</b>, análisis de datos y <b>nubes privadas</b>.</p>
+  </div>
+  <div class="bloque">
+    <h4>Tecnologías: Ceph frente a GlusterFS</h4>
+    <p>El mercado SDS lo dominan soluciones de <b>código abierto</b>:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Solución</th><th>Qué ofrece</th><th>Encaja en</th></tr>
+      <tr><td><b>Ceph</b></td><td>Plataforma SDS <b>unificada</b>: objetos (compatibles con <b>S3</b>), bloques (<b>RBD</b>) y sistema de archivos distribuido (<b>CephFS</b>). Valorada por su robustez y arquitectura convergente</td><td>Cargas sensibles a la latencia de metadatos y transaccionales (o soluciones de bloques dedicadas)</td></tr>
+      <tr><td><b>GlusterFS</b></td><td>Sistema de archivos distribuido, <b>sencillo de operar</b> y capaz de escalar a capacidades enormes (<b>hasta 16 exabytes</b>)</td><td>Alto throughput con <b>archivos grandes</b>. <b>No</b> sirve para cargas transaccionales (bases de datos) ni para aplicaciones con <b>bloqueo estricto</b>: sus metadatos rinden mal con muchos archivos</td></tr>
+    </table></div>
+    <div class="warn">Escalar en capacidad no implica alto rendimiento en todas las cargas. La tecnología se elige según el <b>perfil de entrada/salida (I/O)</b> de la aplicación.</div>
+  </div>
+  <div class="bloque">
+    <h4>Casos de uso</h4>
+    <ul>
+      <li><b>Data lakes para Big Data y aprendizaje automático:</b> repositorios que guardan grandes volúmenes en su <b>formato nativo</b> (también datos no estructurados) <b>antes de definir un esquema</b>. Los clústers con almacenamiento de <b>objetos compatible con S3</b> aportan la elasticidad y la capacidad de ingesta necesarias. Ejemplo: <b>servicios financieros</b> que alimentan modelos de ML con datos de mercado en tiempo real para la <b>gestión de riesgos</b>.</li>
+      <li><b>Nube privada (IaaS)</b> o entornos de contenedores (<b>Kubernetes</b>): necesitan un backend de almacenamiento con alta disponibilidad y tolerancia a fallos para aprovisionar <b>discos persistentes</b> de máquinas virtuales o contenedores. Ceph permite que la nube crezca de forma dinámica y, al dar a la vez bloques y objetos, mantiene disponibles y escalables los discos virtuales y las copias de seguridad. La tolerancia a fallos llega por <b>replicación</b> o <b>codificación de borrado</b> (<i>erasure coding</i>), que conservan los datos aunque falle el hardware.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec6">
+  <h2 class="cat-title">7. Comparativa, glosario y conclusiones</h2>
+  <div class="bloque">
+    <h4>Tabla comparativa de arquitecturas (Tabla VII.1)</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Tipo</th><th>Métrica principal</th><th>Foco operacional</th><th>Dependencia de tareas</th><th>Tecnologías clave</th></tr>
+      <tr><td><b>HPC</b></td><td>Latencia (velocidad de solución)</td><td>Cómputo intensivo, precisión</td><td>Acoplamiento fuerte (interdependientes)</td><td>MPI, InfiniBand, Slurm</td></tr>
+      <tr><td><b>HTC</b></td><td>Alto throughput (volumen de tareas)</td><td>Tareas masivas, eficiencia de recursos</td><td>Acoplamiento débil (independientes)</td><td>HTCondor, Grid Engine</td></tr>
+      <tr><td><b>HA</b></td><td>Disponibilidad (RTO/RPO)</td><td>Resiliencia, continuidad del negocio (failover)</td><td>Alta (protege recursos específicos)</td><td>Pacemaker, Corosync, Oracle RAC</td></tr>
+      <tr><td><b>LB</b></td><td>Escalabilidad (distribución)</td><td>Rendimiento, prevención de cuellos de botella</td><td>Variable (distribuye solicitudes)</td><td>NGINX Plus, HAProxy, algoritmos dinámicos</td></tr>
+      <tr><td><b>Almacenamiento distribuido</b></td><td>Capacidad / tolerancia a fallos</td><td>Almacenamiento masivo, gobierno de datos</td><td>N/A (maneja datos distribuidos)</td><td>Ceph, GlusterFS, S3 (SDS)</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Glosario</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Término</th><th>Significado</th></tr>
+      <tr><td><b>Latencia</b></td><td>Demora en la comunicación de red: lo que tardan los datos en transferirse. Métrica crítica que hay que <b>minimizar en HPC</b></td></tr>
+      <tr><td><b>Throughput</b></td><td>Volumen medio de datos o número de tareas que pasan con éxito por un sistema en un periodo. Métrica clave en <b>HTC y LB</b></td></tr>
+      <tr><td><b>Failover</b></td><td>Cambio automático y transparente a un sistema de respaldo (en espera) cuando falla el primario</td></tr>
+      <tr><td><b>Failback</b></td><td>Devolver servicios y carga del nodo secundario al primario ya reparado y verificado</td></tr>
+      <tr><td><b>Escalabilidad horizontal</b></td><td>Ganar capacidad <b>añadiendo nodos o máquinas</b> al clúster. Base de los clústers <b>LB</b> y de <b>almacenamiento distribuido</b></td></tr>
+      <tr><td><b>Escalabilidad vertical</b></td><td>Ganar capacidad <b>añadiendo recursos</b> (CPU, RAM, almacenamiento) a <b>una sola máquina</b>. Limitada por el hardware máximo que admite esa máquina</td></tr>
+      <tr><td><b>Pacemaker</b></td><td>Gestor de recursos de clúster de código abierto: supervisa servicios críticos y automatiza el failover en HA</td></tr>
+      <tr><td><b>Corosync</b></td><td>Infraestructura de comunicación: capa de pertenencia y <b>heartbeat</b> para que Pacemaker detecte y coordine el estado de los nodos</td></tr>
+      <tr><td><b>MPI</b></td><td><i>Message Passing Interface</i>: estándar de HPC que define la comunicación paralela entre procesos fuertemente acoplados</td></tr>
+      <tr><td><b>RTO</b></td><td>Tiempo máximo aceptable para restaurar las funciones tras una interrupción o desastre</td></tr>
+      <tr><td><b>RPO</b></td><td>Pérdida máxima de datos (medida en tiempo) tolerable tras una interrupción</td></tr>
+      <tr><td><b>SDS</b></td><td><i>Software Defined Storage</i>: abstrae la gestión de los datos del hardware físico (p. ej. Ceph, GlusterFS)</td></tr>
+      <tr><td><b>Cribado virtual</b></td><td>Caso de HTC: simulaciones masivamente paralelas para evaluar grandes bibliotecas de compuestos en busca de fármacos</td></tr>
+      <tr><td><b>Simulación de Monte Carlo</b></td><td>Técnica que repite <b>muestreos aleatorios</b> para obtener resultados numéricos y modelar la probabilidad de procesos difíciles de predecir. En HTC: la misma simulación miles de veces variando parámetros</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Conclusiones del documento</h4>
+    <ol>
+      <li><b>HPC y HTC:</b> la distinción más crítica es el <b>acoplamiento de las tareas</b>. Con sincronización constante (acoplamiento fuerte), la baja latencia de HPC es obligatoria; con tareas independientes, maximizar el throughput (HTC) con recursos oportunistas es lo más económico y eficiente.</li>
+      <li><b>HA y LB:</b> la HA se centra en la <b>resiliencia interna</b> (failover) para la continuidad del negocio; el LB, en la <b>escalabilidad externa</b> para absorber el volumen de tráfico. Los balanceadores modernos también son guardianes de la seguridad perimetral.</li>
+      <li><b>Almacenamiento distribuido:</b> escalar en capacidad no garantiza alto rendimiento para todas las cargas; el <b>perfil de I/O</b> (sobre todo la sensibilidad a la latencia de metadatos) debe guiar la elección entre Ceph y GlusterFS.</li>
+    </ol>
+    <p>La nube <b>reduce las barreras de entrada</b> a la HPC, pero sigue haciendo falta experiencia técnica para personalizar y optimizar los entornos de ejecución.</p>
+  </div>
+  <div class="bloque">
+    <h4>Ideas clave para el examen</h4>
+    <ul>
+      <li><b>HPC</b> = latencia y TTS, acoplamiento fuerte, MPI + InfiniBand/OmniPath + Slurm/PBS. Clima, CFD, DFT.</li>
+      <li><b>HTC</b> = throughput, tareas independientes, HTCondor, checkpointing y migración, recursos oportunistas. Monte Carlo, cribado virtual.</li>
+      <li><b>HA</b> = RTO/RPO ≈ 0, failover y failback, Corosync (heartbeat) + Pacemaker (recursos), Oracle RAC con TAF (solo lectura). Activo-Pasivo (simple, recursos ociosos) frente a Activo-Activo (throughput, más complejidad).</li>
+      <li><b>LB</b> = escalabilidad horizontal, HAProxy (especializado en balanceo y proxy) frente a NGINX (también servidor web), Weighted Round-Robin estático frente a algoritmos dinámicos, canary 90/10 y vuelta a 100:0.</li>
+      <li><b>Almacenamiento distribuido</b> = SDS, entidad lógica única, Ceph (S3 + RBD + CephFS) frente a GlusterFS (16 EB, metadatos lentos), elegir por perfil de I/O.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-tema-1-clusters.html">Hacer el test</a><a class="btn" href="asis-tema-2-resumen.html">Siguiente: resumen del Tema 2</a></div>
+  Basado en «Tipos de Clústers y Tecnologías Asociadas» (Administración de Sistemas, ampliación del Tema 1).
+</footer>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test ASIS Tema 3.4 · Niveles funcionales</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3.4 · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+    <h1>Test: Niveles funcionales</h1>
+    <p class="lead">25 preguntas de tres opciones. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="asis-tema-3-4-resumen.html">Ver el resumen</a><a class="btn" href="../index.html">Inicio</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en «Tema 3.4 – Niveles funcionales (ampliación)» (Administración de Sistemas; extracto de Ediciones ENI).</footer>
+</main>
+
+<script>
+/* La opción CORRECTA es siempre la primera (o[0]); el motor las baraja al mostrarlas. Tres opciones por pregunta: dos casi idénticas, y la correcta nunca es la más larga. */
+window.TEST = {
+  id: "asis-tema-3-4",
+  cats: [
+    "1. Qué son los niveles funcionales",
+    "2. Niveles funcionales de bosque",
+    "3. Niveles funcionales de dominio",
+    "4. Elevar el nivel funcional"
+  ],
+  qs: [
+  {cat:0, t:"Los niveles funcionales de un dominio o de un bosque determinan:",
+   o:["Las funcionalidades activas y qué SO pueden ser controladores de dominio","Las funcionalidades activas y qué SO pueden unirse como clientes al dominio","El número máximo de controladores de dominio y de sitios del bosque"],
+   e:"Determinan qué funcionalidades están activas y qué sistemas operativos pueden albergar el rol de controlador de dominio, no qué clientes pueden unirse."},
+  {cat:0, t:"La selección de un nivel funcional de dominio activa las funcionalidades:",
+   o:["Solo en el dominio concreto","Solo en el dominio raíz del bosque","En todos los dominios del bosque"],
+   e:"El nivel de dominio afecta solo a ese dominio; es el nivel de bosque el que activa funcionalidades para todo el bosque."},
+
+  {cat:1, t:"¿Cuántos niveles funcionales de bosque soporta Windows Server 2016, según el documento?",
+   o:["Cinco, de Windows Server 2008 a 2016","Seis, de Windows Server 2003 a 2016","Cinco, de Windows Server 2003 a 2012 R2"],
+   e:"Cinco: 2008, 2008 R2, 2012, 2012 R2 y 2016. Los de Windows Server 2003 desaparecieron por el fin de su ciclo de vida."},
+  {cat:1, t:"¿Por qué ya no aparecen los niveles funcionales de Windows Server 2003?",
+   o:["Por el fin del ciclo de vida de Windows Server 2003","Porque no admitían controladores de dominio de solo lectura","Porque no admitían controladores de dominio virtualizados"],
+   e:"Desaparecieron por el fin del ciclo de vida de Windows Server 2003, no por una funcionalidad concreta que les faltara."},
+  {cat:1, t:"Según el documento, ¿en qué nivel funcional de bosque aparecen los controladores de dominio de solo lectura y las confianzas entre bosques?",
+   o:["Windows Server 2008","Windows Server 2008 R2","Windows Server 2016"],
+   e:"Son funcionalidades del nivel de bosque 2008, junto con modificar InetOrgPerson en Usuario y renombrar dominios. El 2008 R2 añade la papelera de reciclaje."},
+  {cat:1, t:"¿En qué nivel funcional de bosque aparece la papelera de reciclaje de Active Directory?",
+   o:["Windows Server 2008 R2","Windows Server 2012 R2","Windows Server 2008, sin R2"],
+   e:"La papelera de reciclaje de AD, para recuperar objetos eliminados por accidente, llega con el nivel de bosque 2008 R2. Los niveles 2012 y 2012 R2 no añaden nada."},
+  {cat:1, t:"¿Qué novedad aporta el nivel funcional de bosque Windows Server 2016?",
+   o:["Una caducidad para la pertenencia a un grupo","Una caducidad para las contraseñas de un grupo","La papelera de reciclaje de Active Directory"],
+   e:"Con el nivel de bosque 2016 se puede agregar un usuario a un grupo durante un tiempo limitado. Las directivas de contraseña por grupo son del nivel de dominio 2008."},
+  {cat:1, t:"¿Qué funcionalidades suplementarias añaden los niveles funcionales de bosque Windows Server 2012 y 2012 R2?",
+   o:["Ninguna funcionalidad suplementaria","La caducidad de la pertenencia a un grupo","La caducidad de las contraseñas de un grupo"],
+   e:"Los niveles de bosque 2012 y 2012 R2 no añaden ninguna funcionalidad. La caducidad de la pertenencia a grupos llega con el nivel de bosque 2016."},
+  {cat:1, t:"Según el documento, ¿cuál de estas funcionalidades figura entre las del nivel funcional de <b>bosque</b> Windows Server 2008?",
+   o:["Modificar el nombre de un dominio","Modificar el nombre de un controlador de dominio","Recuperar objetos borrados por accidente"],
+   e:"Renombrar un dominio es del nivel de bosque 2008; renombrar controladores con Netdom.exe es del nivel de dominio 2008, y la papelera de reciclaje, del bosque 2008 R2."},
+  {cat:1, t:"El nivel funcional de bosque Windows Server 2008 permite modificar un objeto InetOrgPerson en:",
+   o:["Un objeto de tipo Usuario","Un objeto de tipo Equipo","Un objeto de tipo Contacto"],
+   e:"Permite modificar un objeto InetOrgPerson en un objeto Usuario."},
+
+  {cat:2, t:"Con el nivel funcional de dominio Windows Server 2008, las zonas DNS pueden almacenarse:",
+   o:["En particiones del directorio, para replicarse a todos los DC","En la carpeta SYSVOL, para replicarse por DFS-R a todos los DC","En el catálogo global, para replicarse a todo el bosque"],
+   e:"Las zonas DNS se guardan en particiones del directorio y se replican en todos los controladores de dominio. SYSVOL con DFS-R es otra mejora distinta."},
+  {cat:2, t:"En el nivel de dominio Windows Server 2008, ¿con qué herramienta se pueden renombrar los controladores de dominio?",
+   o:["<code>Netdom.exe</code>","<code>Netsh.exe</code>","<code>Dcpromo.exe</code>"],
+   e:"El documento cita Netdom.exe para renombrar controladores de dominio. Netsh configura la red y Dcpromo era el antiguo asistente para promover un DC."},
+  {cat:2, t:"Con el nivel de dominio Windows Server 2008, los atributos de grupo se replican como valores múltiples en un único objeto. ¿Qué permite?",
+   o:["Que dos administradores modifiquen a la vez un grupo sin perder cambios","Que dos administradores modifiquen a la vez un grupo de otro dominio del bosque","Que un usuario pertenezca a un grupo durante un tiempo limitado"],
+   e:"Dos administradores pueden modificar al mismo tiempo un objeto de grupo sin que se eliminen las modificaciones. El tiempo limitado es del nivel de bosque 2016."},
+  {cat:2, t:"¿Qué guarda el atributo <code>LastLogonTimestamp</code>, activo desde el nivel de dominio Windows Server 2008?",
+   o:["La fecha y hora de la última conexión al dominio, replicada en todos los DC","La fecha y hora de la última conexión al dominio, solo en el DC que la validó","La fecha y hora del último cambio de contraseña de la cuenta"],
+   e:"Guarda la fecha y hora de la última conexión al dominio, y se replica en el conjunto de los controladores del dominio."},
+  {cat:2, t:"La delegación de autenticación para las cuentas de usuario (nivel de dominio 2008) permite:",
+   o:["Que una aplicación con cuenta de servicio autentique a los usuarios","Que un usuario con cuenta de servicio autentique a todas las aplicaciones","Que un administrador delegue el control de una UO en otro usuario"],
+   e:"Autoriza a una aplicación que se ejecuta con una cuenta de servicio a autenticar a los usuarios en el dominio; la usan a menudo las aplicaciones con Kerberos (SSO)."},
+  {cat:2, t:"¿Qué cifrado Kerberos se admite a partir del nivel de dominio Windows Server 2008?",
+   o:["AES de 128 y 256 bits","AES de 128 y 192 bits","DES de 56 y de 128 bits"],
+   e:"Kerberos con AES (Advanced Encryption Standard) de 128 y 256 bits."},
+  {cat:2, t:"Según el documento, los controladores de dominio de solo lectura se implementan para:",
+   o:["Mejorar la seguridad y la autenticación de sitios remotos","Acelerar la replicación del esquema entre los distintos bosques","Acelerar la replicación del esquema entre los distintos dominios"],
+   e:"Los RODC sirven para mejorar la seguridad y la autenticación en los sitios remotos. No tienen que ver con la replicación del esquema."},
+  {cat:2, t:"Desde el nivel de dominio Windows Server 2008, la carpeta SYSVOL puede replicarse con:",
+   o:["DFS-R (Distributed File System Replication)","DFS-N (Distributed File System Namespaces)","FRS (File Replication System), de forma exclusiva"],
+   e:"SYSVOL puede replicarse con DFS-R, frente al tradicional FRS. DFS-N es el espacio de nombres de DFS, no un sistema de replicación."},
+  {cat:2, t:"La mejora de las directivas de contraseña del nivel de dominio 2008 permite:",
+   o:["Dar a un grupo de usuarios una directiva distinta de la Default Domain Policy","Dar a un grupo de equipos del dominio una directiva distinta de la Default Domain Policy","Definir una caducidad para la pertenencia de un usuario a un grupo"],
+   e:"Un grupo de usuarios puede tener su propia directiva de contraseñas en lugar de la directiva predeterminada del dominio (Default Domain Policy)."},
+  {cat:2, t:"¿Qué activa el nivel funcional de dominio Windows Server 2008 R2?",
+   o:["Mejoras de inicio de sesión y autenticación Kerberos","La papelera de reciclaje de Active Directory del dominio","La papelera de reciclaje de Active Directory del bosque"],
+   e:"Activa funciones avanzadas de inicio de sesión y autenticación Kerberos (con AD FS, leer los tokens de autenticación en cada acceso). La papelera es del nivel de bosque 2008 R2."},
+  {cat:2, t:"¿Qué funcionalidades suplementarias aporta el nivel funcional de dominio Windows Server 2016?",
+   o:["Ninguna, igual que los de 2012 y 2012 R2","Ninguna, a diferencia de los de 2012 y 2012 R2","La caducidad de la pertenencia a un grupo"],
+   e:"Los niveles de dominio 2012, 2012 R2 y 2016 no añaden funcionalidades. La caducidad de la pertenencia a grupos es del nivel de bosque 2016."},
+  {cat:2, t:"Según el documento, el nivel funcional Windows Server 2003:",
+   o:["Solo sirve de compatibilidad y no tiene sentido en producción con WS 2016","Solo sirve de compatibilidad y es el más recomendado en producción con WS 2016","Es el único nivel que permite los controladores de solo lectura (RODC)"],
+   e:"Solo garantiza compatibilidad con versiones sin soporte, como transición hasta elevar a 2008 R2 o superior; no hay motivo para usarlo en producción con Windows Server 2016."},
+
+  {cat:3, t:"Para elevar el nivel funcional de un dominio, la consola indicada es:",
+   o:["Dominios y confianzas de AD (o Usuarios y equipos de AD)","Sitios y servicios de Active Directory (o el Esquema de AD)","Sitios y servicios de Active Directory (o la consola GPMC)"],
+   e:"Se usa Dominios y confianzas de AD (también funciona Usuarios y equipos de AD): clic derecho en el dominio → Elevar el nivel funcional de dominio."},
+  {cat:3, t:"Para elevar el nivel funcional del bosque, en Dominios y confianzas de AD se hace clic derecho en:",
+   o:["La raíz de la consola → Elevar nivel funcional del bosque","El dominio raíz del bosque → Elevar nivel funcional del bosque","La raíz de la consola → Maestro de operaciones"],
+   e:"El bosque se eleva desde la raíz de la consola (Elevar nivel funcional del bosque); el clic derecho en un dominio eleva solo el nivel de ese dominio."},
+  {cat:3, t:"¿Qué precaución destaca el documento al elevar el nivel funcional del bosque?",
+   o:["No es posible restaurarlo después a un nivel inferior","Hay que reiniciar antes todos los controladores del bosque","Hay que reiniciar antes todos los controladores del dominio"],
+   e:"Elevar el nivel funcional del bosque es irreversible: no es posible restaurarlo a un nivel inferior. El documento no pide reiniciar los controladores."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

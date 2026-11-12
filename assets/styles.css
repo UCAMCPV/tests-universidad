@@ -217,6 +217,19 @@ table.tbl { width: 100%; border-collapse: collapse; font-size: .9rem; margin: 10
 .progress-pill { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--muted); margin-top: 8px; }
 .progress-pill .mini { width: 80px; height: 6px; border-radius: 6px; background: var(--border); overflow: hidden; }
 .progress-pill .mini i { display: block; height: 100%; background: var(--accent); }
+/* Ampliación o prácticas agrupadas dentro de la tarjeta de su tema */
+.tema .t-group { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.tema .t-group-label { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.tema .t-sub { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 10px 0; }
+.tema .t-sub + .t-sub { border-top: 1px dashed var(--border); }
+.tema .t-sub:last-child { padding-bottom: 0; }
+.tema .t-sub-info { flex: 1 1 240px; min-width: 0; }
+.tema .t-sub-name { font-weight: 600; font-size: .95rem; }
+.tema .t-sub .links { margin-top: 0; }
+.tema .t-sub .links .btn { flex: 0 0 auto; }
+.tema .t-sub .btn.primary { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent-text); }
+.tema .t-sub .btn.primary:hover { filter: none; background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+.tema .t-sub .progress-pill { margin-top: 4px; }
 
 /* ---------- Test ---------- */
 .test-bar {

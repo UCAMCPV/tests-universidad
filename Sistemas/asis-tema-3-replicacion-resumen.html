@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Tema 3 · Replicación de AD y actualización de GPO</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3 · Replicación y GPO · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+  <h1>Resumen: Replicación de AD y actualización de GPO</h1>
+  <p class="lead">Cada cuánto se replica la base de datos del dominio entre controladores, dentro de un sitio y entre sitios, y cómo y cuándo aplican los clientes las directivas de grupo, con los comandos para forzar ambas cosas.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-tema-3-replicacion.html">Hacer el test</a><a class="btn" href="asis-tema-3-resumen.html">Resumen del Tema 3</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#vistazo">De un vistazo</a>
+  <a href="#sec0">Replicación entre DC</a>
+  <a href="#sec1">Factores y forzado</a>
+  <a href="#sec2">GPO en segundo plano</a>
+  <a href="#sec3">Forzar las GPO</a>
+  <a href="#sec4">Consideraciones y proceso</a>
+  <a href="#claves">Ideas clave</a>
+</nav>
+
+<section class="cat" id="vistazo">
+  <h2 class="cat-title">De un vistazo: cifras y comandos</h2>
+  <div class="bloque">
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Valor o comando</th><th>Qué es</th><th>Ámbito</th></tr>
+      <tr><td><b>15 segundos</b></td><td>Tras un cambio, el DC notifica a sus socios de replicación</td><td>Replicación <b>intrasitio</b></td></tr>
+      <tr><td><b>3 segundos</b></td><td>Pausa entre la notificación a un socio y la siguiente, para evitar respuestas simultáneas</td><td>Replicación <b>intrasitio</b></td></tr>
+      <tr><td><b>180 minutos</b> (3 h)</td><td>Intervalo <b>predeterminado</b>; se puede ajustar</td><td>Replicación <b>entre sitios</b></td></tr>
+      <tr><td><b>15 minutos</b></td><td>Intervalo <b>mínimo configurable</b></td><td>Replicación <b>entre sitios</b></td></tr>
+      <tr><td><b>90 minutos</b></td><td>Actualización en segundo plano de las GPO de <b>equipo</b> y de <b>usuario</b></td><td>Clientes Windows</td></tr>
+      <tr><td><b>hasta 30 minutos</b></td><td><b>Desfase aleatorio</b> que se suma a los 90 minutos para no saturar la red</td><td>Clientes Windows</td></tr>
+      <tr><td><code>repadmin /syncall</code></td><td>Fuerza la <b>replicación de AD</b> entre DC</td><td>Línea de comandos</td></tr>
+      <tr><td>Sitios y servicios de AD</td><td>Fuerza la <b>replicación de AD</b> desde la consola</td><td>Consola</td></tr>
+      <tr><td><code>gpupdate /force</code></td><td>Fuerza una actualización completa de las GPO <b>en el equipo donde se ejecuta</b></td><td>Local (CMD o PowerShell)</td></tr>
+      <tr><td><code>Invoke-GPUpdate -Computer "nombre_de_equipo" -Force</code></td><td>Fuerza la actualización de las GPO en un <b>equipo remoto</b></td><td>Remoto (PowerShell)</td></tr>
+      <tr><td>GPMC → clic derecho en la UO → <b>Actualización de directiva de grupo</b></td><td>Notifica a <b>todos los equipos de la UO</b> que se actualicen</td><td>Consola</td></tr>
+    </table></div>
+    <div class="warn">No mezcles las cifras: <b>15 s</b> es la notificación <b>intrasitio</b>; <b>15 min</b> es el mínimo <b>entre sitios</b>; <b>180 min</b> es el predeterminado <b>entre sitios</b>; <b>90 + hasta 30 min</b> es el refresco de las <b>GPO</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. Replicación de la base de datos del dominio entre DC</h2>
+  <div class="bloque">
+    <p>El tiempo que tarda en replicarse la base de datos del dominio entre controladores de dominio <b>depende de si la replicación es dentro de un mismo sitio o entre sitios diferentes</b>. Valores predeterminados:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Intrasitio (mismo sitio)</th><th>Entre sitios</th></tr>
+      <tr><td><b>15 segundos</b>: cuando hay un cambio en un DC, este <b>notifica a sus socios de replicación</b> del mismo sitio.</td><td><b>180 minutos (3 horas)</b>: intervalo de replicación <b>predeterminado</b>, aunque se puede ajustar.</td></tr>
+      <tr><td><b>3 segundos</b>: <b>pausa</b> entre las notificaciones a los socios para <b>evitar respuestas simultáneas</b>.</td><td><b>15 minutos</b>: intervalo <b>mínimo configurable</b>.</td></tr>
+    </table></div>
+<pre>Mismo sitio:   cambio ──15 s──► aviso al socio 1 ──3 s──► aviso al socio 2 ──3 s──► …
+Entre sitios:  replicación cada 180 min por defecto (ajustable, mínimo 15 min)</pre>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. Factores que influyen y replicación forzada</h2>
+  <div class="bloque">
+    <h4>Factores que afectan a los tiempos de replicación</h4>
+    <ul>
+      <li><b>Topología de red</b>: la velocidad y el ancho de banda influyen directamente en la rapidez de la transferencia entre DC.</li>
+      <li><b>Volumen de cambios</b>: cuantos más datos haya que replicar, más puede aumentar el tiempo total.</li>
+      <li><b>Configuración del enlace de sitio</b>: el administrador puede modificar los intervalos entre sitios para equilibrar <b>latencia</b> y <b>tráfico de red</b>.</li>
+      <li><b>Servidores puente</b> (<i>bridgehead servers</i>): en la replicación <b>entre sitios</b> gestionan el tráfico, así que su rendimiento es crucial.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Forzar la replicación</h4>
+    <p>El administrador no tiene por qué esperar a los intervalos predeterminados:</p>
+    <ul>
+      <li><b>Por consola</b>: herramienta <b>Sitios y servicios de Active Directory</b>.</li>
+      <li><b>Por comandos</b>: herramientas como <code>repadmin /syncall</code>.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Actualización en segundo plano de las GPO</h2>
+  <div class="bloque">
+    <p>Es un <b>proceso automático</b> que los <b>clientes</b> realizan <b>periódicamente</b> para aplicar los cambios que hacen los administradores en las directivas de grupo, <b>sin que el usuario tenga que cerrar o iniciar sesión</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Configuración</th><th>Periodo</th><th>Qué más la fuerza</th></tr>
+      <tr><td><b>Del equipo</b></td><td>Cada <b>90 minutos</b> + desfase aleatorio de <b>hasta 30 minutos</b> (para no saturar la red)</td><td>Un <b>reinicio del sistema</b> desencadena <b>siempre</b> una actualización completa</td></tr>
+      <tr><td><b>Del usuario</b></td><td>Cada <b>90 minutos</b> + desfase aleatorio de <b>hasta 30 minutos</b></td><td>Un <b>inicio</b> o <b>cierre de sesión</b>, y también un <b>reinicio</b> del sistema</td></tr>
+    </table></div>
+    <p><b>Procesamiento de los cambios:</b> si la GPO <b>no ha cambiado</b>, el cliente <b>no aplica</b> la configuración; si <b>detecta cambios</b>, <b>descarga</b> la configuración actualizada y la <b>aplica</b>.</p>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Forzar la actualización de las GPO</h2>
+  <div class="bloque">
+    <h4>1. Comando <code>gpupdate /force</code> (local) e <code>Invoke-GPUpdate</code> (remoto)</h4>
+    <p><code>gpupdate /force</code> fuerza una <b>actualización completa de todas las directivas de grupo</b> en el equipo donde se ejecuta.</p>
+<pre>REM Local, en el símbolo del sistema o en PowerShell
+gpupdate /force
+
+# Remoto, con el cmdlet de PowerShell
+Invoke-GPUpdate -Computer "nombre_de_equipo" -Force</pre>
+  </div>
+  <div class="bloque">
+    <h4>2. Consola de administración de directivas de grupo (GPMC)</h4>
+    <p>Fuerza la actualización de <b>todos los equipos de una unidad organizativa</b>:</p>
+    <ol>
+      <li>Abrir la <b>Consola de administración de directivas de grupo</b>.</li>
+      <li>Expandir el <b>dominio</b> y luego las <b>unidades organizativas</b>.</li>
+      <li>Clic derecho en la <b>UO que contiene los equipos</b>.</li>
+      <li>Elegir <b>Actualización de directiva de grupo</b>: se envía una <b>notificación a todos los equipos de esa UO</b> para que inicien una actualización.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">5. Consideraciones y proceso de actualización</h2>
+  <div class="bloque">
+    <h4>Consideraciones importantes</h4>
+    <ul>
+      <li><b>Extensiones del lado del cliente (CSE)</b>: <b>no todas las políticas se pueden aplicar en segundo plano</b>. Por ejemplo, las de <b>instalación de software</b> requieren <b>reiniciar el equipo o iniciar sesión</b> para aplicarse del todo.</li>
+      <li><b>Rendimiento</b>: el segundo plano está pensado para ser eficiente; pero, tras <b>cambios masivos</b>, una actualización forzada puede <b>aumentar temporalmente el uso de CPU y de red</b>.</li>
+      <li><b>Solución de problemas</b>: forzar la actualización es una herramienta útil para resolver problemas de aplicación de GPO.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Proceso de la actualización</h4>
+    <ol>
+      <li><b>Arranque del sistema</b>: se aplica la <b>configuración del equipo</b>.</li>
+      <li><b>Inicio de sesión</b>: se aplica la <b>configuración del usuario</b>.</li>
+      <li><b>Actualización periódica</b>: los clientes de AD se conectan periódicamente al <b>controlador de dominio</b> para comprobar si han cambiado las GPO que se aplican a su máquina o usuario.</li>
+      <li><b>Descarga y aplicación</b>: si hay cambios, descargan la nueva GPO y la aplican <b>en segundo plano, sin interrumpir la sesión</b> del usuario.</li>
+    </ol>
+<pre>arranque ─► GPO de equipo
+inicio de sesión ─► GPO de usuario
+cada 90 min (+0-30) ─► ¿cambios en el DC? ── no ─► no se aplica nada
+                                           └─ sí ─► descargar y aplicar en segundo plano</pre>
+  </div>
+</section>
+
+<section class="cat" id="claves">
+  <h2 class="cat-title">Ideas clave para el examen</h2>
+  <div class="bloque">
+    <ul>
+      <li>Replicación de AD: <b>intrasitio 15 s + 3 s</b> entre socios; <b>entre sitios 180 min</b> por defecto y <b>15 min</b> como mínimo.</li>
+      <li>Influyen la <b>red</b>, el <b>volumen de cambios</b>, el <b>enlace de sitio</b> y los <b>servidores puente</b>.</li>
+      <li>Forzar la replicación: <b>Sitios y servicios de AD</b> o <code>repadmin /syncall</code>.</li>
+      <li>GPO: equipo y usuario cada <b>90 min + hasta 30 aleatorios</b>; el reinicio refresca ambas; iniciar o cerrar sesión, la de usuario; sin cambios no se aplica nada.</li>
+      <li>Forzar las GPO: <code>gpupdate /force</code> (local), <code>Invoke-GPUpdate -Computer … -Force</code> (remoto) o la <b>GPMC</b> sobre una <b>UO</b>.</li>
+      <li>Algunas CSE (como la de <b>software</b>) necesitan <b>reinicio o inicio de sesión</b>; forzar tras cambios masivos sube CPU y red.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-tema-3-replicacion.html">Hacer el test</a><a class="btn" href="../index.html">Volver al inicio</a></div>
+  Basado en «Active Directory: Replicación BBDD y Actualización de GPO» (Administración de Sistemas, UCAM).
+</footer>
+</main>
+
+</body>
+</html>

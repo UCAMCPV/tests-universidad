@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test ASIS Práctica P2-0 · Introducción a Amazon Web Services</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Práctica P2-0 · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Sistemas · Tema 2 · Práctica P2-0</span>
+    <h1>Test: Introducción a Amazon Web Services (EC2)</h1>
+    <p class="lead">21 preguntas de tres opciones. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="asis-p2-0-resumen.html">Ver el resumen</a><a class="btn" href="../index.html">Inicio</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en «Práctica P2-0 – Introducción a Amazon Web Services» (Administración de Sistemas, Juan Morales García).</footer>
+</main>
+
+<script>
+/* La opción CORRECTA es siempre la primera (o[0]); el motor las baraja al mostrarlas. Tres opciones por pregunta: dos casi idénticas, y la correcta nunca es la más larga. */
+window.TEST = {
+  id: "asis-p2-0",
+  cats: [
+    "1. Objetivo y conceptos",
+    "2. Crear la cuenta de AWS",
+    "3. Consola, región y EC2",
+    "4. Lanzar la instancia",
+    "5. Ver la instancia y conectarse"
+  ],
+  qs: [
+  {cat:0, t:"¿Con qué servicio de AWS se crea en la práctica la máquina virtual Debian?",
+   o:["EC2, servidores virtuales en la nube","Lambda, servidores virtuales en la nube","S3, almacenamiento de objetos en la nube"],
+   e:"EC2 (Elastic Compute Cloud) es el servicio de máquinas virtuales: «Virtual Servers in the Cloud». Lambda y S3 aparecen en la consola, pero no crean VMs."},
+  {cat:0, t:"En EC2, la AMI (Amazon Machine Image) es:",
+   o:["La imagen con el SO desde la que se lanza la instancia","La imagen con el SO que se genera al detener la instancia","La máquina virtual que se ejecuta en la nube"],
+   e:"La AMI es la imagen con el sistema operativo (Debian 11 en la práctica) y la instancia es la máquina virtual que se lanza a partir de ella. Detener una instancia no genera ninguna AMI."},
+  {cat:1, t:"Al registrarte, ¿qué uso de la cuenta se marca en <i>Contact Information</i>?",
+   o:["Personal, aunque el correo sea de la UCAM","Business, ya que el correo es de la UCAM","Educativa, vinculada al campus virtual UCAM"],
+   e:"El boletín marca Personal (para proyectos propios). Business es para el trabajo, el centro de estudios o la organización, aunque el correo sea de la universidad."},
+  {cat:1, t:"Sobre la tarjeta de crédito que pide AWS al registrarse:",
+   o:["Es obligatoria, pero no se cobra el uso dentro de la capa gratuita","Es obligatoria, pero solo se cobra el uso dentro de la capa gratuita","Es opcional si se elige el plan de soporte básico y gratuito"],
+   e:"Hace falta una tarjeta válida, pero AWS no cobra lo que esté por debajo de los límites del Free Tier (como mucho retiene 1 USD unos días). En las prácticas se usan siempre los programas gratuitos."},
+  {cat:1, t:"¿Cómo se confirma la identidad durante el registro, según el boletín?",
+   o:["Con un código enviado por SMS al móvil","Con un código enviado al correo de la UCAM","Con el fichero .pem que descarga la consola"],
+   e:"El paso <i>Confirm your identity</i> envía un código por SMS (o llamada de voz). El correo se verifica antes, en otro paso, y el .pem llega mucho después, al crear el par de claves."},
+  {cat:1, t:"Plan de soporte que se elige al final del registro:",
+   o:["El básico (Basic support), que es gratuito","Developer support, desde 29 dólares al mes","Business support, desde 100 dólares al mes"],
+   e:"Se selecciona Basic support – Free. Developer y Business son planes de pago."},
+  {cat:2, t:"En la pantalla <i>Sign in</i>, tras el registro, se entra como:",
+   o:["Root user, con el correo del registro","Usuario IAM, con el correo del registro","Root user, con el ID de la instancia EC2"],
+   e:"Root user es el propietario de la cuenta, con acceso sin restricciones, y entra con el correo con el que te registraste. Un usuario IAM se crea dentro de la cuenta para las tareas diarias."},
+  {cat:2, t:"Lo primero que se hace en la consola, antes de buscar EC2:",
+   o:["Cambiar la región a Europe (Paris)","Cambiar la región a Europe (London)","Crear un usuario IAM para las prácticas"],
+   e:"Se cambia la región de arriba a la derecha a Europe (Paris). Las capturas del boletín muestran London, pero el texto pide París."},
+  {cat:2, t:"¿Por qué importa la región seleccionada en la consola?",
+   o:["Las instancias se crean en esa región y solo se ven desde ella","Solo cambia el idioma de la consola y la moneda de facturación","Solo cambia el idioma de la consola y la zona horaria del panel"],
+   e:"Los recursos de EC2 pertenecen a una región: si cambias de región, la lista sale vacía («You do not have any instances in this region»)."},
+  {cat:2, t:"¿Qué se consulta en <i>Security Groups</i> del panel de EC2 antes de lanzar la VM?",
+   o:["El grupo de seguridad que da acceso a la VM","El par de claves .pem que da acceso a la VM","El catálogo de AMI gratuitas de la región"],
+   e:"Allí aparece el grupo de seguridad por defecto, que regula el tráfico que puede llegar a la máquina. El par de claves se crea después, al lanzar la instancia."},
+  {cat:2, t:"La regla «Allow SSH traffic from Anywhere <code>0.0.0.0/0</code>» del asistente significa que:",
+   o:["Cualquier IP puede intentar conectar por SSH","Solo tu IP pública puede intentar conectar por SSH","Cualquier IP puede acceder a la VM por HTTP y HTTPS"],
+   e:"0.0.0.0/0 representa todas las direcciones IPv4. La consola avisa de ello y recomienda limitar las reglas a IP conocidas."},
+  {cat:3, t:"Nombre y sistema operativo de la instancia según el boletín:",
+   o:["<code>Debian-&lt;MisIniciales&gt;</code> con Debian 11","<code>Ubuntu-&lt;MisIniciales&gt;</code> con Ubuntu 20.04","<code>Ubuntu-&lt;MisIniciales&gt;</code> con Ubuntu 22.04"],
+   e:"Nombre Debian-&lt;MisIniciales&gt; y AMI Debian 11; el resto de opciones por defecto. Las capturas muestran Ubuntu 20.04, pero la práctica usa Debian 11."},
+  {cat:3, t:"Opciones del par de claves que se crea en la práctica:",
+   o:["Tipo RSA y formato .pem","Tipo RSA y formato .ppk","Tipo ED25519 y formato .pem"],
+   e:"Se dejan RSA y .pem (para OpenSSH). El formato .ppk es para PuTTY y ED25519 es el otro tipo de clave, no admitido en instancias Windows."},
+  {cat:3, t:"Al pulsar <i>Create key pair</i>:",
+   o:["Se descarga el fichero .pem con la clave privada","Se descarga el fichero .pem con la clave pública","La clave queda guardada en la consola para bajarla cuando quieras"],
+   e:"Se descarga la clave privada (.pem): hay que guardarla bien porque la necesitarás para conectarte. La clave pública la conserva AWS para instalarla en la instancia."},
+  {cat:3, t:"Almacenamiento que se configura para la instancia:",
+   o:["20 GB en el volumen raíz","30 GB en el volumen raíz","8 GB, el valor que propone por defecto"],
+   e:"El asistente propone 8 GiB y el boletín pide 20 GB. La capa gratuita admite hasta 30 GB de EBS, así que 20 GB no generan coste."},
+  {cat:3, t:"Según el asistente, ¿qué incluye la capa gratuita de EC2 durante el primer año?",
+   o:["750 horas al mes de instancias t2.micro","Instancias de cualquier tipo, sin límite de horas, 12 meses","Instancias de cualquier tipo, sin límite de horas, 6 meses"],
+   e:"750 horas mensuales de t2.micro (o t3.micro donde no exista t2.micro): suficiente para una instancia encendida todo el mes, pero no cualquier tipo."},
+  {cat:4, t:"Justo después de lanzarla, en la lista de instancias la VM aparece:",
+   o:["En estado «Inicializando» hasta que termina de arrancar","En estado «Detenida» hasta que se pulsa el botón Connect","En estado «Inicializando» hasta que alguien conecta por SSH"],
+   e:"Al comienzo indica «Inicializando» (<i>Initializing</i>) y en unos minutos está lista, sin necesidad de conectarse ni de pulsar nada."},
+  {cat:4, t:"En <code>ssh -i &lt;fichero.pem&gt; debian@&lt;nombreDNS&gt;</code>, la opción <code>-i</code> indica:",
+   o:["El fichero de identidad: la clave privada","El fichero de identidad: la clave pública","La IP pública de la instancia a la que conectar"],
+   e:"-i (<i>identity file</i>) apunta a la clave privada .pem; la pública está en la instancia. La dirección va después de la @ (DNS o IP pública)."},
+  {cat:4, t:"Además del fichero .pem, ¿qué dato de la instancia necesitas para el comando <code>ssh</code>?",
+   o:["Su IP pública o su DNS público","Su IP privada o su DNS privado","El ID de la instancia (i-…) y su región"],
+   e:"Desde tu equipo se llega por la IP pública o el DNS público (ec2-…amazonaws.com). La IP privada (172.31.x.x) solo es accesible dentro de la red de AWS."},
+  {cat:4, t:"¿Dónde muestra la consola el comando SSH exacto (usuario y DNS) de tu instancia?",
+   o:["En el botón Connect, pestaña SSH client","En Security Groups, en las reglas de entrada","En Security Groups, en las reglas de salida"],
+   e:"Connect → SSH client indica los pasos: localizar la clave, <code>chmod 400</code> si hace falta y el comando <code>ssh -i</code> con el DNS público. Los grupos de seguridad solo tienen reglas de tráfico."},
+  {cat:4, t:"En la pestaña SSH client, <code>chmod 400</code> sobre el fichero .pem sirve para:",
+   o:["Que la clave privada no sea legible por otros","Que la clave privada sea legible por todos","Convertir la clave .pem al formato .ppk de PuTTY"],
+   e:"400 deja la clave en solo lectura para su propietario. SSH rechaza las claves privadas con permisos demasiado abiertos."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

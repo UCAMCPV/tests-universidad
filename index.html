@@ -102,12 +102,38 @@ var SUBJECTS = [
   {
     id: "asis", initial: "ASIS",
     name: "Administración de Sistemas",
-    meta: "Sistemas de información, CPD, SysAdmin, virtualización y Docker",
+    meta: "Sistemas de información y CPD, virtualización y Docker, dominios Windows, Active Directory y GPO",
     temas: [
-      { name: "Tema 1 · Sistemas de Información", meta: "Resumen y test",
-        links: [ { href: "Sistemas/asis-tema-1-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-1.html", label: "Test · 53 preguntas", test: "asis-tema-1", primary: true } ] },
-      { name: "Tema 2 · Virtualización", meta: "De la abstracción a Docker",
-        links: [ { href: "Sistemas/asis-tema-2-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-2.html", label: "Test · 61 preguntas", test: "asis-tema-2", primary: true } ] }
+      { name: "Tema 1 · Sistemas de Información", meta: "SI, dato e información, calidad, CPD, evolución hasta el cloud, SysAdmin y DevOps",
+        links: [ { href: "Sistemas/asis-tema-1-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-1.html", label: "Test · 93 preguntas", test: "asis-tema-1-v2", primary: true } ],
+        group: { label: "Ampliación", items: [
+          { name: "Tipos de clústers y tecnologías asociadas", meta: "HPC, HTC, alta disponibilidad, balanceo de carga y almacenamiento distribuido",
+            links: [ { href: "Sistemas/asis-tema-1-clusters-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-1-clusters.html", label: "Test · 90 preguntas", test: "asis-tema-1-clusters", primary: true } ] }
+        ] } },
+      { name: "Tema 2 · Virtualización", meta: "Tipos de virtualización e hipervisores, VMware, hiperconvergencia, AWS y Docker",
+        links: [ { href: "Sistemas/asis-tema-2-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-2.html", label: "Test · 146 preguntas", test: "asis-tema-2-v2", primary: true } ],
+        group: { label: "Prácticas", items: [
+          { name: "P2-0 · Introducción a Amazon Web Services", meta: "Cuenta de AWS, región, instancia EC2 Debian con par de claves y conexión SSH",
+            links: [ { href: "Sistemas/asis-p2-0-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-p2-0.html", label: "Test · 21 preguntas", test: "asis-p2-0", primary: true } ] },
+          { name: "P2-1 · Introducción a Docker", meta: "Contenedores y opciones de run, entrar con -it, imágenes, capas y Dockerfile",
+            links: [ { href: "Sistemas/asis-p2-1-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-p2-1.html", label: "Test · 35 preguntas", test: "asis-p2-1", primary: true } ] },
+          { name: "P2-2 · Almacenamiento en Docker", meta: "Volúmenes anónimos y con nombre, volúmenes compartidos y bind mounts",
+            links: [ { href: "Sistemas/asis-p2-2-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-p2-2.html", label: "Test · 22 preguntas", test: "asis-p2-2", primary: true } ] }
+        ] } },
+      { name: "Tema 3 · Gestión de dominios y políticas en Windows", meta: "Grupos de trabajo y dominios, Active Directory, X.500/LDAP, GPO y PowerShell",
+        links: [ { href: "Sistemas/asis-tema-3-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-3.html", label: "Test · 125 preguntas", test: "asis-tema-3", primary: true } ],
+        group: { label: "Ampliación", items: [
+          { name: "3.1 · Bosques y dominios de Active Directory", meta: "Dominio, árbol de dominios y bosque; espacio de nombres continuo y esquema único",
+            links: [ { href: "Sistemas/asis-tema-3-1-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-3-1.html", label: "Test · 13 preguntas", test: "asis-tema-3-1", primary: true } ] },
+          { name: "3.2 · Presentación de Active Directory", meta: "AD DS y LDAP, ntds.dit, consolas y ADAC, particiones, Kerberos y unidades organizativas",
+            links: [ { href: "Sistemas/asis-tema-3-2-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-3-2.html", label: "Test · 54 preguntas", test: "asis-tema-3-2", primary: true } ] },
+          { name: "3.3 · Controladores de dominio", meta: "Roles FSMO, catálogo global, actualizar un DC a WS 2016 y clonar un DC virtual",
+            links: [ { href: "Sistemas/asis-tema-3-3-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-3-3.html", label: "Test · 54 preguntas", test: "asis-tema-3-3", primary: true } ] },
+          { name: "3.4 · Niveles funcionales", meta: "Niveles funcionales de bosque y de dominio en WS 2016, y cómo elevarlos",
+            links: [ { href: "Sistemas/asis-tema-3-4-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-3-4.html", label: "Test · 25 preguntas", test: "asis-tema-3-4", primary: true } ] },
+          { name: "Replicación de AD y actualización de GPO", meta: "Tiempos de replicación entre DC, refresco de GPO y cómo forzar ambos",
+            links: [ { href: "Sistemas/asis-tema-3-replicacion-resumen.html", label: "Resumen" }, { href: "Sistemas/asis-tema-3-replicacion.html", label: "Test · 30 preguntas", test: "asis-tema-3-replicacion", primary: true } ] }
+        ] } }
     ]
   },
   {
@@ -158,6 +184,16 @@ var SUBJECTS = [
       s.done + "/" + s.total + " respondidas · " + s.ok + " aciertos</div>";
   }
 
+  /* Botones de un tema (o de un documento agrupado) y el progreso de sus tests */
+  function linkRow(links, small) {
+    var h = '<div class="links">', prog = "";
+    links.forEach(function (l) {
+      h += '<a class="btn' + (small ? " small" : "") + (l.primary ? " primary" : "") + '" href="' + l.href + '">' + l.label + "</a>";
+      if (l.test) prog += progress(l.test);
+    });
+    return { links: h + "</div>", prog: prog };
+  }
+
   var html = "";
   SUBJECTS.forEach(function (s) {
     var isOpen = openSet.indexOf(s.id) !== -1;
@@ -167,14 +203,19 @@ var SUBJECTS = [
     html += '<span class="info"><span class="name">' + s.name + '</span><br><span class="meta">' + s.meta + "</span></span>" + CHEV + "</button>";
     html += '<div class="subject-body" id="body-' + s.id + '">';
     s.temas.forEach(function (t) {
-      html += '<div class="tema"><div class="t-name">' + t.name + '</div><div class="t-meta">' + t.meta + "</div>";
-      var prog = "";
-      html += '<div class="links">';
-      t.links.forEach(function (l) {
-        html += '<a class="btn' + (l.primary ? " primary" : "") + '" href="' + l.href + '">' + l.label + "</a>";
-        if (l.test) prog += progress(l.test);
-      });
-      html += "</div>" + prog + "</div>";
+      var main = linkRow(t.links, false);
+      html += '<div class="tema"><div class="t-name">' + t.name + '</div><div class="t-meta">' + t.meta + "</div>" + main.links + main.prog;
+      /* Ampliación o prácticas del tema, agrupadas dentro de su tarjeta */
+      if (t.group) {
+        html += '<div class="t-group" role="group" aria-label="' + t.group.label + " · " + t.name + '">';
+        html += '<div class="t-group-label">' + t.group.label + "</div>";
+        t.group.items.forEach(function (g) {
+          var sub = linkRow(g.links, true);
+          html += '<div class="t-sub"><div class="t-sub-info"><div class="t-sub-name">' + g.name + '</div><div class="t-meta">' + g.meta + "</div>" + sub.prog + "</div>" + sub.links + "</div>";
+        });
+        html += "</div>";
+      }
+      html += "</div>";
     });
     html += "</div></section>";
   });

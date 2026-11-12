@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test ASIS Práctica P2-2 · Almacenamiento en Docker</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Práctica P2-2 · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Sistemas · Tema 2 · Práctica P2-2</span>
+    <h1>Test: Almacenamiento en Docker</h1>
+    <p class="lead">22 preguntas de tres opciones. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="asis-p2-2-resumen.html">Ver el resumen</a><a class="btn" href="../index.html">Inicio</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en «Práctica P2-2 – Introducción al almacenamiento en Docker» (Administración de Sistemas, Juan Morales García).</footer>
+</main>
+
+<script>
+/* La opción CORRECTA es siempre la primera (o[0]); el motor las baraja al mostrarlas. Tres opciones por pregunta: dos casi idénticas, y la correcta nunca es la más larga. */
+window.TEST = {
+  id: "asis-p2-2",
+  cats: [
+    "1. Persistencia y tipos de almacenamiento",
+    "2. Volúmenes",
+    "3. Volúmenes con nombre y compartidos",
+    "4. Bind mounting"
+  ],
+  qs: [
+  {cat:0, t:"¿Por qué hacen falta volúmenes o bind mounts en Docker?",
+   o:["Porque lo escrito en el contenedor se pierde al borrarlo","Porque lo escrito en el contenedor se pierde al pararlo","Porque sin ellos un contenedor no puede publicar puertos"],
+   e:"La capa de escritura del contenedor desaparece al borrarlo, no al pararlo. Volúmenes y bind mounts guardan los datos fuera, en el host."},
+  {cat:0, t:"Diferencia entre un volumen y un bind mount:",
+   o:["El volumen lo gestiona Docker; el bind mount es una carpeta del host que eliges tú","El bind mount lo gestiona Docker; el volumen es una carpeta del host que eliges tú","El volumen vive dentro del contenedor y se borra con él"],
+   e:"Docker crea y gestiona los volúmenes en su zona del host; el bind mount monta una ruta concreta del host. Ninguno se borra al borrar el contenedor."},
+  {cat:1, t:"El primer paso de la práctica es <code>docker volume prune</code>. ¿Qué hace?",
+   o:["Borra los volúmenes que no usa ningún contenedor","Borra los volúmenes que no usa ningún contenedor en marcha","Borra los contenedores parados junto con sus volúmenes"],
+   e:"prune elimina los volúmenes que no están asociados a ningún contenedor, ni siquiera a uno parado; sirve para limpiar los heredados de otras prácticas. El boletín escribe «docker volumen»: el comando correcto es «docker volume»."},
+  {cat:1, t:"<code>docker image inspect mysql</code> tiene un apartado Volumes porque:",
+   o:["La imagen declara un volumen para sus datos","La imagen declara un volumen para sus copias de seguridad","La imagen incluye ya una base de datos de ejemplo"],
+   e:"La imagen de MySQL declara un volumen para /var/lib/mysql, donde guarda los datos; cada contenedor recibe uno (anónimo si no se le da nombre)."},
+  {cat:1, t:"En <code>docker container run -d --name mysql -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql</code>, la opción <code>-e</code>:",
+   o:["Define una variable de entorno dentro del contenedor","Define una variable de entorno en el host, fuera del contenedor","Expone el puerto de MySQL hacia el exterior"],
+   e:"-e (--env) pasa variables de entorno al contenedor; aquí permite arrancar MySQL con root sin contraseña. Para publicar puertos se usa -p."},
+  {cat:1, t:"Tras <code>docker container inspect mysql</code>, en Mounts, el campo Source indica:",
+   o:["La ruta del host donde se guarda el volumen","La ruta del contenedor donde se monta el volumen","El nombre de la imagen de la que procede el volumen"],
+   e:"Source es la ruta en el host (p. ej. /var/lib/docker/volumes/…/_data); Destination es la ruta dentro del contenedor (/var/lib/mysql)."},
+  {cat:1, t:"Comando para listar los volúmenes:",
+   o:["<code>docker volume ls</code>","<code>docker volumen ls</code>","<code>docker container ls -v</code>"],
+   e:"El objeto se llama volume. «docker volumen» es una errata del boletín y Docker la rechaza como comando desconocido."},
+  {cat:1, t:"Al lanzar un segundo MySQL (mysql2) sin opción <code>-v</code>, ¿cuántos volúmenes hay?",
+   o:["Dos volúmenes anónimos, uno por contenedor","Dos volúmenes con nombre, uno por contenedor","Uno solo, compartido por mysql y mysql2"],
+   e:"Cada contenedor crea su propio volumen anónimo, con un nombre aleatorio largo; por eso cuesta saber cuál es de quién. Solo tienen nombre si se indica con -v nombre:ruta."},
+  {cat:1, t:"¿Cómo se sabe qué volumen anónimo pertenece a cada contenedor?",
+   o:["Inspeccionando el contenedor (apartado Mounts)","Con docker volume ls, que muestra el contenedor de cada uno","Con docker volume ls, que muestra la imagen de cada uno"],
+   e:"docker volume ls solo muestra el driver y el nombre del volumen. La relación se ve con <code>docker container inspect</code> (Mounts → Name/Source); ponerles nombre lo resuelve."},
+  {cat:1, t:"Tras parar mysql y mysql2, <code>docker volume ls</code> muestra:",
+   o:["Los dos: parar no borra volúmenes","Ninguno: parar borra los volúmenes","Solo el del último contenedor parado"],
+   e:"Parar un contenedor no afecta a sus volúmenes. El boletín pregunta por «los dos contenedores», pero se refiere a los volúmenes."},
+  {cat:1, t:"Después de <code>docker container rm mysql mysql2</code>, <code>docker volume ls</code> muestra:",
+   o:["Los dos volúmenes, que sobreviven a sus contenedores","Ningún volumen, porque rm borra también los volúmenes","Los dos volúmenes, pero ya vacíos de datos"],
+   e:"Borrar un contenedor no borra sus volúmenes: los datos persisten. Para eliminarlos hay que usar <code>docker volume rm</code> o <code>docker volume prune</code>."},
+  {cat:2, t:"En <code>-v mysql-db:/var/lib/mysql</code>, ¿qué es cada parte?",
+   o:["mysql-db, el nombre del volumen; /var/lib/mysql, la ruta interna","mysql-db, el nombre del volumen; /var/lib/mysql, la ruta del host","mysql-db, una carpeta del host; /var/lib/mysql, la ruta interna"],
+   e:"El formato es nombre:ruta-en-el-contenedor. Si a la izquierda hubiera una ruta absoluta del host, sería un bind mount."},
+  {cat:2, t:"Ventaja de nombrar el volumen (mysql-db) en lugar de dejarlo anónimo:",
+   o:["Se identifica y asocia a su contenedor","Se cifra y se comprime de forma automática","Se cifra y se replica de forma automática"],
+   e:"Con nombre es fácil saber qué volumen usa cada contenedor y reutilizarlo. Docker no cifra, comprime ni replica los volúmenes por darles nombre."},
+  {cat:2, t:"Lanzas mysql3 con <code>-v mysql-db:/var/lib/mysql</code> cuando mysql-db ya existe. ¿Se crea un volumen nuevo?",
+   o:["No: mysql3 usa el volumen mysql-db ya creado","Sí: se crea otro volumen, llamado mysql-db-2","Sí: se crea otro volumen anónimo solo para mysql3"],
+   e:"Un volumen con nombre solo se crea si no existe; si existe, se monta el mismo. Así varios contenedores pueden compartirlo."},
+  {cat:2, t:"¿Pueden varios contenedores montar el mismo volumen?",
+   o:["Sí, basta con indicar el mismo nombre en -v","No, cada volumen solo admite un contenedor montado","No, cada volumen solo admite un contenedor en marcha"],
+   e:"Basta con indicar el mismo nombre en -v, como hace mysql3. Otra cosa es que la aplicación lo tolere: dos MySQL a la vez sobre los mismos datos chocan."},
+  {cat:3, t:"En <code>-v $(pwd):/usr/share/nginx/html</code>, <code>$(pwd)</code> se sustituye por:",
+   o:["La ruta del directorio actual del host","La ruta del directorio actual del contenedor","El nombre de un volumen gestionado por Docker"],
+   e:"La shell sustituye $(pwd) por la carpeta en la que estás (dockerfile-sample-2) antes de ejecutar docker. Como es una ruta del host, se trata de un bind mount."},
+  {cat:3, t:"¿Por qué se monta la carpeta en <code>/usr/share/nginx/html</code>?",
+   o:["Es la carpeta que nginx sirve como web","Es la carpeta donde nginx guarda sus logs","Es la carpeta donde nginx guarda su configuración"],
+   e:"nginx sirve las páginas desde /usr/share/nginx/html. Al montar ahí la carpeta del host, nginx publica sus ficheros en lugar de la página por defecto."},
+  {cat:3, t:"Con el nginx y el bind mount en marcha, al abrir localhost en el navegador:",
+   o:["Se ve la web de dockerfile-sample-2","Da error 404 hasta reiniciar el contenedor","Da error 404 hasta reconstruir la imagen"],
+   e:"El bind mount sustituye la carpeta web del contenedor por la del host: la página por defecto cambia por la de dockerfile-sample-2."},
+  {cat:3, t:"Creas test.txt en la carpeta del host y abres <code>localhost/test.txt</code>:",
+   o:["Se ve al momento, sin reiniciar nada","Solo se ve tras reiniciar el contenedor nginx","Solo se ve tras reconstruir la imagen nginx"],
+   e:"Con un bind mount el contenedor ve la carpeta real del host: cualquier cambio aparece en el acto."},
+  {cat:3, t:"En <code>docker container run -d --name nginx -p 80:80 -v $(pwd):/usr/share/nginx/html nginx</code>, el montaje es:",
+   o:["Un bind mount: a la izquierda va una ruta del host","Un volumen con nombre: a la izquierda va una ruta del host","Un volumen anónimo, porque no se le da nombre"],
+   e:"Si lo que va antes de los dos puntos es una ruta del host, Docker hace un bind mount; si es un nombre, un volumen con nombre."},
+  {cat:3, t:"¿Qué tipo de montaje hace cada opción: <code>-v mysql-db:/var/lib/mysql</code> y <code>-v $(pwd):/usr/share/nginx/html</code>?",
+   o:["El primero, un volumen con nombre; el segundo, un bind mount","El primero, un bind mount; el segundo, un volumen con nombre","Ninguno: los dos crean volúmenes anónimos gestionados por Docker"],
+   e:"mysql-db es un nombre de volumen; $(pwd) es una ruta del host, así que el segundo es un bind mount."},
+  {cat:3, t:"<code>echo \"hola esto es una prueba\" &gt; test.txt</code> hace que:",
+   o:["El texto se escriba en test.txt, sustituyendo su contenido","El texto se añada al final de test.txt, conservando lo anterior","El texto se muestre por pantalla y test.txt quede vacío"],
+   e:"&gt; redirige la salida al fichero y lo sobrescribe; &gt;&gt; añadiría al final."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

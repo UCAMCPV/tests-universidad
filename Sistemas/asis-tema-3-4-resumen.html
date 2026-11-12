@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Tema 3.4 · Niveles funcionales</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3.4 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+  <h1>Resumen: Niveles funcionales</h1>
+  <p class="lead">Qué son los niveles funcionales de bosque y de dominio en Windows Server 2016, qué activa cada uno y cómo se elevan (y por qué no hay vuelta atrás).</p>
+  <div class="actions-row"><a class="btn primary" href="asis-tema-3-4.html">Hacer el test</a><a class="btn" href="asis-tema-3-resumen.html">Resumen del Tema 3</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Qué son</a>
+  <a href="#sec1">Nivel de bosque</a>
+  <a href="#sec2">Nivel de dominio</a>
+  <a href="#sec3">Elevar el nivel</a>
+  <a href="#claves">Ideas clave</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. Qué son los niveles funcionales</h2>
+  <div class="bloque">
+    <p>Los niveles funcionales hacen dos cosas a la vez:</p>
+    <ul>
+      <li>Determinan las <b>funcionalidades activas</b> dentro de un <b>dominio</b> o de un <b>bosque</b>.</li>
+      <li>Definen <b>qué sistemas operativos pueden albergar el rol de controlador de dominio</b> en ese dominio o bosque.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Nivel</th><th>Alcance de las funcionalidades que activa</th></tr>
+      <tr><td><b>De bosque</b></td><td>El <b>conjunto del bosque</b></td></tr>
+      <tr><td><b>De dominio</b></td><td><b>Solo ese dominio</b> concreto</td></tr>
+    </table></div>
+    <p>Con <b>Windows Server 2016</b> hay <b>cinco niveles</b> disponibles, tanto de bosque como de dominio:</p>
+<pre>Windows Server 2008 → 2008 R2 → 2012 → 2012 R2 → 2016</pre>
+    <div class="note">Los niveles de <b>Windows Server 2003</b> han desaparecido por el <b>fin del ciclo de vida</b> de ese sistema.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. Niveles funcionales de bosque</h2>
+  <div class="bloque">
+    <h4>Qué activa cada nivel de bosque</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Nivel de bosque</th><th>Funcionalidades para todo el bosque</th></tr>
+      <tr><td><b>Windows Server 2008</b></td><td>
+        <ul>
+          <li>Implementar <b>controladores de dominio de solo lectura</b> (RODC).</li>
+          <li>Modificar un objeto <b>InetOrgPerson</b> en el objeto <b>Usuario</b>.</li>
+          <li><b>Modificar el nombre de un dominio</b>.</li>
+          <li>Crear <b>relaciones de confianza entre bosques</b> para compartir recursos.</li>
+        </ul></td></tr>
+      <tr><td><b>Windows Server 2008 R2</b></td><td>Activar la <b>papelera de reciclaje de Active Directory</b> para recuperar objetos eliminados por accidente.</td></tr>
+      <tr><td><b>Windows Server 2012 y 2012 R2</b></td><td><b>Ninguna</b> funcionalidad suplementaria.</td></tr>
+      <tr><td><b>Windows Server 2016</b></td><td>Definir una <b>caducidad para la pertenencia a un grupo</b>: agregar un usuario a un grupo durante un <b>tiempo limitado</b>.</td></tr>
+    </table></div>
+    <div class="key">Bosque: <b>2008</b> RODC, InetOrgPerson→Usuario, renombrar dominios y confianzas entre bosques · <b>2008 R2</b> papelera de reciclaje · <b>2012/2012 R2</b> nada · <b>2016</b> pertenencia a grupos con caducidad.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Niveles funcionales de dominio</h2>
+  <div class="bloque">
+    <h4>Nivel de dominio Windows Server 2008 (el que más aporta)</h4>
+    <ul>
+      <li>Almacenar las <b>zonas DNS en las particiones del directorio</b>, para replicarlas en todos los controladores de dominio.</li>
+      <li><b>Renombrar los controladores de dominio</b> con la herramienta <code>Netdom.exe</code>.</li>
+      <li><b>Redirigir</b> los contenedores (el documento dice «unidades organizativas») <b>Usuarios</b> y <b>Equipos</b>.</li>
+      <li>Los <b>atributos de grupo</b> se replican como valores múltiples en un único objeto: <b>dos administradores pueden modificar a la vez un grupo</b> sin que se pierdan las modificaciones.</li>
+      <li>El atributo <b><code>LastLogonTimestamp</code></b> está activo en todas las cuentas de usuario: guarda la <b>fecha y hora de la última conexión al dominio</b> y <b>se replica en todos los DC</b> del dominio.</li>
+      <li><b>Delegación de autenticación</b> para las cuentas de usuario: una aplicación que se ejecuta con una <b>cuenta de servicio</b> puede autenticar a los usuarios en el dominio. La usan a menudo las aplicaciones con <b>Kerberos</b> (SSO, <i>Single Sign On</i>).</li>
+      <li>Cifrado <b>Kerberos con AES de 128 y 256 bits</b> (<i>Advanced Encryption Standard</i>).</li>
+      <li><b>Controladores de dominio de solo lectura</b> para mejorar la <b>seguridad y la autenticación de sitios remotos</b>.</li>
+      <li>Replicación de la carpeta <b>SYSVOL</b> entre DC con <b>DFS-R</b> (<i>Distributed File System Replication</i>), frente al tradicional <b>FRS</b> (<i>File Replication System</i>).</li>
+      <li><b>Directivas de contraseña para un grupo de usuarios</b>, en lugar de la directiva predeterminada del dominio (<b>Default Domain Policy</b>).</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>El resto de niveles de dominio</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Nivel de dominio</th><th>Qué añade</th></tr>
+      <tr><td><b>Windows Server 2008 R2</b></td><td>Funcionalidades avanzadas de <b>inicio de sesión y autenticación Kerberos</b>. En entornos federados con <b>AD FS</b> (<i>Active Directory Federation Services</i>) permite leer el contenido de los <b>tokens de autenticación</b> en cada acceso a una aplicación.</td></tr>
+      <tr><td><b>Windows Server 2012 y 2012 R2</b></td><td><b>Ninguna</b> funcionalidad suplementaria.</td></tr>
+      <tr><td><b>Windows Server 2016</b></td><td><b>Ninguna</b> funcionalidad suplementaria.</td></tr>
+    </table></div>
+    <div class="note"><b>Windows Server 2003</b> no se aborda: solo garantiza compatibilidad con versiones que ya no tienen soporte de Microsoft, como transición hasta elevar a <b>2008 R2 o superior</b>. No hay motivo para usarlo en producción con servidores Windows Server 2016.</div>
+    <div class="warn">Trampas típicas: la <b>papelera de reciclaje</b> es del nivel de <b>bosque</b> 2008 R2, no del de dominio; la <b>caducidad de la pertenencia a grupos</b> es del nivel de <b>bosque</b> 2016; <b>renombrar un dominio</b> es de bosque 2008, pero <b>renombrar controladores</b> con Netdom.exe es de dominio 2008.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Elevar el nivel funcional</h2>
+  <div class="bloque">
+    <h4>Nivel funcional de dominio</h4>
+    <ol>
+      <li>Abrir <b>Dominios y confianzas de Active Directory</b> (también funciona con <b>Usuarios y equipos de Active Directory</b>).</li>
+      <li>Desplegar el árbol, seleccionar el <b>dominio</b>, clic derecho → <b>Elevar el nivel funcional de dominio</b>.</li>
+      <li>Elegir el nivel en la lista desplegable → <b>Elevar</b>.</li>
+    </ol>
+  </div>
+  <div class="bloque">
+    <h4>Nivel funcional de bosque</h4>
+    <ol>
+      <li>Abrir <b>Dominios y confianzas de Active Directory</b>.</li>
+      <li>Seleccionar la <b>raíz de la consola</b>, clic derecho en <b>Dominios y confianzas de Active Directory</b> → <b>Elevar nivel funcional del bosque</b>.</li>
+      <li>Elegir el nivel en la lista desplegable → <b>Elevar</b>.</li>
+    </ol>
+    <div class="warn">Precaución: al elevar el nivel funcional del bosque <b>no es posible restaurarlo a un nivel inferior</b>.</div>
+  </div>
+</section>
+
+<section class="cat" id="claves">
+  <h2 class="cat-title">Ideas clave para el examen</h2>
+  <div class="bloque">
+    <ul>
+      <li>Nivel funcional = <b>funcionalidades activas</b> + <b>qué SO pueden ser DC</b>.</li>
+      <li>WS 2016 admite <b>cinco niveles</b> (2008 a 2016); los de 2003 desaparecen por fin de ciclo de vida.</li>
+      <li>Bosque: <b>2008</b> RODC, InetOrgPerson, renombrar dominios, confianzas entre bosques · <b>2008 R2</b> papelera · <b>2016</b> pertenencia temporal a grupos.</li>
+      <li>Dominio 2008: DNS en particiones del directorio, Netdom.exe, LastLogonTimestamp, AES 128/256, RODC, SYSVOL con DFS-R, directivas de contraseña por grupo… · <b>2008 R2</b> Kerberos avanzado con AD FS · <b>2012, 2012 R2 y 2016</b> nada nuevo.</li>
+      <li>Se elevan desde <b>Dominios y confianzas de AD</b>; el de dominio, también desde Usuarios y equipos. <b>Elevar el bosque es irreversible.</b></li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-tema-3-4.html">Hacer el test</a><a class="btn" href="asis-tema-3-replicacion-resumen.html">Siguiente: Replicación de AD y actualización de GPO</a></div>
+  Basado en «Tema 3.4 – Niveles funcionales (ampliación)» (Administración de Sistemas; extracto de Ediciones ENI).
+</footer>
+</main>
+
+</body>
+</html>

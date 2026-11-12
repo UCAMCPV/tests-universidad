@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test ASIS Tema 3 · Replicación de AD y actualización de GPO</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3 · Replicación y GPO · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+    <h1>Test: Replicación de AD y actualización de GPO</h1>
+    <p class="lead">30 preguntas de tres opciones. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="asis-tema-3-replicacion-resumen.html">Ver el resumen</a><a class="btn" href="../index.html">Inicio</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en «Active Directory: Replicación BBDD y Actualización de GPO» (Administración de Sistemas, UCAM).</footer>
+</main>
+
+<script>
+/* La opción CORRECTA es siempre la primera (o[0]); el motor las baraja al mostrarlas. Tres opciones por pregunta: dos casi idénticas, y la correcta nunca es la más larga. */
+window.TEST = {
+  id: "asis-tema-3-replicacion",
+  cats: [
+    "1. Replicación de la base de datos entre DC",
+    "2. Factores y replicación forzada",
+    "3. Actualización en segundo plano de las GPO",
+    "4. Forzar la actualización de las GPO",
+    "5. Consideraciones y proceso de actualización"
+  ],
+  qs: [
+  {cat:0, t:"¿De qué depende el tiempo de replicación de la base de datos del dominio entre controladores?",
+   o:["De si la replicación es dentro de un mismo sitio o entre sitios","De si la replicación es dentro de un mismo dominio o entre dominios","Del nivel funcional del bosque y del número de RODC"],
+   e:"Los valores predeterminados cambian según la replicación sea dentro de un mismo sitio o entre sitios diferentes."},
+  {cat:0, t:"En la replicación intrasitio, ¿cuándo notifica un DC un cambio a sus socios de replicación?",
+   o:["A los 15 segundos","A los 15 minutos","A los 180 minutos (3 horas)"],
+   e:"Dentro del sitio, el DC notifica el cambio a sus socios a los 15 segundos. 15 minutos es el mínimo entre sitios y 180 minutos el predeterminado entre sitios."},
+  {cat:0, t:"¿Para qué sirve la pausa de 3 segundos en la replicación intrasitio?",
+   o:["Para que los socios no respondan todos a la vez","Para agrupar los cambios del sitio antes de enviarlos","Para agrupar los cambios del bosque antes de enviarlos"],
+   e:"Son 3 segundos entre la notificación a un socio y la siguiente, para evitar respuestas simultáneas."},
+  {cat:0, t:"¿Cuál es el intervalo predeterminado de replicación entre sitios?",
+   o:["180 minutos (3 horas), ajustable","180 segundos (3 minutos), ajustable","15 minutos, que es además el máximo"],
+   e:"Entre sitios, el intervalo predeterminado es de 180 minutos (3 horas), aunque puede ajustarse. 15 minutos es el mínimo configurable, no el máximo."},
+  {cat:0, t:"¿Cuál es el intervalo mínimo configurable para la replicación entre sitios?",
+   o:["15 minutos","15 segundos","180 minutos"],
+   e:"El mínimo configurable entre sitios es de 15 minutos; el predeterminado, 180 minutos. 15 segundos es la notificación dentro del sitio."},
+  {cat:0, t:"¿Qué pareja de valores corresponde a la replicación <b>intrasitio</b>?",
+   o:["15 s de notificación y 3 s de pausa entre socios","15 min de notificación y 3 min de pausa entre socios","180 min por defecto y 15 min como mínimo"],
+   e:"Intrasitio: 15 s y 3 s. Entre sitios: 180 min por defecto y 15 min como mínimo."},
+
+  {cat:1, t:"¿Cuál de estos factores influye en los tiempos de replicación, según el documento?",
+   o:["El volumen de cambios que hay que replicar","El número de equipos cliente de cada sitio","El número de equipos cliente de cada dominio"],
+   e:"El documento cita la topología de red, el volumen de cambios, la configuración del enlace de sitio y los servidores puente; no el número de clientes."},
+  {cat:1, t:"Sobre la topología de red, el documento indica que:",
+   o:["La velocidad y el ancho de banda influyen directamente en la replicación","La velocidad y el ancho de banda solo influyen en la replicación intrasitio","Solo importa en la replicación de las GPO, no en la de AD"],
+   e:"La velocidad y el ancho de banda de la red influyen directamente en la rapidez con que se transfieren los datos entre controladores de dominio."},
+  {cat:1, t:"¿Para qué puede un administrador modificar la configuración del enlace de sitio?",
+   o:["Para equilibrar latencia y tráfico de red entre sitios","Para equilibrar latencia y tráfico de red dentro del sitio","Para elegir qué DC tienen el rol de catálogo global"],
+   e:"Los intervalos de replicación entre sitios se ajustan en el enlace de sitio para equilibrar la latencia frente al tráfico de red."},
+  {cat:1, t:"¿Qué papel tienen los servidores puente (<i>bridgehead servers</i>)?",
+   o:["Gestionan el tráfico de la replicación entre sitios","Gestionan el tráfico de la replicación dentro del sitio","Asignan los grupos de RID a los DC de cada sitio"],
+   e:"En la replicación entre sitios, los servidores puente gestionan el tráfico; por eso su rendimiento es crucial."},
+  {cat:1, t:"¿Con qué herramienta gráfica se puede forzar la replicación sin esperar a los intervalos?",
+   o:["Sitios y servicios de Active Directory","Usuarios y equipos de Active Directory","Consola de administración de directivas de grupo"],
+   e:"Por consola se usa Sitios y servicios de Active Directory; por comandos, <code>repadmin /syncall</code>."},
+  {cat:1, t:"¿Qué comando fuerza la replicación de AD entre controladores de dominio?",
+   o:["<code>repadmin /syncall</code>","<code>repadmin /showrepl</code>","<code>gpupdate /force</code>"],
+   e:"<code>repadmin /syncall</code> sincroniza los DC; <code>/showrepl</code> solo muestra el estado de la replicación y <code>gpupdate /force</code> actualiza directivas, no replica AD."},
+
+  {cat:2, t:"La actualización en segundo plano de las GPO es:",
+   o:["Un proceso automático y periódico de los clientes","Una tarea manual que lanza el administrador cada día","Una tarea manual que lanza el administrador cada hora"],
+   e:"Son los clientes quienes la realizan, de forma automática y periódica, sin que el usuario tenga que cerrar o iniciar sesión."},
+  {cat:2, t:"Por defecto, ¿cada cuánto actualiza un cliente la configuración de equipo de sus GPO?",
+   o:["Cada 90 minutos, con un desfase aleatorio de hasta 30","Cada 30 minutos, con un desfase aleatorio de hasta 90","Cada 180 minutos, igual que la replicación entre sitios"],
+   e:"Equipo: cada 90 minutos más un desfase aleatorio de hasta 30 para no saturar la red. La gemela invierte las cifras."},
+  {cat:2, t:"Por defecto, ¿cada cuánto se actualiza en segundo plano la configuración de usuario de las GPO?",
+   o:["Igual que la de equipo: cada 90 minutos más hasta 30 aleatorios","Distinto de la de equipo: cada 30 minutos más hasta 90 aleatorios","Solo al iniciar o cerrar sesión, nunca en segundo plano"],
+   e:"La configuración de usuario también se refresca cada 90 minutos con hasta 30 de desfase; además, iniciar o cerrar sesión fuerza una actualización."},
+  {cat:2, t:"¿Para qué sirve el desfase aleatorio de hasta 30 minutos?",
+   o:["Para no saturar la red con todos los clientes a la vez","Para no saturar la red con la replicación entre sitios","Para esperar a que termine la replicación entre sitios"],
+   e:"El desfase aleatorio reparte en el tiempo las actualizaciones de los clientes para evitar saturar la red."},
+  {cat:2, t:"¿Qué evento desencadena siempre una actualización completa de la configuración del equipo?",
+   o:["Un reinicio del sistema","Un cierre de sesión del usuario","Un inicio de sesión del usuario"],
+   e:"La configuración del equipo se aplica al arrancar: un reinicio siempre provoca una actualización completa. Iniciar o cerrar sesión afecta a la configuración de usuario."},
+  {cat:2, t:"Además del ciclo periódico, ¿qué fuerza una actualización de la configuración de usuario?",
+   o:["Iniciar o cerrar sesión, y también reiniciar el sistema","Iniciar o cerrar sesión, pero nunca un reinicio del sistema","Solo ejecutar <code>repadmin /syncall</code> en el DC"],
+   e:"Un inicio o cierre de sesión fuerza la actualización de la configuración de usuario, y un reinicio del sistema también."},
+  {cat:2, t:"Durante la actualización periódica, si el cliente no detecta cambios en la GPO:",
+   o:["No aplica la configuración y espera al siguiente ciclo","Aplica de nuevo la configuración y espera al siguiente ciclo","Descarga la GPO completa para comprobarla"],
+   e:"Sin cambios, el cliente no aplica la configuración; solo si detecta cambios descarga la configuración actualizada y la aplica."},
+
+  {cat:3, t:"¿Qué comando fuerza en el propio equipo una actualización completa de todas las directivas de grupo?",
+   o:["<code>gpupdate /force</code>","<code>repadmin /syncall</code>","<code>repadmin /syncall /force</code>"],
+   e:"<code>gpupdate /force</code> (en el símbolo del sistema o en PowerShell) fuerza la actualización completa de las GPO del equipo. <code>repadmin</code> es para la replicación de AD."},
+  {cat:3, t:"¿Cómo se fuerza con PowerShell la actualización de las GPO de un equipo remoto?",
+   o:["<code>Invoke-GPUpdate -Computer \"nombre_de_equipo\" -Force</code>","<code>Invoke-GPUpdate -Computer \"nombre_de_equipo\" -Remote</code>","<code>gpupdate /force /remote:nombre_de_equipo</code>"],
+   e:"En remoto se usa el cmdlet <code>Invoke-GPUpdate</code> con <code>-Computer</code> y <code>-Force</code>; <code>gpupdate</code> actúa sobre el equipo donde se ejecuta."},
+  {cat:3, t:"Desde la GPMC, ¿sobre qué se hace clic derecho para forzar la actualización en muchos equipos a la vez?",
+   o:["Sobre la UO que contiene los equipos","Sobre la GPO vinculada a los equipos","Sobre el sitio que contiene los equipos"],
+   e:"Se hace clic derecho en la unidad organizativa que contiene los equipos y se elige Actualización de directiva de grupo."},
+  {cat:3, t:"¿Qué ocurre al elegir «Actualización de directiva de grupo» sobre una UO en la GPMC?",
+   o:["Se notifica a todos los equipos de la UO que inicien una actualización","Se notifica a todos los equipos de la UO que se reinicien inmediatamente","Se replica la GPO a todos los controladores del dominio"],
+   e:"La GPMC envía una notificación a todos los equipos de esa UO para que inicien una actualización de las directivas."},
+
+  {cat:4, t:"Según el documento, una configuración de instalación de software de una GPO:",
+   o:["Necesita reiniciar el equipo o iniciar sesión para aplicarse del todo","Necesita reiniciar el controlador de dominio para poder aplicarse del todo","Se aplica del todo en segundo plano, como el resto de políticas"],
+   e:"No todo puede aplicarse en segundo plano: por la extensión del lado del cliente (CSE) que la procesa, el software necesita reiniciar el equipo o iniciar sesión. No hace falta reiniciar el DC."},
+  {cat:4, t:"¿Qué determina, según el documento, si una política puede aplicarse en segundo plano?",
+   o:["La extensión del lado del cliente (CSE) que la procesa","La extensión del lado del servidor (SSE) que la procesa","El intervalo de replicación del enlace de sitio"],
+   e:"Depende de la extensión del lado del cliente (CSE): algunas, como la de instalación de software, necesitan un reinicio o un inicio de sesión."},
+  {cat:4, t:"¿Qué efecto puede tener una actualización forzada tras cambios masivos en las GPO?",
+   o:["Aumentar temporalmente el uso de CPU y de red","Reducir temporalmente el uso de CPU y de red","Cerrar la sesión de todos los usuarios conectados"],
+   e:"El segundo plano está pensado para ser eficiente, pero un forzado tras cambios masivos puede subir temporalmente el uso de CPU y de red."},
+  {cat:4, t:"Según el documento, la actualización forzada de GPO es especialmente útil para:",
+   o:["Resolver problemas de aplicación de GPO","Reducir el tráfico de red de las GPO","Reducir el tráfico de red de la replicación"],
+   e:"El documento la presenta como una herramienta útil para resolver problemas de aplicación de GPO; tras cambios masivos puede incluso aumentar el tráfico."},
+  {cat:4, t:"En el proceso de actualización, ¿qué configuración se aplica durante el arranque del sistema?",
+   o:["La configuración del equipo","La configuración del usuario conectado","La configuración del usuario local"],
+   e:"Al arrancar se aplica la configuración del equipo; la del usuario se aplica al iniciar sesión."},
+  {cat:4, t:"En la actualización periódica, ¿qué hacen los clientes de AD?",
+   o:["Se conectan al DC para ver si han cambiado las GPO que les afectan","Se conectan al DC para descargar y aplicar siempre las GPO que les afectan","Esperan a que el DC les envíe las GPO cuando cambian"],
+   e:"Los clientes consultan periódicamente al DC si hay cambios en las GPO aplicadas a su máquina o usuario; solo si los hay, las descargan y aplican."},
+  {cat:4, t:"Cuando detecta cambios, el cliente descarga la nueva GPO y la aplica:",
+   o:["En segundo plano, sin interrumpir la sesión del usuario","En segundo plano, pero cerrando antes la sesión del usuario","Solo en el siguiente reinicio del equipo"],
+   e:"La nueva GPO se aplica en segundo plano, sin interrumpir la sesión del usuario."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

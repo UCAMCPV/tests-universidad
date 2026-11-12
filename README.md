@@ -12,7 +12,7 @@ Está hecha con HTML, CSS y JavaScript sin frameworks, dependencias externas, ba
 | Aplicaciones para Dispositivos Móviles | Resumen y test del tema 2 (Kotlin), más 16 ejercicios resueltos. |
 | Ingeniería del Conocimiento | Resúmenes y tests de los temas 1, 1.1, 2, 2.1, 2.2, 2.3 y 2.4, más un examen parcial de 30 preguntas, un simulacro de 30 preguntas con su guía de estudio un test global del primer parcial de 119 preguntas (examen real, Parcial 1 tipo A, Wooclap 2.1–2.3 de clase y simulacro), seis simulacros más (dos al estilo del Parcial 1 tipo A y cuatro al del examen parcial) una guía para el examen basada en los exámenes reales y un generador de preguntas de 287 preguntas con filtros por tema y origen. |
 | Calidad de Software | Resúmenes y tests de los temas 1 (concepto de calidad del software) y 2 (técnicas de revisión, secciones 2.0–2.5), más el banco guiado del primer parcial: 300 preguntas en 13 etapas, con solucionario, 30 diagramas interactivos, formulario y autoevaluación. |
-| Administración de Sistemas | Resúmenes y tests de los temas 1 (sistemas de información) y 2 (virtualización). |
+| Administración de Sistemas | Resúmenes y tests de los temas 1 (sistemas de información), 2 (virtualización) y 3 (gestión de dominios y políticas en Windows). En la portada, cada tema agrupa su material complementario, cada documento con su resumen y su test: la ampliación del Tema 1 (tipos de clústers), las prácticas P2-0, P2-1 y P2-2 del Tema 2 (AWS EC2, Docker y almacenamiento en Docker) y las ampliaciones 3.1–3.4 del Tema 3 (bosques y dominios, presentación de AD, controladores de dominio y niveles funcionales), más la replicación de AD y la actualización de GPO. Todas las preguntas tienen tres opciones, dos de ellas casi idénticas, y la correcta nunca es la más larga. |
 | Desarrollo de Aplicaciones Distribuidas I | Apuntes del primer parcial (hilos, sockets, HTTP y FTP), el primer parcial real resuelto, talleres con 12 ejercicios y un examen de ejemplo. No son tests de opción múltiple: cada pregunta se resuelve con «Ver solución». |
 | Soluciones Informáticas para la Empresa | Resúmenes y tests de los temas 1 (software empresarial y comercio digital, secciones 1.1–1.9, con los requisitos de la Tarea 1), 2 (ERP, CRM e integración de sistemas empresariales, secciones 2.1–2.9) y 3 (automatización, analítica e IA aplicada a procesos empresariales, secciones 3.1–3.9), más un test de repaso del parcial de 160 preguntas. |
 
@@ -79,7 +79,7 @@ El progreso depende del navegador y del origen utilizado: cambiar de dominio, pu
 ├── Moviles/                    # Kotlin: resumen, test y ejercicios
 ├── IngenieriaConocimiento/     # Resúmenes, tests y examen parcial
 ├── CalidadSoftware/            # Resúmenes y tests de calidad del software
-├── Sistemas/                   # Resúmenes, tests y apuntes en Unidad1/*.md
+├── Sistemas/                   # Temas, ampliaciones y prácticas (resumen y test); apuntes en Unidad1/*.md
 ├── DAD1/                       # Apuntes, primer parcial, talleres y examen de ejemplo
 └── SIE/                        # Resúmenes y tests de Soluciones Informáticas para la Empresa
 ```
@@ -89,6 +89,8 @@ Los archivos Markdown de `Sistemas/Unidad1/` son apuntes adicionales; no hay un 
 ## Añadir o editar contenidos
 
 Para actualizar un resumen o ejercicio, edita su HTML. Para añadir un tema, toma como base una página de la misma asignatura, ajusta los títulos, enlaces y `data-crumb`, y registra los enlaces en el array `SUBJECTS` de `index.html`.
+
+Para agrupar dentro de un tema su material complementario (ampliaciones o prácticas), añade al tema un `group: { label: "Ampliación", items: [ { name, meta, links } ] }`. La portada lo muestra dentro de la tarjeta del tema, bajo esa etiqueta, con los botones y el progreso de cada documento. Administración de Sistemas lo usa en sus tres temas.
 
 ### Definir un test
 
@@ -118,6 +120,8 @@ window.TEST = {
 - `qs`: preguntas; `cat` es el índice de categoría empezando en cero, `t` el enunciado, `o` las opciones y `e` la explicación.
 - `c`: índice opcional de la respuesta correcta dentro de `o`; por defecto es `0`.
 - `shuffle: false`: propiedad opcional del test para conservar el orden de las opciones.
+
+El motor baraja el orden de las opciones, pero no su longitud: redacta las opciones de modo que la correcta no sea la más larga. Los tests de Administración de Sistemas usan tres opciones por pregunta; dos de ellas son casi idénticas y solo cambia el detalle que hay que saber, y en parte de las preguntas la correcta es precisamente la tercera.
 
 Incluye también `styles.css`, `app.js` y `auth.js` en la cabecera, siguiendo las páginas existentes. `app.js` debe cargarse antes del motor para que el progreso se guarde. Ajusta las rutas relativas según la carpeta de la página.
 

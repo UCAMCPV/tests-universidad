@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test ASIS Tema 3.2 · Presentación de Active Directory</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3.2 · Test">
+
+<main class="wrap">
+  <div class="page-head">
+    <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+    <h1>Test: Presentación de Active Directory</h1>
+    <p class="lead">54 preguntas de tres opciones. Cada pregunta se corrige al responder y muestra la explicación. Las opciones se barajan y tu progreso se guarda en este navegador.</p>
+    <div class="actions-row"><a class="btn" href="asis-tema-3-2-resumen.html">Ver el resumen</a><a class="btn" href="../index.html">Inicio</a></div>
+  </div>
+  <div id="app"></div>
+  <footer class="page-foot">Basado en «Presentación de Active Directory» (Administración de Sistemas, ampliación del Tema 3; Ediciones ENI).</footer>
+</main>
+
+<script>
+/* La opción CORRECTA es siempre la primera (o[0]); el motor las baraja al mostrarlas. Tres opciones por pregunta: dos casi idénticas, y la correcta nunca es la más larga. */
+window.TEST = {
+  id: "asis-tema-3-2",
+  cats: [
+    "1. AD, AD DS y LDAP",
+    "2. Base de datos NTDS",
+    "3. Administración de AD",
+    "4. Particiones y esquema",
+    "5. Identidades, Kerberos y SPN",
+    "6. Unidades organizativas"
+  ],
+  qs: [
+  {cat:0, t:"¿Cómo se denomina un servidor que alberga el rol de servidor de Active Directory?",
+   o:["Controlador de dominio","Servidor miembro del dominio","Servidor miembro del bosque"],
+   e:"El servidor con el rol de Active Directory es un controlador de dominio (DC). Un servidor miembro pertenece al dominio, pero no aloja el directorio."},
+  {cat:0, t:"Según el documento, Active Directory es la solución de directorio de Microsoft que permite:",
+   o:["Centralizar la gestión de identidades de acceso de una empresa","Centralizar la gestión de las copias de seguridad de una empresa","Repartir el tráfico web entre varios servidores"],
+   e:"AD centraliza la gestión de las identidades de acceso. Las copias de seguridad o el reparto de carga no son su función."},
+  {cat:0, t:"Los servicios de dominio de Active Directory (AD DS) se basan en una arquitectura de directorio:",
+   o:["LDAP (Lightweight Directory Access Protocol)","LDAP (Lightweight Directory Application Protocol)","NTLM (NT Lan Manager)"],
+   e:"AD DS se basa en LDAP, <i>Lightweight Directory <b>Access</b> Protocol</i>. NTLM es un protocolo de autenticación, no de directorio."},
+  {cat:0, t:"¿Qué define el esquema de Active Directory?",
+   o:["Las clases de objetos y de atributos del directorio","Los dominios, los sitios y la programación de las replicaciones","Los dominios, los sitios y la topología completa del bosque"],
+   e:"El esquema define las clases de objetos y de atributos que puede contener la base de datos. Dominios, sitios, replicaciones y topología son la partición de configuración."},
+  {cat:0, t:"¿Por qué puerto interroga LDAP a un controlador de dominio simple?",
+   o:["TCP 389","TCP 3389","TCP 3268"],
+   e:"Con un controlador de dominio simple, LDAP usa TCP 389; TCP 3268 es para el que actúa como catálogo global. El 3389 no es un puerto de LDAP."},
+  {cat:0, t:"¿Por qué puerto interroga LDAP a un controlador de dominio que actúa como catálogo global?",
+   o:["TCP 3268","TCP 389","TCP 3389"],
+   e:"El catálogo global se consulta por TCP 3268. El 389 es el de un controlador de dominio simple y el 3389 no es un puerto de LDAP."},
+  {cat:0, t:"El directorio de AD DS registra información sobre objetos como:",
+   o:["Usuarios, grupos, equipos, impresoras y carpetas compartidas","Usuarios, grupos, equipos, impresoras y sectores del disco duro","Paquetes IP, tramas Ethernet y direcciones MAC"],
+   e:"Guarda usuarios, grupos, equipos, impresoras, contactos, carpetas compartidas y otros objetos, cada uno con los atributos que define el esquema."},
+
+  {cat:1, t:"¿Cuál es la ubicación por defecto de la base de datos de Active Directory?",
+   o:["<code>%SYSTEMROOT%\\NTDS\\ntds.dit</code>","<code>%SYSTEMROOT%\\SYSVOL\\ntds.dit</code>","<code>%SYSTEMROOT%\\NTDS\\edb.chk</code>"],
+   e:"La base de datos es <code>ntds.dit</code>, dentro de la carpeta NTDS. <code>edb.chk</code> está en la misma carpeta, pero es el punto de control."},
+  {cat:1, t:"¿Qué archivo de la carpeta NTDS sirve de punto de control (checkpoint) de <code>ntds.dit</code>?",
+   o:["<code>edb.chk</code>","<code>edb.log</code>","<code>temp.edb</code>"],
+   e:"<code>edb.chk</code> registra las transacciones ejecutadas correctamente y permite saber si ya están en la base de datos. <code>edb.log</code> guarda las que aún no lo están."},
+  {cat:1, t:"Cuando se envían modificaciones a un controlador de dominio, ¿dónde se escriben primero las transacciones?",
+   o:["En <code>edb.log</code>","En <code>edb.chk</code>","Directamente en <code>ntds.dit</code>"],
+   e:"Se escriben primero en <code>edb.log</code> y después se integran en <code>ntds.dit</code>; <code>edb.chk</code> solo marca hasta dónde se han registrado."},
+  {cat:1, t:"¿Qué tamaño fijo tienen <code>edb.log</code>, <code>edbtmp.log</code> y cada archivo <code>.jrs</code>?",
+   o:["10 MB","100 MB","20 MB"],
+   e:"Todos esos archivos (y también <code>edb000X.log</code>) tienen un tamaño fijo de 10 MB."},
+  {cat:1, t:"¿Para qué sirven <code>edbres00001.jrs</code> y <code>edbres00002.jrs</code>?",
+   o:["Para reservar espacio en disco por si este se llena","Para reservar espacio en memoria por si esta se llena","Para compactar ntds.dit durante el mantenimiento"],
+   e:"Reservan espacio de escritura en el disco duro: si se llena, AD sigue funcionando mientras el administrador hace el mantenimiento."},
+  {cat:1, t:"¿Para qué se usa el archivo temporal <code>temp.edb</code>?",
+   o:["Guardar transacciones mientras se compacta ntds.dit","Guardar transacciones mientras se restaura ntds.dit","Servir de punto de control de la base de datos"],
+   e:"<code>temp.edb</code> almacena la información de las transacciones durante el mantenimiento que compacta <code>ntds.dit</code>."},
+  {cat:1, t:"Según el documento, ¿qué archivo auxiliar almacena las transacciones destinadas al archivo <code>edb.log</code>?",
+   o:["<code>edb000X.log</code>","<code>edbtmp.log</code>","<code>edbres00001.jrs</code>"],
+   e:"<code>edb000X.log</code> es el auxiliar de <code>edb.log</code>. <code>edbtmp.log</code> es un temporal parecido a <code>edb.log</code> y los <code>.jrs</code> reservan espacio en disco."},
+  {cat:1, t:"¿Dónde se encuentra el archivo <code>ntds.dit</code>?",
+   o:["En cada controlador de dominio","En cada equipo cliente del dominio","En cada equipo cliente del bosque"],
+   e:"<code>ntds.dit</code> es la base de datos de AD y está en cada controlador de dominio; los equipos cliente no la guardan."},
+
+  {cat:2, t:"Al instalar el rol AD DS se crea un servicio de Windows con arranque automático. ¿Qué facilita?",
+   o:["El mantenimiento de la base de datos, al poder detener el servicio","El mantenimiento de la base de datos sin tener que parar el servicio","La replicación automática del esquema entre bosques"],
+   e:"Como AD funciona como servicio de Windows («Servicios de dominio de Active Directory»), para hacer el mantenimiento de la base de datos basta con detenerlo."},
+  {cat:2, t:"Si se detiene el servicio «Servicios de dominio de Active Directory», ¿qué otros servicios se detienen?",
+   o:["KDC de Kerberos, Mensajería entre sitios, Servidor DNS y Replicación DFS","KDC de Kerberos, Mensajería entre sitios, Servidor DHCP y Replicación DFS","Cliente DNS, Cola de impresión, Firewall y Windows Update"],
+   e:"Se detienen el Centro de distribución de claves Kerberos, la Mensajería entre sitios, el Servidor DNS y la Replicación DFS. DHCP no está en la lista."},
+  {cat:2, t:"¿Cómo se puede tener la consola Usuarios y equipos de Active Directory en un puesto cliente con Windows 10?",
+   o:["Instalando las herramientas RSAT","Habilitando el rol AD DS en Windows 10","Habilitando el rol DNS en Windows 10"],
+   e:"En un servidor sin AD o en un cliente (Windows 7, 8, 8.1 o 10) las consolas se obtienen instalando RSAT (<i>Remote Server Administration Tools</i>)."},
+  {cat:2, t:"¿Qué comando abre la consola Usuarios y equipos de Active Directory?",
+   o:["<code>dsa.msc</code>","<code>dsadd.msc</code>","<code>gpmc.msc</code>"],
+   e:"<code>dsa.msc</code> abre Usuarios y equipos de AD desde el símbolo del sistema, la búsqueda o Ejecutar. <code>dsadd</code> es un comando DS, no una consola."},
+  {cat:2, t:"En el Administrador del servidor, ¿cómo se ven los registros de eventos vinculados al directorio?",
+   o:["Haciendo clic en AD DS desde el Panel","Haciendo clic en AD CS desde el Panel","Abriendo la papelera de reciclaje de AD"],
+   e:"Basta con hacer clic en AD DS desde el Panel del Administrador del servidor. AD CS (servicios de certificados) es otro rol distinto."},
+  {cat:2, t:"¿Qué consola de administración de AD se basa completamente en comandos PowerShell?",
+   o:["El Centro de administración de AD (ADAC)","La consola Usuarios y equipos de AD (dsa.msc)","La consola Usuarios y equipos de AD con RSAT"],
+   e:"ADAC se apoya por completo en el módulo PowerShell de AD: cada acción de la interfaz genera comandos PowerShell transparentes para el usuario."},
+  {cat:2, t:"¿Dónde se pueden ver los comandos PowerShell que ha generado una operación hecha en ADAC?",
+   o:["En la sección Historial de Windows PowerShell","En el Visor de eventos, en el registro de Seguridad","En el Visor de eventos, en el registro del Sistema"],
+   e:"ADAC muestra en su sección «Historial de Windows PowerShell» los cmdlets que ha ejecutado por debajo."},
+  {cat:2, t:"Al crear desde ADAC la UO «Carpetas compartidas» dentro de NEXTINFO, el historial muestra el cmdlet:",
+   o:["<code>New-ADOrganizationalUnit</code>","<code>Create-ADOrganizationalUnit</code>","<code>dsadd ou</code>"],
+   e:"ADAC invoca <code>New-ADOrganizationalUnit</code> con parámetros como <code>Name</code>, <code>Path</code>, <code>ProtectedFromAccidentalDeletion</code> y <code>Server</code>."},
+  {cat:2, t:"Además de administrar usuarios, equipos y unidades organizativas, ADAC permite:",
+   o:["Elevar niveles funcionales y activar la papelera de reciclaje de AD","Elevar niveles funcionales y desactivar la papelera de reciclaje de AD","Registrar la dll del esquema y editar el archivo ntds.dit"],
+   e:"ADAC eleva los niveles funcionales de dominio o de bosque y activa la papelera de reciclaje, que después ya no se puede desactivar."},
+  {cat:2, t:"Una vez activada la papelera de reciclaje de Active Directory:",
+   o:["Ya no se puede desactivar","Se puede desactivar desde ADAC","Se puede desactivar desde PowerShell"],
+   e:"La activación es irreversible: una vez activada no es posible eliminarla, por eso el documento pide precaución antes de hacerlo."},
+  {cat:2, t:"¿Desde qué contenedor se recuperan los objetos eliminados por accidente con la papelera de reciclaje?",
+   o:["Deleted Objects","Recycled Objects","LostAndFound"],
+   e:"Al activar la papelera aparece el contenedor Deleted Objects. LostAndFound es otro contenedor del dominio que nada tiene que ver con la papelera."},
+  {cat:2, t:"¿Qué requisito impone activar la papelera de reciclaje en Windows Server 2016?",
+   o:["Nivel funcional del bosque mínimo Windows Server 2008 R2","Nivel funcional del dominio mínimo Windows Server 2008 R2","Nivel funcional del bosque mínimo Windows Server 2016"],
+   e:"Obliga a elevar el nivel funcional de todo el bosque como mínimo a Windows Server 2008 R2, y no hay vuelta atrás."},
+
+  {cat:3, t:"¿Qué partición contiene todas las clases de objetos y atributos que se pueden crear en el directorio?",
+   o:["La partición de esquema","La partición de dominio","La partición de configuración"],
+   e:"La partición de esquema guarda las clases de objetos y atributos; es única en el bosque y se replica en todos los controladores de dominio."},
+  {cat:3, t:"¿Qué partición guarda la información sobre dominios, sitios, programación de replicaciones y topología del bosque?",
+   o:["La partición de configuración","La partición de directivas de grupo","La partición de dominio"],
+   e:"Es la partición de configuración, única en el bosque. Las tres particiones del documento son esquema, configuración y dominio."},
+  {cat:3, t:"¿Qué particiones son únicas en el bosque y se replican en todos los controladores de dominio?",
+   o:["Esquema y configuración","Configuración y dominio","Esquema, configuración y dominio"],
+   e:"Esquema y configuración son únicas en el bosque. La de dominio no: cada dominio tiene la suya."},
+  {cat:3, t:"¿Qué partición de Active Directory existe una vez por cada dominio?",
+   o:["La de dominio, con todos sus objetos","La de esquema, replicada en todo el bosque","La de configuración, replicada en todo el bosque"],
+   e:"Cada dominio tiene su propia partición de dominio con todos sus objetos. Esquema y configuración son únicas para todo el bosque."},
+  {cat:3, t:"¿Qué cuenta hace falta para modificar (extender) el esquema de Active Directory?",
+   o:["Una cuenta del grupo Administradores de esquema","Una cuenta del grupo Administradores del dominio","Cualquier cuenta, tras registrar <code>schmmgmt.dll</code>"],
+   e:"Modificar el esquema requiere una cuenta de administrador del grupo Administradores de esquema. Registrar <code>schmmgmt.dll</code> solo sirve para ver el esquema en una consola."},
+  {cat:3, t:"El complemento Esquema de Active Directory no está disponible por defecto. Para poder usarlo hay que ejecutar:",
+   o:["<code>regsvr32 schmmgmt.dll</code>","<code>regsvr32 /u schmmgmt.dll</code>","<code>dsa.msc /schema</code>"],
+   e:"<code>regsvr32 schmmgmt.dll</code> registra la dll del complemento. Con <code>/u</code> se haría lo contrario: anular el registro."},
+  {cat:3, t:"Tras registrar la dll, ¿cómo se abre el complemento Esquema de Active Directory?",
+   o:["En una nueva consola MMC","Desde ADAC, en la sección Tareas","Desde ADAC, en la sección Historial"],
+   e:"Una vez registrada la dll, se abre una nueva consola MMC y se le agrega el complemento Esquema de Active Directory."},
+
+  {cat:4, t:"Para gestionar la autenticación y los permisos de acceso, un controlador de dominio emplea:",
+   o:["Las ACL y un protocolo como NTLM o Kerberos","Las ACL y un protocolo como LDAP o Kerberos","Grupos de trabajo con usuarios locales en cada equipo"],
+   e:"El DC combina las ACL (listas de control de acceso) con un protocolo de autenticación: NTLM o Kerberos. LDAP es el protocolo de acceso al directorio, no de autenticación."},
+  {cat:4, t:"¿Cuál es el protocolo de autenticación predeterminado de Windows?",
+   o:["Kerberos versión 5","NT Lan Manager versión 1","NT Lan Manager versión 2"],
+   e:"Microsoft usa por defecto Kerberos versión 5. NTLM (NT Lan Manager) es la alternativa que cita el documento, no la predeterminada."},
+  {cat:4, t:"Kerberos protege el intercambio de claves secretas mediante:",
+   o:["Encriptación simétrica","Claves públicas y privadas","Claves públicas y certificados"],
+   e:"Kerberos usa tiques y claves secretas protegidas con encriptación simétrica; los pares de claves pública y privada son propios de la criptografía asimétrica."},
+  {cat:4, t:"Según el documento, ¿durante cuánto tiempo es válido el tique de acceso que pide el usuario al autenticarse?",
+   o:["Durante la duración de su sesión","Durante una única petición a un servicio","Durante la duración de su contraseña"],
+   e:"El tique es válido durante la sesión: con él el usuario accede a los distintos servicios (archivos, aplicaciones, impresión) presentándolo."},
+  {cat:4, t:"¿Dónde se ubican el cliente y el servidor Kerberos?",
+   o:["Cliente en los equipos cliente y servidor en un controlador de dominio","Cliente en el servidor de archivos y servidor en un controlador de dominio","Ambos en el servidor de archivos al que se accede"],
+   e:"El cliente Kerberos se instala en los equipos cliente y el servidor Kerberos, con el KDC, está en un controlador de dominio."},
+  {cat:4, t:"¿Qué distribuye el servidor de autenticación del KDC a los usuarios que autentica?",
+   o:["Tokens de acceso llamados TGT","Tokens de acceso llamados TGS","Nombres principales llamados SPN"],
+   e:"El servidor de autenticación del KDC entrega el TGT (<i>Ticket Granting Ticket</i>); los TGS son los tiques de servicio que se distribuyen después."},
+  {cat:4, t:"¿Qué presenta el usuario al servidor de archivos para que este valide su acceso?",
+   o:["El TGS que le dio el controlador de dominio","El TGT que le dio antes el controlador de dominio","El SPN de su cuenta de usuario"],
+   e:"Al servidor de archivos se le presenta el TGS (tique de servicio) que ha dado el controlador de dominio. El TGT sirve para conseguir ese TGS."},
+  {cat:4, t:"En el proceso Kerberos del documento, ¿qué ocurre justo después de que el usuario recibe el TGT?",
+   o:["Se presenta el TGT a un controlador de dominio para obtener un TGS","Se presenta el TGS al controlador de dominio para obtener un nuevo TGT","El usuario ya abre los recursos del servidor de archivos"],
+   e:"Paso 3: se presenta el TGT a un controlador de dominio, que responde con un TGS (paso 4). Solo después se presenta el TGS al servidor de archivos."},
+  {cat:4, t:"Un SPN (<i>Service Principal Name</i>) se compone de:",
+   o:["Clase de servicio, nombre de host y puerto","Nombre de usuario, contraseña y dominio del servicio","Nombre de usuario, contraseña y dominio del cliente"],
+   e:"El SPN combina una clase de servicio, un nombre de host y un puerto, y se registra en una cuenta de usuario o de equipo predefinida."},
+  {cat:4, t:"¿Cuándo hay que registrar manualmente el SPN de un servicio?",
+   o:["Cuando el servicio se ejecuta con una cuenta de usuario de dominio","Cuando el servicio se ejecuta con una cuenta integrada como LocalSystem","Cada vez que se reinicia el controlador de dominio"],
+   e:"Con una cuenta integrada (NetworkService, LocalSystem) el SPN se registra automáticamente; con una cuenta de usuario de dominio hay que hacerlo a mano."},
+  {cat:4, t:"¿Con qué comando se registra manualmente un SPN?",
+   o:["<code>setspn -s</code> seguido del SPN y la cuenta","<code>setspn -d</code> seguido del SPN y la cuenta","<code>dsadd user</code> seguido del SPN y el puerto"],
+   e:"Se usa <code>setspn -s</code> con el SPN (<code>http/servidor.dominio:puerto</code>) y la cuenta de usuario de dominio. El modificador <code>-d</code> sirve para eliminar un SPN."},
+
+  {cat:5, t:"Una unidad organizativa (UO) es:",
+   o:["Un contenedor que organiza en árbol de carpetas los objetos del dominio","Un contenedor que organiza en árbol de carpetas los dominios de un bosque","Una partición de la base de datos replicada en todo el bosque"],
+   e:"La UO es un contenedor que organiza los objetos de un dominio en un árbol de carpetas. Agrupar dominios es cosa de árboles y bosques."},
+  {cat:5, t:"Los comandos tradicionales de DOS para administrar Active Directory (por ejemplo, para crear UO) son los comandos:",
+   o:["DS, como <code>dsadd</code>","DS, como <code>dcpromo</code>","NET, como <code>net user</code>"],
+   e:"El documento habla de los comandos DS tradicionales; para crear una UO se usa <code>dsadd ou</code>."},
+  {cat:5, t:"¿Qué opción viene marcada por defecto al crear una UO con Usuarios y equipos de Active Directory?",
+   o:["Proteger contenedor contra eliminación accidental","Proteger contenedor contra modificación accidental","Heredar las directivas del dominio raíz del bosque"],
+   e:"La casilla «Proteger contenedor contra eliminación accidental» está marcada por defecto y protege la UO frente a operaciones nocivas."},
+  {cat:5, t:"En Usuarios y equipos de Active Directory, ¿cómo se crea una UO?",
+   o:["Clic derecho en el dominio o UO › Nuevo › Unidad organizativa","Clic derecho en el dominio o UO › Propiedades › Unidad organizativa","Sección Tareas › Nuevo › Unidad organizativa, tras Información general"],
+   e:"Se hace clic derecho sobre el dominio o una UO existente y se elige Nuevo › Unidad organizativa. La sección Tareas pertenece al Centro de administración de AD."},
+  {cat:5, t:"En el Centro de administración de Active Directory, la opción para crear una UO está en:",
+   o:["La sección Tareas: Nuevo › Unidad organizativa","La sección Información general: Nuevo › Unidad organizativa","El menú Acción de la consola MMC del esquema"],
+   e:"En ADAC se selecciona el dominio en Información general, se elige la ubicación y en la sección Tareas se pulsa Nuevo › Unidad organizativa."},
+  {cat:5, t:"¿Cuál es la sintaxis del comando DOS para crear una unidad organizativa?",
+   o:["<code>dsadd ou &lt;DN de la unidad organizativa&gt;</code>","<code>dsadd ou &lt;GUID de la unidad organizativa&gt;</code>","<code>dsa.msc ou &lt;nombre de la unidad organizativa&gt;</code>"],
+   e:"<code>dsadd ou</code> recibe el DN (nombre distinguido) de la nueva UO y se ejecuta en un controlador de dominio."},
+  {cat:5, t:"El documento crea la sub-UO Grupos dentro de la UO NEXTINFO con:",
+   o:["<code>dsadd ou OU=Grupos,OU=NEXTINFO,DC=NEXTINFO,DC=priv</code>","<code>dsadd ou OU=NEXTINFO,OU=Grupos,DC=NEXTINFO,DC=priv</code>","<code>dsadd ou CN=Grupos,DC=NEXTINFO,DC=priv</code>"],
+   e:"El DN va del objeto a la raíz: primero la nueva UO (<code>OU=Grupos</code>), luego su UO padre (<code>OU=NEXTINFO</code>) y al final el dominio. La gemela invierte las UO."},
+  {cat:5, t:"En <code>New-ADOrganizationalUnit -Name Servidores -Path \"OU=NEXTINFO,DC=Nextinfo,DC=priv\"</code>, el parámetro <code>-Path</code> indica:",
+   o:["El DN del contenedor en el que se crea la UO","El DN del controlador en el que se guarda la UO","El nombre que tendrá la nueva UO"],
+   e:"<code>-Path</code> es la ubicación (el contenedor padre, aquí la UO NEXTINFO) y <code>-Name</code> el nombre de la nueva UO."},
+  {cat:5, t:"¿Qué parámetro de <code>New-ADOrganizationalUnit</code> protege la nueva UO contra la eliminación accidental?",
+   o:["<code>-ProtectedFromAccidentalDeletion:$true</code>","<code>-ProtectedFromAccidentalDeletion:$false</code>","<code>-Confirm:$true</code>"],
+   e:"Con <code>-ProtectedFromAccidentalDeletion:$true</code> la UO queda protegida, igual que con la casilla que la interfaz gráfica marca por defecto."}
+  ]
+};
+</script>
+<script src="../assets/test.js"></script>
+</body>
+</html>

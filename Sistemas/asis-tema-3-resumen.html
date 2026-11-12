@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Tema 3 · Gestión de Dominios y Políticas en Windows</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 3</span>
+  <h1>Resumen: Gestión de dominios y políticas en Windows</h1>
+  <p class="lead">Grupos de trabajo frente a dominios, Active Directory (objetos, dominios, árboles, bosques, UO, nombres, sitios, DNS, esquema, servidores, cuentas y grupos), X.500/LDAP, directivas de grupo (GPO) y PowerShell.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-tema-3.html">Hacer el test</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Grupos de trabajo y directorio</a>
+  <a href="#sec1">AD, objetos y dominio</a>
+  <a href="#sec2">Árboles, bosques y UO</a>
+  <a href="#sec3">Diseño y caso práctico</a>
+  <a href="#sec4">Nombres</a>
+  <a href="#sec5">Sitios, DNS y esquema</a>
+  <a href="#sec6">Servidores</a>
+  <a href="#sec7">Cuentas y grupos</a>
+  <a href="#sec8">X.500 / LDAP</a>
+  <a href="#sec9">GPO</a>
+  <a href="#sec10">PowerShell</a>
+  <a href="#claves">Ideas clave</a>
+  <a href="#ampliacion">Ampliación</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. Grupos de trabajo, dominios y servicio de directorio</h2>
+  <div class="bloque">
+    <h4>Grupo de trabajo</h4>
+    <p>En terminología Microsoft, <b>agrupación lógica de equipos en red que comparten recursos</b> (archivos, impresoras) <b>de igual a igual</b>.</p>
+    <ul>
+      <li>Cada equipo mantiene su <b>propia base de datos local de seguridad</b> (usuarios y permisos).</li>
+      <li>Administración de usuarios y recursos <b>descentralizada</b>: el cambio de una cuenta se hace en cada equipo.</li>
+      <li><b>Ventajas:</b> no requiere ningún Windows Server; sencillo de diseñar e implementar; <b>ideal para pocos equipos y cercanos</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Usuarios locales: el problema de la sincronización</h4>
+    <p>Cada máquina tiene su BD de usuarios independiente y se pueden crear usuarios iguales en varias. Problema: <b>sincronizarlos</b>. Las altas, bajas, cambios de contraseña o de configuración deben hacerse <b>en todas las máquinas</b>.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Usuario</th><th>PC1</th><th>PC2</th><th>PC3</th></tr>
+      <tr><td><b>Usuario2</b></td><td>clave2</td><td>clave22</td><td>deshabilitado</td></tr>
+      <tr><td><b>Usuario3</b></td><td>clave3</td><td>no existe (dado de baja)</td><td>clave3</td></tr>
+    </table></div>
+    <div class="note">El mismo usuario acaba con claves y estados distintos en cada equipo: justo lo que resuelve un dominio.</div>
+  </div>
+  <div class="bloque">
+    <h4>Entorno cliente-servidor sin directorio</h4>
+    <p>Para que un usuario acceda a recursos de varios servidores hay que <b>darle de alta en cada uno</b> y otorgarle los permisos.</p>
+    <ul>
+      <li>Viable solo en redes pequeñas: <b>menos de 20 equipos y menos de 2 servidores</b>.</li>
+      <li>En redes medianas o grandes (<b>más de 2 servidores</b>) dar de alta usuarios es tedioso y propenso a errores.</li>
+      <li>Lo deseable es una <b>administración centralizada</b>: crear el usuario <b>una única vez</b> y que acceda desde cualquier equipo con los mismos permisos; si cambia la contraseña, el cambio vale para <b>toda la red</b>.</li>
+    </ul>
+    <div class="key">Para esa administración centralizada se utiliza un <b>servicio de directorio</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Servicio de directorio</h4>
+    <p><b>Base de datos jerárquica y distribuida</b>, <b>optimizada para operaciones de lectura</b>: soporta búsquedas ágiles en grandes volúmenes de datos distribuidos.</p>
+    <p><b>Objetivo:</b> gestión centralizada de la red (usuarios, equipos, impresoras…) facilitando búsquedas y administración mediante una BD en forma de árbol.</p>
+    <p><b>Características:</b> es un almacén de datos con información de todos los objetos de la red (usuarios, grupos, equipos, recursos compartidos…); está distribuido de manera jerárquica; permite la administración centralizada de los recursos y el acceso de usuarios y aplicaciones a ellos.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Ventaja</th><th>En qué consiste</th></tr>
+      <tr><td><b>a) Seguridad de la información</b></td><td>Protección ante accesos indebidos</td></tr>
+      <tr><td><b>b) Replicación de la información</b></td><td>Agilizar búsquedas y protegerse ante caídas de servidores. Sincronización por cambios de datos o periódica</td></tr>
+      <tr><td><b>c) Administración basada en directivas</b></td><td>Las directivas de grupo son la base para administrar la política de seguridad de la empresa</td></tr>
+      <tr><td><b>d) Capacidad de ampliación</b></td><td>Sistema flexible ante futuras ampliaciones de la red</td></tr>
+      <tr><td><b>e) Escalabilidad</b></td><td>Aumentar el servicio a miles de usuarios e integrar dos estructuras que ya tienen servicio de directorio sin problemas</td></tr>
+    </table></div>
+    <p><b>Ejemplos:</b> Active Directory (Microsoft), OpenLDAP (Linux), Novell eDirectory (Novell) y Oracle Internet Directory (Oracle).</p>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2.1 Active Directory, objetos y dominio</h2>
+  <div class="bloque">
+    <h4>¿Qué es Active Directory?</h4>
+    <p>Nombre que usa Microsoft para su <b>implementación de servicio de directorio</b> en una red distribuida de computadores. Está <b>basado en los estándares X.500</b>.</p>
+    <ul>
+      <li><b>Simular</b> una infraestructura de red → mediante <b>objetos</b>.</li>
+      <li><b>Controlar</b> los recursos de la red → mediante <b>Group Policy Objects (GPO)</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Objetos</h4>
+    <p>Un objeto es un <b>recurso de red con nombre y atributos</b>; representa la infraestructura física y es el <b>bloque de construcción básico</b> de AD.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Tipo</th><th>Ejemplos</th></tr>
+      <tr><td><b>Objetos hoja</b></td><td>Usuarios, grupos, impresoras, equipos, contactos…</td></tr>
+      <tr><td><b>Objetos contenedores</b></td><td>Unidades organizativas, dominios, árboles y bosques</td></tr>
+    </table></div>
+    <div class="key">La estructura jerárquica de objetos permite <b>desacoplar la estructura lógica</b> de la organización (dominios, árboles…) <b>de la estructura física</b> (topología de red).</div>
+  </div>
+  <div class="bloque">
+    <h4>El dominio</h4>
+    <ul>
+      <li><b>Estructura principal de AD.</b> Es una <b>frontera de seguridad o administrativa</b>: todos sus usuarios funcionan bajo la <b>misma política de seguridad</b>.</li>
+      <li>Su jerarquía se representa con otros objetos (contenedores y hoja). También se le llama <b>«partición»</b> de un AD.</li>
+      <li>AD se compone de <b>uno o más dominios</b> (uno para toda la empresa o uno por delegación). Todo objeto de red existe dentro de un dominio, que puede contener <b>hasta un millón de objetos</b>.</li>
+      <li>El <b>administrador del dominio</b> tiene derechos absolutos en su dominio.</li>
+      <li>Se identifica con un <b>nombre en formato DNS</b>, que es el sufijo de sus equipos: <code>equipo1</code> en <code>asidominio.com</code> → <code>equipo1.asidominio.com</code>.</li>
+      <li>Admite equipos próximos (<b>LAN</b>) y lejanos (<b>WAN</b>).</li>
+      <li>Reside en los <b>controladores de dominio (CD)</b>: servidores que <b>autentican</b> (validan ID y contraseña) a quien quiere acceder al dominio.</li>
+      <li>BD de usuarios <b>centralizada</b> en la que confían los miembros: la identificación se <b>delega en el CD</b>, aunque cada máquina puede mantener usuarios locales. Ventaja: <b>sincronización de usuarios</b>.</li>
+      <li>Las BD se <b>replican entre los CD</b> del dominio: todos contienen la misma información.</li>
+      <li>En el diseño lógico de AD se representa como un <b>triángulo</b>.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Ejemplo con dominio</th><th>PC1</th><th>PC2</th><th>PC3</th></tr>
+      <tr><td><b>Usuario2</b> (del dominio)</td><td>clave2</td><td>clave2</td><td>clave2</td></tr>
+      <tr><td><b>Usuario5</b> (local de PC3)</td><td>—</td><td>—</td><td>solo aquí</td></tr>
+    </table></div>
+    <p>En el CD: Usuario1–clave1, Usuario2–clave2, Usuario3–clave3, Usuario4 deshabilitado.</p>
+  </div>
+  <div class="bloque">
+    <h4>Los tres límites del dominio</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Límite</th><th>Significado</th></tr>
+      <tr><td><b>De seguridad</b></td><td>Directivas de seguridad, derechos administrativos y ACL <b>no se comparten entre dominios</b></td></tr>
+      <tr><td><b>De replicación</b></td><td><b>Cualquier CD</b> admite cambios y los replica al resto de controladores</td></tr>
+      <tr><td><b>De delegación</b></td><td>Se delegan derechos administrativos del dominio o de algunas UO a otros usuarios, <b>pero no de otros dominios</b></td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">2.2 Árboles, bosques y unidades organizativas</h2>
+  <div class="bloque">
+    <h4>Árbol de dominios</h4>
+    <p>Conjunto de <b>uno o más dominios que comparten un espacio de nombres contiguo</b>: derivan del mismo nombre de dominio raíz. Es una agrupación jerárquica de dominios (ej. <code>microsoft.com</code> con <code>dev.microsoft.com</code> y <code>product.microsoft.com</code>).</p>
+    <p><b>Ejemplo inforxte.com:</b> la empresa trabaja en Francia, España, Suiza, Alemania e Italia; España se divide en delegaciones (Madrid, Barcelona, Valencia, Sevilla, Bilbao). Valencia tiene <b>200 trabajadores</b>, lo que justifica su propio administrador.</p>
+<pre>inforxte.com                    ← dominio raíz (sede central)
+ └── spain.inforxte.com         ← secundario (España)
+      └── valencia.spain.inforxte.com   ← Valencia, con su administrador</pre>
+    <ul>
+      <li>El <b>primer dominio</b> creado es el <b>raíz</b>; los que se agregan a uno existente son <b>secundarios</b>.</li>
+      <li>Dominio y subdominio establecen <b>automáticamente</b> una relación de confianza <b>bidireccional</b> (A confía en B y B en A) y <b>transitiva</b>.</li>
+      <li>Cada dominio tiene su propia jerarquía y estructura de AD.</li>
+      <li><b>Catálogo global común</b>: lista cualquier objeto del árbol y permite <b>búsquedas en todos los dominios</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Bosque</h4>
+    <p>Conjunto de <b>uno o más árboles</b> conectados entre sus <b>dominios raíz</b> mediante relaciones de confianza <b>bidireccionales y transitivas</b>. Agrupa árboles diferentes que queremos que trabajen juntos: permite divisiones con <b>espacios de nombres independientes</b> y que <b>dos organizaciones combinen sus redes</b>.</p>
+    <p><b>Ejemplo:</b> inforxte.com compra Computerlab (<code>computerlab.com</code>) y quiere mantener esa estructura de nombres independiente → ambos dominios se integran en el <b>mismo bosque</b>.</p>
+<pre>                        BOSQUE
+inforxte.com  ◄── confianza bidireccional ──►  computerlab.com
+ └── spain.inforxte.com    y transitiva         (árbol propio)
+                         entre dominios raíz</pre>
+    <p><b>Razones para agrupar dominios en un bosque:</b></p>
+    <ol type="a">
+      <li><b>Mantener los nombres de dominio</b> de sus árboles (fusiones de empresas que quieren conservar su identidad).</li>
+      <li><b>Proporcionar una estructura de red</b> (empresas independientes que trabajan juntas de manera puntual).</li>
+    </ol>
+    <div class="warn"><b>No se pueden mover dominios entre bosques.</b></div>
+    <div class="note">Otra diapositiva añade que «las relaciones de confianza deben establecerse de forma manual siguiendo un único sentido». Para el examen, quédate con la definición: dentro del bosque, los dominios raíz se unen con confianzas <b>bidireccionales y transitivas</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Unidad organizativa (UO / OU)</h4>
+    <ul>
+      <li>Sirve para <b>organizar objetos dentro de un dominio</b>; cada dominio tiene su propia jerarquía de UO.</li>
+      <li>Una buena estructura de UO es importante para <b>aplicar las políticas de grupo</b> de forma eficiente y <b>delegar el control administrativo</b> a nivel de UO.</li>
+      <li><b>No es permanente:</b> cambia con la organización (se crean y borran UO y se mueven usuarios de una a otra).</li>
+      <li>Ejemplo, dominio <code>ucam.edu</code>: OU=Profesores, OU=Alumnos, OU=PAS, OU=Informática, OU=Administración, OU=Conserjería.</li>
+    </ul>
+    <div class="warn"><b>¡OJO!</b> Las UO inciden sobre la <b>funcionalidad</b>; los grupos, sobre la <b>seguridad</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Comparativa rápida</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Estructura</th><th>Qué agrupa</th><th>Clave</th></tr>
+      <tr><td><b>UO</b></td><td>Objetos dentro de un dominio</td><td>Aplicar GPO y delegar</td></tr>
+      <tr><td><b>Dominio</b></td><td>Objetos con la misma política de seguridad</td><td>Frontera de seguridad, replicación y delegación</td></tr>
+      <tr><td><b>Árbol</b></td><td>Dominios con espacio de nombres <b>contiguo</b></td><td>Confianza automática bidireccional y transitiva</td></tr>
+      <tr><td><b>Bosque</b></td><td>Árboles con espacios de nombres <b>independientes</b></td><td>Unidos por sus dominios raíz</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">2.3 Guía de diseño y caso práctico</h2>
+  <div class="bloque">
+    <h4>Guía de diseño</h4>
+    <p>Se debe intentar crear <b>árboles con un único dominio</b> e incluir dentro <b>diferentes UO</b>. ¿Cuándo crear un subdominio?</p>
+    <ul>
+      <li>Conexiones <b>WAN lentas</b> en las que hay que limitar el tráfico de replicación.</li>
+      <li>Cuestiones de <b>seguridad</b>.</li>
+      <li>Facciones organizativas o políticas que exigen <b>fronteras administrativas</b> (distintos administradores para dominios concretos).</li>
+      <li>Organización <b>muy grande</b>: más dominios permiten su crecimiento futuro.</li>
+      <li>Organización de <b>ámbito internacional</b>.</li>
+    </ul>
+    <div class="key">Microsoft recomienda un árbol <b>tan poco profundo como sea posible</b>: profundidad de dominios <b>como mucho 3</b> (2 es preferible y <b>1 es lo óptimo</b>).</div>
+  </div>
+  <div class="bloque">
+    <h4>Caso de uso: Amparo Fabra</h4>
+    <p><b>a)</b> La empresa de telas Amparo Fabra tiene fábricas en Madrid, Barcelona, Sevilla y Bilbao, cada una con su red en grupo de trabajo. Quieren una estructura única a partir del dominio <code>afabra.es</code>, centralizada en Bilbao, pero con <b>administración independiente</b> por fábrica, y que un trabajador que se desplace pueda acceder a sus recursos desde otra fábrica.</p>
+    <p><b>b)</b> Un año después compran la firma de moda Comomola (<code>comomola.es</code>), que quiere <b>mantener su marca y su dominio</b> pero integrarse en la misma estructura informática.</p>
+<pre>a) afabra.es  (dominio raíz: aquí queda Bilbao)
+    ├── madrid.afabra.es
+    ├── barcelona.afabra.es
+    └── sevilla.afabra.es
+
+b)  BOSQUE:  afabra.es ◄── confianza entre dominios raíz ──► comomola.es</pre>
+    <div class="key"><b>Solución:</b> a) dominio raíz <code>afabra.es</code> con un <b>subdominio por fábrica</b> (Bilbao en el raíz); b) integrar el <b>árbol</b> <code>comomola.es</code> en el <b>mismo bosque</b> que <code>afabra.es</code>, con relación de confianza entre sus dominios raíz.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">2.4 Sistema de nombres de AD</h2>
+  <div class="bloque">
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Nombre</th><th>Para qué sirve</th><th>Ejemplo</th></tr>
+      <tr><td><b>1. Nombre completo</b></td><td>Identifica un objeto dentro del AD de manera <b>inequívoca</b></td><td><code>CN=Rafael Pérez, OU=Users, DC=ejemplo, DC=com</code></td></tr>
+      <tr><td><b>2. Nombre completo relativo</b></td><td>Ruta del objeto <b>sin mencionar su dominio ni su UO</b>. Puede repetirse en el bosque</td><td>Estando en la UO Users de ejemplo.com: <code>Rafael Pérez</code></td></tr>
+      <tr><td><b>3. Nombre principal de usuario</b></td><td>Nombre con el que <b>se registra</b> el usuario; debe saber en qué dominio está su cuenta</td><td><code>rperez@ejemplo.com</code></td></tr>
+      <tr><td><b>4. GUID y SID</b></td><td>Identifican el objeto de forma <b>única en todo el bosque</b>. El <b>SID depende del dominio</b> y cambia si el objeto se mueve a otro; el <b>GUID nunca cambia</b></td><td>—</td></tr>
+      <tr><td><b>5. Nombre NetBIOS</b></td><td>Compatibilidad hacia atrás con <b>Windows NT</b> y aplicaciones antiguas. Se recomienda que sea <b>el mismo</b> que el usado para el AD</td><td>—</td></tr>
+    </table></div>
+    <div class="warn">SID frente a GUID: los dos son únicos en el bosque, pero solo el <b>SID cambia</b> al mover el objeto de dominio.</div>
+  </div>
+  <div class="bloque">
+    <h4>Ejercicio: Gema Escrivá</h4>
+    <p>Usuaria situada en la UO <b>Usuarios</b> del dominio <code>actividad.ejemploSOR.com</code>, que se valida como <code>gescriva</code>. Solución siguiendo los ejemplos del tema:</p>
+    <ul>
+      <li><b>Nombre completo:</b> <code>CN=Gema Escrivá, OU=Usuarios, DC=actividad, DC=ejemploSOR, DC=com</code></li>
+      <li><b>Nombre completo relativo:</b> <code>Gema Escrivá</code></li>
+      <li><b>Nombre principal de usuario:</b> <code>gescriva@actividad.ejemploSOR.com</code></li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">2.5 Sitios, AD y DNS, y esquema</h2>
+  <div class="bloque">
+    <h4>Estructura física: sitios (sites)</h4>
+    <ul>
+      <li><b>Segmento de red o rango de subredes IP</b> conectadas por una red de <b>alta calidad</b> (normalmente <b>LAN</b>).</li>
+      <li>Los equipos de un sitio deben tener <b>conectividad RPC</b> entre ellos.</li>
+      <li>Los <b>CD</b> se asignan a un sitio durante su <b>proceso de promoción</b>; los <b>clientes</b>, durante su <b>arranque</b>: el CD los asigna según la <b>subred de su IP</b>.</li>
+      <li>Un dominio puede tener <b>varios sitios</b>, con un CD y su copia de AD en cada uno, por <b>velocidad y fiabilidad</b> (caída del enlace WAN): cada usuario accede al DC de su sitio. Debe haber <b>replicación entre los DC</b>, y su tráfico se puede controlar.</li>
+    </ul>
+<pre>Sitio 1 (LAN: CD + clientes) ──── enlace WAN ──── Sitio 2 (LAN: CD + clientes)
+          └────────── replicación controlada entre los CD ──────────┘</pre>
+  </div>
+  <div class="bloque">
+    <h4>AD frente a DNS</h4>
+    <p>Ambos usan el término «dominio»: son conceptos <b>separados pero relacionados</b>.</p>
+    <ul>
+      <li><b>Dominio DNS:</b> colección de registros de recursos que describe los <b>hosts y servicios</b> del dominio.</li>
+      <li><b>Dominio AD:</b> indica cómo se <b>particionan los objetos</b> del AD.</li>
+      <li>Cada dominio AD <b>requiere su dominio DNS</b> como <b>servicio de localización</b>: los servicios y equipos del AD se registran en DNS para que los clientes los <b>localicen mediante consultas DNS</b>.</li>
+    </ul>
+<pre>Espacio DNS                      Espacio AD
+  "."
+   └ net
+      └ steveco  ───────────►  Steveco.net (dominio AD)
+         ├ eng   ───────────►    ├ eng (dominio hijo)
+         └ hr    ───────────►    └ hr  (dominio hijo)</pre>
+  </div>
+  <div class="bloque">
+    <h4>Esquema de AD</h4>
+    <p>Define las <b>clases de objetos</b> que se pueden crear:</p>
+    <ul>
+      <li>Qué atributos <b>debe</b> tener una instancia y cuáles <b>puede</b> tener adicionalmente.</li>
+      <li>Qué clases de objetos pueden ser <b>contenedores</b>.</li>
+      <li>Ej. de un usuario se guarda: nombre, nombre completo, contraseña…; horas y equipos permitidos de inicio de sesión; directorio home, logon script y carpeta de perfil.</li>
+    </ul>
+    <p>Al instalar AD se define un <b>esquema predeterminado</b> con usuarios, grupos, equipos e impresoras, más objetos y propiedades de uso interno. El esquema <b>se puede extender</b>: nuevas clases de objetos y nuevos atributos.</p>
+  </div>
+</section>
+
+<section class="cat" id="sec6">
+  <h2 class="cat-title">2.6 Tipos de servidores</h2>
+  <div class="bloque">
+    <h4>Controladores de dominio (CD)</h4>
+    <ul>
+      <li>Equipo con <b>Windows Server</b> con una <b>réplica del directorio</b> y el servicio de Directorio Activo instalado.</li>
+      <li>Mantiene la BD de usuarios y grupos que comparte con otros servidores y clientes, y ejecuta el servicio que <b>autentica los inicios de sesión</b>.</li>
+      <li>Todo dominio debe contar con <b>uno o más</b> controladores.</li>
+    </ul>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Partición que almacena</th><th>Contenido</th><th>Se replica a</th></tr>
+      <tr><td><b>De dominio</b></td><td>Objetos del dominio</td><td>Cada CD del <b>mismo dominio</b>, no a otros dominios</td></tr>
+      <tr><td><b>De esquema</b></td><td>Definición de todos los tipos de objetos y atributos que se pueden crear en el bosque</td><td><b>Todos los CD del bosque</b> (común a todos los dominios). Solo <b>un CD del bosque</b> puede modificar el esquema</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>RODC (Read-only Domain Controller)</h4>
+    <ul>
+      <li>CD con una <b>copia de solo lectura</b> del directorio activo: <b>desde él no se puede administrar</b> el dominio.</li>
+      <li>Recomendado en <b>sucursales sin suficiente seguridad</b> (física): los equipos de la sucursal tienen acceso rápido a un CD, pero sin ofrecer un punto de ataque a la red interna.</li>
+      <li>En el sitio central (centro de datos protegido) queda el CD <b>grabable</b>.</li>
+    </ul>
+    <div class="warn"><b>¡El RODC no se puede utilizar para tolerancia a fallos!</b></div>
+  </div>
+  <div class="bloque">
+    <h4>Servidores miembro e independientes</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th></th><th>Servidor miembro</th><th>Servidor independiente</th></tr>
+      <tr><td><b>Dominio</b></td><td>Pertenece al dominio, pero <b>no gestiona</b> el Directorio Activo</td><td><b>No pertenece</b> a ningún dominio</td></tr>
+      <tr><td><b>Usuarios</b></td><td>Se accede con un usuario <b>local</b> o con un usuario <b>del dominio</b> (autenticado en el CD)</td><td>BD de usuarios y grupos <b>propia</b>, no compartida: hay que autenticarse en él, no en un CD</td></tr>
+      <tr><td><b>Dos servidores</b></td><td>La cuenta del dominio sirve en ambos</td><td>Hace falta <b>una cuenta en cada uno</b></td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Inicio de sesión en delegaciones remotas</h4>
+    <p>Por la lentitud y fiabilidad de los enlaces WAN hace falta un <b>servidor cercano</b>, <b>sincronizado</b> con el resto y con <b>resolución de conflictos</b> por cambios en varios servidores. Ejemplos: servidor <b>primario y esclavo en NIS</b>; <b>control de versiones</b> de cambio de objeto en Windows.</p>
+<pre>MURCIA (maestro) ── propagación de cambios ──► MADRID (esclavo)
+Usuario2: usa clave2 en todos los equipos · Usuario5: local, solo en PC3</pre>
+  </div>
+</section>
+
+<section class="cat" id="sec7">
+  <h2 class="cat-title">2.7 Cuentas de usuario, de equipo y grupos</h2>
+  <div class="bloque">
+    <h4>Cuentas</h4>
+    <ul>
+      <li>La <b>cuenta de usuario</b> contiene toda su información. Tipos: <b>global</b> (del dominio) y <b>local</b> (de la máquina).</li>
+      <li>Cada equipo que se une a un dominio tiene una <b>cuenta de equipo</b>, que debe ser <b>única</b>. Como las de usuario, sirve para <b>auditar y asignar permisos y restricciones</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Grupos</h4>
+    <p>Agrupación lógica de usuarios o equipos. Un usuario puede estar en varios grupos: sus permisos son <b>sus permisos explícitos más la suma de los permisos de sus grupos</b>. Se definen por el <b>ámbito</b> (scope) y el <b>tipo</b> (<b>seguridad</b> o <b>distribución</b>).</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Ámbito</th><th>Miembros</th><th>Acceso a recursos</th></tr>
+      <tr><td><b>Locales</b></td><td>De un mismo dominio</td><td>Solo en ese dominio</td></tr>
+      <tr><td><b>Globales</b></td><td>De un mismo dominio</td><td>En otros dominios del árbol, si se les otorgan permisos</td></tr>
+      <tr><td><b>Universales</b></td><td>De cualquier dominio del bosque</td><td>En cualquier dominio. Se usan ocasionalmente</td></tr>
+    </table></div>
+    <div class="warn"><b>¡OJO!</b> Las UO inciden sobre la funcionalidad; los grupos, sobre la seguridad.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec8">
+  <h2 class="cat-title">3. Servicios de directorio: X.500 y LDAP</h2>
+  <div class="bloque">
+    <h4>Servicio de directorio X.500</h4>
+    <ul>
+      <li>Sirve para generar un <b>directorio electrónico</b> y almacenar información sobre objetos (personas, equipos…).</li>
+      <li>Define un <b>espacio de nombres jerárquico</b>: BD en árbol, <b>optimizada para búsquedas, no para escrituras</b>.</li>
+      <li><b>Contenedores</b> que dan forma a la jerarquía: <code>C</code> (country), <code>st</code> (state), <code>l</code> (location), <code>O</code> (organisation), <code>OU</code> (organisational unit).</li>
+      <li><b>Nodos hoja:</b> <code>CN</code> (Common Name) y <code>UID</code> (User ID).</li>
+      <li>El nombre completo se denomina <b>DN</b> (Distinguished Name, nombre distinguido).</li>
+    </ul>
+<pre>C=ES
+ └── O=ucam
+      ├── OU=servinf ── CN=SLeon, …
+      ├── …
+      └── OU=itis ───── CN=JEgea, …, CN=MRodriguez
+
+DN = [CN=MRodriguez, OU=itis, OU=ucam, C=ES]   (de la hoja a la raíz)</pre>
+    <div class="note">La diapositiva escribe <code>OU=ucam</code> en el DN, pero en el árbol ucam aparece como <code>O=ucam</code> (organización).</div>
+  </div>
+  <div class="bloque">
+    <h4>Nodos y esquema</h4>
+    <p>Cada nodo X.500 es un <b>conjunto de múltiples atributos</b>, y el <b>esquema define los tipos de atributos</b>. Ejemplo del tema:</p>
+<pre>dn: cn=Roland Wende, ou=people, dc=zirndorf, dc=de
+objectClass: top / person / organizationalPerson / inetOrgPerson
+cn: Roland Wende   gn: Roland   sn: Wende
+mail: roland.wende@zirndorf.de   telephoneNumber: 9600-190</pre>
+    <div class="note">LDAP es el protocolo con el que se consultan directorios con este modelo X.500 (lo usan OpenLDAP y el propio Active Directory). Los nombres de AD (<code>CN=…, OU=…, DC=…</code>) siguen esta misma notación.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec9">
+  <h2 class="cat-title">4. Directivas de grupo (GPO)</h2>
+  <div class="bloque">
+    <h4>¿Qué son?</h4>
+    <ul>
+      <li><b>Group Policy Objects (GPO)</b>: una de las funcionalidades más poderosas de AD. Permiten definir <b>políticas de configuración y seguridad</b> aplicables a máquinas o al log-on de usuarios.</li>
+      <li>Integradas con AD: aplicables a <b>usuarios, grupos, equipos, UO, dominios y sitios</b>, y <b>almacenadas en el propio AD</b>.</li>
+      <li>Las GPO de <b>máquina</b> se aplican en el <b>arranque</b> y afectan a cualquier usuario que use ese dispositivo.</li>
+      <li>Las GPO de <b>usuario</b> se aplican cuando ese usuario <b>inicia sesión</b> en una máquina.</li>
+      <li>Los cambios en una GPO se propagan cada <b>90 ± 30 minutos</b>: no hay que esperar a que el usuario vuelva a iniciar sesión ni a apagar la máquina.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Estructura de una GPO</h4>
+    <p>Dos partes básicas: <b>configuración de equipo</b> (se aplica al iniciar el SO) y <b>configuración de usuario</b> (controla el logueo; se aplica al iniciar sesión). Ambas definen entornos, aplicaciones, seguridad, scripts… y se dividen en tres secciones:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Sección</th><th>Contenido</th></tr>
+      <tr><td><b>Software settings</b></td><td>Asignar o publicar software a un usuario o equipo; crea su entrada en el menú Inicio y al pulsarla empieza la instalación</td></tr>
+      <tr><td><b>Windows settings</b></td><td>Scripts de arranque/parada (máquina) o logon/logoff (usuario) y parámetros de seguridad (p. ej. contraseñas)</td></tr>
+      <tr><td><b>Administrative templates</b></td><td>Configuración de aplicaciones, apariencia del escritorio y nivel de personalización del entorno del usuario</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Herencia y conflictos</h4>
+    <p>Las GPO son <b>heredables y acumulativas</b>. Orden de aplicación: <b>Sitio &gt; Dominio &gt; UO &gt; Grupo &gt; Equipo &gt; Usuario</b>. Sin conflictos, las configuraciones se combinan; en caso de conflicto <b>predomina la más específica</b>.</p>
+<pre>GPO1 → Sitio
+GPO2 → Dominio
+GPO3 → OU1
+        ├── OU2 ← GPO5   (aquí está el EQUIPO)
+        └── OU3 ← GPO4   (aquí está el USUARIO)
+
+Arranque:          política local → máquina de GPO1, GPO2, GPO3 → GPO5
+Inicio de sesión:  usuario de GPO1, GPO2, GPO3 → GPO4
+Equipo  = GPO1 + GPO2 + GPO3 + GPO5
+Usuario = GPO1 + GPO2 + GPO3 + GPO4</pre>
+    <ul>
+      <li><b>Block inheritance</b> (en la UO hija): bloquea la propagación por herencia de las GPO superiores.</li>
+      <li><b>No override</b> (en GPO de alto nivel, definidas por administradores): impide que se sobrescriba su configuración.</li>
+    </ul>
+<pre>Block inheritance                       No override
+OU padre ← GPO1                         OU padre ← GPO1 [No override]
+OU hija  ← GPO2 [Block inheritance]     OU hija  ← GPO2
+Equipo   = GPO2                         Equipo   = GPO1 + lo de GPO2 que
+                                                   no choque con GPO1</pre>
+    <div class="key">¿Y si chocan <b>block inheritance</b> y <b>no override</b>? El tema deja la pregunta abierta; en Windows <b>prevalece no override</b> (hoy «Exigido» / <i>Enforced</i>): esa GPO se aplica aunque la UO bloquee la herencia.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec10">
+  <h2 class="cat-title">5. Microsoft PowerShell</h2>
+  <div class="bloque">
+    <h4>Qué es y su historia</h4>
+    <ul>
+      <li>PowerShell (originalmente <b>Windows PowerShell</b>) es una <b>interfaz de consola (CLI)</b> que permite escribir y unir comandos mediante instrucciones (<b>scripts</b>).</li>
+      <li>Diseñada para <b>administradores de sistemas</b>, para automatizar tareas o hacerlas de forma más controlada.</li>
+      <li>Se llamó <b>MONAD</b> en <b>2003</b>; adoptó su nombre actual al lanzarse al público el <b>25 de abril de 2006</b>.</li>
+      <li>El <b>15 de agosto de 2016</b> Microsoft publicó su código en <b>GitHub</b> y la renombró <b>PowerShell Core</b>. La <b>versión 6</b> se ofrece con licencia <b>MIT</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Rasgos</h4>
+    <ul>
+      <li>Rasgo distintivo: es un <b>intérprete de comandos orientado a objetos</b>. La entrada y la salida de cada etapa (<b>cmdlet</b>, «comándulo») son instancias de objetos, mientras que los intérpretes tradicionales solo reciben y devuelven <b>texto</b>.</li>
+      <li>Permite <b>alias</b> al estilo Unix: para mostrar directorios valen <code>dir</code>, <code>ls</code> y <code>gci</code>; cada uno puede apodar los comandos como quiera.</li>
+      <li>Con <b>una única sentencia</b> se puede monitorizar contadores, apagar o detener servicios y modificar registros del sistema.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="claves">
+  <h2 class="cat-title">Ideas clave para el examen</h2>
+  <div class="bloque">
+    <ul>
+      <li>Grupo de trabajo = igual a igual, BD local en cada equipo, ideal para pocos equipos. Sin directorio, el alta en cada servidor solo es viable con &lt; 20 equipos y &lt; 2 servidores.</li>
+      <li>Directorio = BD jerárquica y distribuida, optimizada para <b>lectura</b>. AD es el de Microsoft y se basa en <b>X.500</b>.</li>
+      <li>Dominio = frontera de seguridad, replicación y delegación; nombre DNS; vive en los CD; se dibuja como triángulo.</li>
+      <li>Árbol = espacio de nombres <b>contiguo</b>; bosque = árboles con espacios <b>independientes</b> unidos por sus raíces. Confianzas bidireccionales y transitivas. No se mueven dominios entre bosques.</li>
+      <li>UO = organizar dentro del dominio, aplicar GPO y delegar (funcionalidad); grupos = permisos (seguridad).</li>
+      <li>Diseño: árboles de un solo dominio con UO; profundidad máxima 3, óptima 1.</li>
+      <li>Nombres: completo (inequívoco), relativo (sin dominio ni UO), principal (<code>usuario@dominio</code>), SID (cambia con el dominio), GUID (nunca cambia), NetBIOS (Windows NT).</li>
+      <li>Sitio = subredes con red de alta calidad (física); el cliente se asigna por su subred IP. Cada dominio AD necesita su dominio DNS.</li>
+      <li>Partición de dominio → CD del dominio; partición de esquema → todos los CD del bosque, y solo uno puede modificarla. RODC: solo lectura, sucursales, <b>no</b> sirve para tolerancia a fallos.</li>
+      <li>GPO: máquina al arrancar, usuario al iniciar sesión, propagación 90 ± 30 min; orden Sitio &gt; Dominio &gt; UO &gt; Grupo &gt; Equipo &gt; Usuario; gana la más específica salvo block inheritance / no override.</li>
+      <li>PowerShell: CLI orientada a objetos (cmdlets), MONAD 2003, pública en 2006, Core y GitHub en 2016, v6 con licencia MIT.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="cat" id="ampliacion">
+  <h2 class="cat-title">Ampliación del tema</h2>
+  <div class="bloque">
+    <p>Documentos de ampliación del Tema 3, cada uno con su resumen y su test:</p>
+    <ul>
+      <li><a href="asis-tema-3-1-resumen.html">3.1 · Bosques y dominios de Active Directory</a> · <a href="asis-tema-3-1.html">test</a></li>
+      <li><a href="asis-tema-3-2-resumen.html">3.2 · Presentación de Active Directory</a> · <a href="asis-tema-3-2.html">test</a></li>
+      <li><a href="asis-tema-3-3-resumen.html">3.3 · Controladores de dominio</a> · <a href="asis-tema-3-3.html">test</a></li>
+      <li><a href="asis-tema-3-4-resumen.html">3.4 · Niveles funcionales</a> · <a href="asis-tema-3-4.html">test</a></li>
+      <li><a href="asis-tema-3-replicacion-resumen.html">Replicación de AD y actualización de GPO</a> · <a href="asis-tema-3-replicacion.html">test</a></li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-tema-3.html">Hacer el test</a><a class="btn" href="asis-tema-3-1-resumen.html">Siguiente: ampliación 3.1 · Bosques y dominios</a></div>
+  Basado en «Tema 3 – Gestión de Dominios y Políticas en Windows» (Administración de Sistemas, Juan Morales García).
+</footer>
+</main>
+
+</body>
+</html>

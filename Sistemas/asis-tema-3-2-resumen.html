@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen ASIS Tema 3.2 · Presentación de Active Directory</title>
+<link rel="stylesheet" href="../assets/styles.css">
+<script src="../assets/app.js"></script>
+<script src="../assets/auth.js"></script>
+</head>
+<body data-crumb="ASIS · Tema 3.2 · Resumen">
+
+<main class="wrap">
+<div class="page-head">
+  <span class="eyebrow">Administración de Sistemas · Tema 3 · Ampliación</span>
+  <h1>Resumen: Presentación de Active Directory</h1>
+  <p class="lead">AD DS y LDAP, la base de datos <code>ntds.dit</code> y la carpeta NTDS, las consolas de administración, particiones y esquema, la autenticación Kerberos y la creación de unidades organizativas.</p>
+  <div class="actions-row"><a class="btn primary" href="asis-tema-3-2.html">Hacer el test</a><a class="btn" href="asis-tema-3-resumen.html">Resumen del Tema 3</a><a class="btn" href="../index.html">Inicio</a></div>
+</div>
+
+<nav class="toc" id="toc">
+  <a href="#sec0">Servicio de directorio</a>
+  <a href="#sec1">Base de datos NTDS</a>
+  <a href="#sec2">Administración</a>
+  <a href="#sec3">Particiones y esquema</a>
+  <a href="#sec4">Kerberos y SPN</a>
+  <a href="#sec5">Unidades organizativas</a>
+</nav>
+
+<section class="cat" id="sec0">
+  <h2 class="cat-title">1. Active Directory y el servicio de directorio</h2>
+  <div class="bloque">
+    <h4>Qué es Active Directory</h4>
+    <p>Es la solución de directorio de Microsoft que permite <b>centralizar la gestión de identidades de acceso</b> de una empresa.</p>
+    <ul>
+      <li>Se presenta en forma de <b>rol del servidor</b>.</li>
+      <li>Un servidor que alberga el rol de Active Directory se llama <b>controlador de dominio</b> (DC, <i>Domain Controller</i>).</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>AD DS, LDAP y el esquema</h4>
+    <p>Los <b>servicios de dominio de Active Directory</b> (AD DS, <i>Active Directory Domain Services</i>) se basan en una arquitectura de directorio <b>LDAP</b> (<i>Lightweight Directory Access Protocol</i>).</p>
+    <ul>
+      <li>El directorio registra información sobre <b>usuarios, grupos, equipos, impresoras, contactos, carpetas compartidas</b> y muchos otros tipos de objeto.</li>
+      <li>Cada tipo de objeto tiene un conjunto de <b>atributos y propiedades</b> definidos en el <b>esquema</b> de Active Directory.</li>
+      <li>El esquema define las <b>clases de objetos y de atributos</b> que puede contener la base de datos del directorio.</li>
+    </ul>
+    <p>Las aplicaciones interrogan al directorio con el protocolo <b>LDAP</b>, basado en TCP/IP:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Puerto</th><th>Cuándo</th></tr>
+      <tr><td><b>TCP 389</b></td><td>Al consultar un controlador de dominio simple</td></tr>
+      <tr><td><b>TCP 3268</b></td><td>Al consultar un controlador de dominio que actúa como <b>catálogo global</b></td></tr>
+    </table></div>
+    <div class="key">LDAP es el protocolo de acceso al directorio: <b>389</b> para un DC normal y <b>3268</b> para el catálogo global.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec1">
+  <h2 class="cat-title">2. La base de datos: ntds.dit y la carpeta NTDS</h2>
+  <div class="bloque">
+    <h4>Dónde está la base de datos</h4>
+    <p>La base de datos de Active Directory es un archivo situado por defecto en <code>%SYSTEMROOT%\NTDS\ntds.dit</code>. Está en <b>cada controlador de dominio</b>.</p>
+    <p>La carpeta <b>NTDS</b> contiene además los registros de transacciones, archivos de log y archivos temporales que necesita Active Directory:</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Archivo</th><th>Para qué sirve</th><th>Tamaño</th></tr>
+      <tr><td><code>ntds.dit</code></td><td>La <b>base de datos</b> de Active Directory. Está en cada controlador de dominio</td><td>—</td></tr>
+      <tr><td><code>edb.chk</code></td><td><b>Punto de control</b> (checkpoint) de <code>ntds.dit</code>: registra las transacciones ejecutadas correctamente y permite saber si ya se han registrado en la base de datos</td><td>—</td></tr>
+      <tr><td><code>edb.log</code></td><td>Últimas transacciones <b>aún no registradas</b> en la base de datos. Los cambios enviados a un DC se escriben <b>primero aquí</b> y después se integran en la base de datos</td><td>10 MB fijos</td></tr>
+      <tr><td><code>edb000X.log</code></td><td>Archivo <b>auxiliar</b> que almacena las transacciones destinadas a <code>edb.log</code></td><td>10 MB fijos</td></tr>
+      <tr><td><code>edbres00001.jrs</code> y <code>edbres00002.jrs</code></td><td><b>Reservan espacio de escritura en disco</b> por si este se llena: AD sigue funcionando mientras el administrador hace el mantenimiento</td><td>10 MB fijos cada uno</td></tr>
+      <tr><td><code>edbtmp.log</code></td><td>Temporal que almacena información de las transacciones, de forma similar a <code>edb.log</code></td><td>10 MB fijos</td></tr>
+      <tr><td><code>temp.edb</code></td><td>Temporal con la información de las transacciones durante el mantenimiento que <b>compacta</b> <code>ntds.dit</code></td><td>—</td></tr>
+    </table></div>
+<pre>cambio enviado al DC ──► edb.log (primero) ──► ntds.dit (después)
+                            ▲
+            edb.chk: marca hasta dónde ya está guardado en ntds.dit</pre>
+    <div class="note">Los archivos de log y de reserva tienen un <b>tamaño fijo de 10 MB</b>. En la captura del documento la carpeta NTDS tiene además otros archivos (<code>Api*</code>) que el texto no comenta.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec2">
+  <h2 class="cat-title">3. Administrar Active Directory</h2>
+  <div class="bloque">
+    <h4>El servicio de Windows de AD DS</h4>
+    <p>Al instalar el rol <b>Servidor AD DS</b> se crea un servicio de Windows llamado <b>Servicios de dominio de Active Directory</b>, con <b>arranque automático</b>. Esto facilita el <b>mantenimiento de la base de datos</b>: basta con detener ese servicio.</p>
+    <p>Detenerlo detiene también (el sistema avisa en el cuadro «Detener otros servicios»):</p>
+    <ul>
+      <li><b>Centro de distribución de claves Kerberos</b> (KDC).</li>
+      <li><b>Mensajería entre sitios</b>.</li>
+      <li><b>Servidor DNS</b>.</li>
+      <li><b>Replicación DFS</b>.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Consolas de administración</h4>
+    <ul>
+      <li><b>Usuarios y equipos de Active Directory</b>: la instalación del rol copia este complemento (en las herramientas administrativas o en una nueva MMC). También se abre con <code>dsa.msc</code> (símbolo del sistema, búsqueda de aplicaciones o ventana Ejecutar) o desde el menú Inicio de Windows Server 2016.</li>
+      <li>Las consolas se pueden instalar en un servidor <b>sin</b> Active Directory o en un <b>puesto cliente</b> (Windows 7, 8, 8.1 o 10) instalando <b>RSAT</b> (<i>Remote Server Administration Tools</i>).</li>
+      <li><b>Administrador del servidor</b>: haciendo clic en <b>AD DS</b> desde el Panel se ven directamente los <b>registros de eventos</b> vinculados al directorio.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Centro de administración de Active Directory (ADAC)</h4>
+    <p>Consola accesible desde <b>Herramientas</b> del Administrador del servidor y desde las herramientas administrativas de Windows Server 2016. Permite, entre otras cosas:</p>
+    <ul>
+      <li>Administrar objetos <b>usuario</b> o <b>equipo</b> y <b>unidades organizativas</b>.</li>
+      <li>Elevar los <b>niveles funcionales</b> de dominio o de bosque.</li>
+      <li>Activar la <b>papelera de reciclaje de Active Directory</b>, que permite recuperar objetos eliminados por accidente desde un nuevo contenedor llamado <b>Deleted Objects</b>.</li>
+    </ul>
+    <div class="warn"><b>La papelera no tiene vuelta atrás:</b> una vez activada no se puede eliminar (desactivar), y exige que el nivel funcional de <b>todo el bosque</b> sea como mínimo <b>Windows Server 2008 R2</b>.</div>
+    <p>La ventaja de ADAC es que se basa <b>completamente en comandos PowerShell</b> del módulo de Active Directory: cada acción de la interfaz genera, de forma transparente, comandos PowerShell que se pueden consultar en la sección <b>Historial de Windows PowerShell</b>.</p>
+<pre>Crear la UO «Carpetas compartidas» dentro de la UO NEXTINFO desde ADAC genera:
+
+New-ADOrganizationalUnit -Name:"Carpetas compartidas"
+    -Path:"OU=NEXTINFO,DC=nextinfo,DC=priv"
+    -ProtectedFromAccidentalDeletion:$true -Server:"DC-01.nextinfo.priv"
+Set-ADObject -Identity:"OU=Carpetas compartidas,OU=NEXTINFO,DC=nextinfo,DC=priv"
+    -ProtectedFromAccidentalDeletion:$true -Server:"DC-01.nextinfo.priv"</pre>
+  </div>
+</section>
+
+<section class="cat" id="sec3">
+  <h2 class="cat-title">4. Particiones y esquema</h2>
+  <div class="bloque">
+    <h4>Las tres particiones lógicas</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Partición</th><th>Contiene</th><th>Alcance</th></tr>
+      <tr><td><b>Esquema</b></td><td>Todas las <b>clases de objetos y atributos</b> que se pueden crear en el directorio</td><td><b>Única en el bosque</b>; se replica en todos los controladores de dominio</td></tr>
+      <tr><td><b>Configuración</b></td><td>Información sobre los <b>dominios</b>, los <b>sitios</b>, la <b>programación de las replicaciones</b> y la <b>topología del bosque</b></td><td><b>Única en el bosque</b>; se replica en todos los controladores de dominio</td></tr>
+      <tr><td><b>Dominio</b></td><td>Todos los <b>objetos que existen en un dominio</b></td><td><b>Una por dominio</b>: cada dominio tiene la suya</td></tr>
+    </table></div>
+  </div>
+  <div class="bloque">
+    <h4>Extender y ver el esquema</h4>
+    <ul>
+      <li>El esquema es <b>extensible</b>: se puede modificar para añadir nuevos atributos o clases de objetos.</li>
+      <li>Modificarlo requiere una cuenta de administrador del grupo <b>Administradores de esquema</b>.</li>
+      <li>Para verlo se usa el complemento <b>Esquema de Active Directory</b>, que <b>no está disponible por defecto</b>: primero hay que registrar su dll y después agregarlo a una <b>nueva consola MMC</b>.</li>
+    </ul>
+<pre>C:\&gt; regsvr32 schmmgmt.dll
+→ «DllRegisterServer se realizó correctamente en schmmgmt.dll»
+→ mmc ▸ Agregar complemento ▸ Esquema de Active Directory</pre>
+  </div>
+</section>
+
+<section class="cat" id="sec4">
+  <h2 class="cat-title">5. Gestión de identidades y acceso: Kerberos</h2>
+  <div class="bloque">
+    <h4>Autenticación y permisos</h4>
+    <p>Una de las funciones principales de AD DS es gestionar la <b>autenticación</b> y los <b>permisos de acceso</b> dentro de un dominio. Para ello, el controlador de dominio emplea las <b>ACL</b> (<i>Access Control List</i>) junto a un protocolo de autenticación como <b>NTLM</b> (<i>NT Lan Manager</i>) o <b>Kerberos</b>.</p>
+    <p>Autenticar a un usuario consiste en comprobar que la combinación de <b>nombre de usuario y contraseña</b> que da al conectarse al dominio es correcta.</p>
+  </div>
+  <div class="bloque">
+    <h4>Kerberos v5</h4>
+    <ul>
+      <li>Es el protocolo de autenticación <b>predeterminado de Windows</b>; Microsoft usa por defecto la <b>versión 5</b>.</li>
+      <li>Funciona con un sistema de <b>tiques</b> (también llamados <b>tokens de acceso</b>) y un intercambio de claves secretas protegidas con <b>encriptación simétrica</b>.</li>
+      <li>Al autenticarse, el usuario puede pedir un tique de acceso <b>válido durante toda su sesión</b>; con él accede a los distintos servicios (archivos, aplicaciones, impresión…) presentándolo.</li>
+      <li>Arquitectura: un <b>cliente Kerberos</b> en los equipos cliente y un <b>servidor Kerberos</b> en un controlador de dominio, con un <b>KDC</b> (<i>Key Distribution Center</i>, centro de distribución de claves).</li>
+      <li>El KDC autentica a los usuarios con un <b>servidor de autenticación</b> que distribuye los tokens de acceso <b>TGT</b> (<i>Ticket Granting Ticket</i>) y después distribuye los tiques de servicio <b>TGS</b> (<i>Ticket Granting Service</i>) para los distintos servicios del dominio.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Acceso a un servidor de archivos, paso a paso</h4>
+    <ol>
+      <li>El usuario se autentica en el dominio; la información de conexión se registra en un controlador de dominio.</li>
+      <li>El servidor Kerberos valida la información y le devuelve un token de acceso: el <b>TGT</b>.</li>
+      <li>El servidor de autenticación emite una solicitud Kerberos presentando el <b>TGT</b> del usuario a un controlador de dominio.</li>
+      <li>El controlador de dominio responde al usuario con un <b>TGS</b>.</li>
+      <li>El usuario presenta el <b>TGS</b> al servidor de archivos, que valida su acceso.</li>
+      <li>El usuario ya puede abrir los recursos del servidor de archivos.</li>
+    </ol>
+<pre>CLIENTE ──1──► DC/KDC        (autenticación)
+CLIENTE ◄─2─── DC/KDC        TGT
+           3   DC ⇄ KDC      se presenta el TGT
+CLIENTE ◄─4─── DC/KDC        TGS
+CLIENTE ──5──► ARCHIVOS      presenta el TGS
+CLIENTE ◄─6──► ARCHIVOS      acceso a los recursos</pre>
+    <div class="key">Primero el <b>TGT</b> (demuestra quién eres ante el dominio); con él se consigue el <b>TGS</b> (tique para un servicio concreto), que es lo que se presenta al servidor.</div>
+  </div>
+  <div class="bloque">
+    <h4>SPN (Service Principal Name)</h4>
+    <ul>
+      <li>Para usar la autenticación Kerberos hay que crear un <b>nombre principal de servicio</b> (SPN).</li>
+      <li>Se compone de una <b>clase de servicio</b>, un <b>nombre de host</b> y un <b>puerto</b>, y debe registrarse en una cuenta de usuario o en una cuenta de equipo predefinida (<b>NetworkService</b> o <b>LocalSystem</b>).</li>
+      <li>Con una <b>cuenta integrada</b>, el SPN se registra <b>automáticamente</b>; si el servicio se ejecuta con una <b>cuenta de usuario de dominio</b>, hay que registrarlo <b>manualmente</b>:</li>
+    </ul>
+<pre>setspn -s http/&lt;NombreDeServidor&gt;.&lt;NombreDeDominio&gt;:&lt;puerto&gt; &lt;CuentaDeUsuarioDeDominio&gt;</pre>
+    <div class="note">Errata del documento: escribe <code>http:/</code> (con dos puntos tras <code>http</code>) y deja un espacio antes de <code>:&lt;puerto&gt;</code>. El formato del SPN es <code>clase/host:puerto</code>, sin espacios.</div>
+  </div>
+</section>
+
+<section class="cat" id="sec5">
+  <h2 class="cat-title">6. Unidades organizativas</h2>
+  <div class="bloque">
+    <h4>Qué son y con qué se administran</h4>
+    <p>Los objetos de un dominio se almacenan en un contenedor llamado <b>unidad organizativa</b> (UO, en inglés OU, <i>Organizational Unit</i>), que organiza el conjunto de objetos mediante un <b>árbol de carpetas</b>.</p>
+    <p>Las UO se administran con:</p>
+    <ul>
+      <li>El complemento <b>Usuarios y equipos de Active Directory</b>.</li>
+      <li>La consola <b>Centro de administración de Active Directory</b>.</li>
+      <li>La <b>línea de comandos</b>: el módulo Active Directory para Windows PowerShell o los <b>comandos DS</b> tradicionales de DOS.</li>
+    </ul>
+  </div>
+  <div class="bloque">
+    <h4>Cuatro formas de crear una UO</h4>
+    <div class="tbl-wrap"><table class="tbl">
+      <tr><th>Herramienta</th><th>Procedimiento</th></tr>
+      <tr><td><b>Usuarios y equipos de AD</b></td><td>Abrir la consola (herramientas de administración o <code>dsa.msc</code>) ▸ clic derecho sobre el dominio o una UO existente ▸ <b>Nuevo ▸ Unidad organizativa</b> ▸ escribir el nombre ▸ Aceptar</td></tr>
+      <tr><td><b>Centro de administración de AD</b></td><td>Abrirlo desde las herramientas administrativas ▸ en <b>Información general</b>, seleccionar el dominio ▸ elegir la ubicación (dominio o UO) ▸ en la sección <b>Tareas</b>, <b>Nuevo ▸ Unidad organizativa</b> ▸ nombre ▸ Aceptar</td></tr>
+      <tr><td><b>Comandos DOS</b> (en un DC)</td><td><code>dsadd ou &lt;DN de la unidad organizativa&gt;</code></td></tr>
+      <tr><td><b>PowerShell</b> (en un DC)</td><td>Administrador del servidor ▸ Herramientas ▸ <b>Módulo de Active Directory para Windows PowerShell</b> ▸ <code>New-ADOrganizationalUnit</code></td></tr>
+    </table></div>
+    <div class="key">La opción <b>Proteger contenedor contra eliminación accidental</b> viene <b>marcada por defecto</b> al crear una UO: la protege frente a operaciones nocivas o peligrosas.</div>
+<pre>C:\&gt; dsadd ou OU=Grupos,OU=NEXTINFO,DC=NEXTINFO,DC=priv
+dsadd correcto:OU=Grupos,OU=NEXTINFO,DC=NEXTINFO,DC=priv
+
+PS C:\&gt; New-ADOrganizationalUnit -Name Servidores -Path "OU=NEXTINFO,DC=Nextinfo,DC=priv"
+           -ProtectedFromAccidentalDeletion:$true</pre>
+    <ul>
+      <li>El <b>DN</b> (nombre distinguido) se escribe desde el objeto hacia la raíz: primero la UO nueva (<code>OU=Grupos</code>), luego su UO padre (<code>OU=NEXTINFO</code>) y al final el dominio (<code>DC=…,DC=priv</code>).</li>
+      <li>En <code>New-ADOrganizationalUnit</code>, <code>-Name</code> es el nombre de la UO y <code>-Path</code> el contenedor en el que se crea.</li>
+    </ul>
+    <div class="note">Errata del documento: el segundo procedimiento gráfico empieza diciendo «consola Usuarios y equipos de Active Directory», pero los pasos que describe son los del <b>Centro de administración de Active Directory</b>.</div>
+  </div>
+  <div class="bloque">
+    <h4>Ideas clave para el examen</h4>
+    <ul>
+      <li>Servidor con el rol AD DS = <b>controlador de dominio</b>. AD DS se basa en <b>LDAP</b>: puerto <b>389</b> (DC) y <b>3268</b> (catálogo global).</li>
+      <li>Base de datos: <code>%SYSTEMROOT%\NTDS\ntds.dit</code>, en cada DC. Los cambios van primero a <code>edb.log</code>; <code>edb.chk</code> es el punto de control; los <code>.jrs</code> reservan espacio; <code>temp.edb</code> se usa al compactar.</li>
+      <li>Detener AD DS detiene <b>KDC, Mensajería entre sitios, DNS y Replicación DFS</b>.</li>
+      <li><code>dsa.msc</code> = Usuarios y equipos; <b>RSAT</b> para tenerla en un cliente; <b>ADAC</b> = PowerShell por debajo + papelera irreversible (bosque ≥ WS 2008 R2, contenedor <b>Deleted Objects</b>).</li>
+      <li>Particiones: <b>esquema</b> y <b>configuración</b> únicas en el bosque; <b>dominio</b>, una por dominio. Esquema: <b>Administradores de esquema</b> y <code>regsvr32 schmmgmt.dll</code>.</li>
+      <li>Kerberos v5 por defecto: <b>TGT</b> → <b>TGS</b> → servicio. SPN = clase de servicio + host + puerto; manual con <code>setspn -s</code> si el servicio usa una cuenta de usuario de dominio.</li>
+      <li>UO: cuatro vías (Usuarios y equipos, ADAC, <code>dsadd ou</code>, <code>New-ADOrganizationalUnit</code>) y protección contra eliminación accidental marcada por defecto.</li>
+    </ul>
+  </div>
+</section>
+
+<footer class="page-foot">
+  <div class="next"><a class="btn primary" href="asis-tema-3-2.html">Hacer el test</a><a class="btn" href="asis-tema-3-3-resumen.html">Siguiente: 3.3 · Controladores de dominio</a></div>
+  Basado en «Presentación de Active Directory» (Administración de Sistemas, ampliación del Tema 3; Ediciones ENI).
+</footer>
+</main>
+
+</body>
+</html>
