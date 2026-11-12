@@ -79,7 +79,7 @@ const { chromium } = require('playwright');
 
   await p.goto(url+'#etapa-3');
   await p.locator('#p54').evaluate(card => {
-   const answers = window.GUIA.qs[53].a.slice(); [answers[5], answers[6]] = [answers[6], answers[5]];
+   const answers = window.GUIA.qs[53].a.slice().reverse();
    card.querySelectorAll('.slot').forEach((sel,k) => { sel.value=answers[k]; sel.dispatchEvent(new Event('change',{bubbles:true})); });
    card.querySelector('[data-check]').click();
   });
@@ -90,12 +90,14 @@ const { chromium } = require('playwright');
   await p.evaluate(() => localStorage.clear());
   await p.reload();
   await p.locator('#p54').evaluate(card => {
-   const answers = window.GUIA.qs[53].a.slice(); answers[5] = 'B';
+   const answers = window.GUIA.qs[53].a.slice().reverse(); answers[5] = 'B';
    card.querySelectorAll('.slot').forEach((sel,k) => { sel.value=answers[k]; sel.dispatchEvent(new Event('change',{bubbles:true})); });
    card.querySelector('[data-check]').click();
   });
   assert.match(await p.locator('#p54 .explain .head').innerText(), /6 de 7/);
-  assert.match(await p.locator('#p54 [data-drop="5"]').getAttribute('aria-label'), /C o A/);
+  assert.match(await p.locator('#p54 [data-drop="5"]').getAttribute('aria-label'), /incorrecta$/);
+  assert.equal(await p.locator('#p54 .slot.s-ok').count(), 6);
+  assert.equal(await p.locator('#p54 .g-fix').count(), 0);
   await p.evaluate(() => localStorage.clear());
   await p.reload();
 
