@@ -395,12 +395,17 @@
     }
     if (q.t !== "test" && q.t !== "calc") {
       h += '<div class="toolbar g-actions"><button type="button" class="btn small primary" data-check="' + n + '" disabled>Comprobar</button>' +
-        '<button type="button" class="btn small" data-reveal="' + n + '">Ver solución</button></div>';
+        '<button type="button" class="btn small" data-reveal="' + n + '">Ver solución</button>' + redoHtml(n) + "</div>";
     } else {
-      h += '<div class="toolbar g-actions"><button type="button" class="btn small" data-reveal="' + n + '">Ver solución</button></div>';
+      h += '<div class="toolbar g-actions"><button type="button" class="btn small" data-reveal="' + n + '">Ver solución</button>' + redoHtml(n) + "</div>";
     }
     h += '<div class="explain" hidden></div></article>';
     return h;
+  }
+
+  /* Botón para volver a responder una sola pregunta (visible cuando ya está respondida) */
+  function redoHtml(n) {
+    return '<button type="button" class="btn small g-redo" data-redo="' + n + '" hidden>↺ Reiniciar pregunta</button>';
   }
 
   function solutionHtml(n, r) {
@@ -422,7 +427,8 @@
     if (!card) return;
     var q = Q(n), r = rec(n);
     card.classList.remove("correct", "wrong");
-    var check = card.querySelector("[data-check]"), reveal = card.querySelector("[data-reveal]");
+    var check = card.querySelector("[data-check]"), reveal = card.querySelector("[data-reveal]"), redo = card.querySelector("[data-redo]");
+    if (redo) redo.hidden = !r;
     if (!r) {
       card.querySelector(".verdict").textContent = "";
       card.querySelector(".explain").hidden = true;
@@ -480,6 +486,7 @@
 
   /* ---------- Vistas ---------- */
   var view = null;
+  var keepVisible = null; /* pregunta recién reiniciada: se mantiene visible aunque el filtro activo la ocultaría */
 
   function etapaView(e) {
     var m = parseMeta(e.meta), a = att(e.n);
@@ -599,6 +606,7 @@
 
   function route() {
     var hsh = location.hash.replace(/^#/, ""), m;
+    keepVisible = null;
     var target = null;
     if ((m = hsh.match(/^etapa-(\d+)$/))) view = +m[1];
     else if ((m = hsh.match(/^p(\d+)$/)) && etapaOf[+m[1]]) { view = etapaOf[+m[1]]; target = hsh; }
@@ -670,7 +678,7 @@
     root.querySelectorAll("[data-f]").forEach(function (b) { b.setAttribute("aria-pressed", b.getAttribute("data-f") === f ? "true" : "false"); });
     root.querySelectorAll(".g-q").forEach(function (card) {
       var n = +card.getAttribute("data-n"), r = rec(n);
-      var show = f === "all" || (f === "pending" && !r) || (f === "wrong" && r && !r.ok) || (f === "doubt" && st.doubt[n]);
+      var show = f === "all" || (f === "pending" && !r) || (f === "wrong" && r && !r.ok) || (f === "doubt" && st.doubt[n]) || n === keepVisible;
       card.hidden = !show;
       if (show) visible++;
     });
@@ -721,8 +729,24 @@
         save();
       });
     });
+    root.querySelectorAll("[data-redo]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var n = +b.getAttribute("data-redo"), card = document.getElementById("p" + n);
+        var top = card.getBoundingClientRect().top;
+        /* Igual que «Repetir las falladas»: st.f conserva el primer acierto para la autoevaluación */
+        delete st.r[att(e.n)][n];
+        keepVisible = n;
+        save(); render();
+        var again = document.getElementById("p" + n);
+        if (again) {
+          window.scrollBy(0, again.getBoundingClientRect().top - top);
+          var first = again.querySelector(".opt input, .slot, .g-drag-choice");
+          if (first) first.focus({ preventScroll: true });
+        }
+      });
+    });
     root.querySelectorAll("[data-f]").forEach(function (b) {
-      b.addEventListener("click", function () { st.filter = b.getAttribute("data-f"); save(); applyFilter(); });
+      b.addEventListener("click", function () { st.filter = b.getAttribute("data-f"); keepVisible = null; save(); applyFilter(); });
     });
     if (C.shuffle) document.getElementById("bShuffle").addEventListener("click", function () {
       st.order = st.order || {};

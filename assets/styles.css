@@ -506,4 +506,4 @@ details.g-box.idea summary { cursor: pointer; }
   .g-outcome-party { display: none; }
 }
 @media print { .g-pokemon-effect { display: none !important; } }
-@media print { .g-nav, .g-actions, .g-doubt, .g-pager { display: none !important; } }
+@media print { .g-nav, .g-actions, .g-doubt, .g-pager, .g-redo { display: none !important; } }
