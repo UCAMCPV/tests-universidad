@@ -89,11 +89,17 @@ details.card summary{cursor:pointer;font-weight:700;color:var(--brand)}
 .modal.on{display:flex}
 .modal>div{background:var(--card);border-radius:12px;padding:16px;max-width:380px}
 .foot{margin-top:24px;text-align:center}
+.htop{display:flex;align-items:center;gap:10px}
+.htop h1{flex:1}
+#hintBtn{flex:0 0 auto;font-weight:600}
+body.nohint .tag,body.nohint .meta-x,body.nohint .pista{display:none}
+body.nohint .card.exc{border-left:1px solid var(--line)}
+body.nohint .pn{color:var(--ink)}
 </style>
 </head>
 <body>
 <header><div class="hwrap">
-  <h1><a href="../index.html" style="color:inherit;text-decoration:none">←</a> Calidad de Software · Temas 1–4 <a href="cs-guia-t1-4.html" style="font-size:12px;font-weight:600;color:var(--brand2);margin-left:6px">Guía original</a></h1>
+  <div class="htop"><h1><a href="../index.html" style="color:inherit;text-decoration:none">←</a> Calidad de Software · Temas 1–4 <a href="cs-guia-t1-4.html" style="font-size:12px;font-weight:600;color:var(--brand2);margin-left:6px">Guía original</a></h1><button class="chip" id="hintBtn" type="button">🙈 Ocultar pistas</button></div>
   <div class="sub" id="global"></div>
   <nav id="nav"></nav>
 </div></header>
@@ -127,7 +133,7 @@ var calcOrder = function(){
   return pri.concat(rest);
 };
 var PH = [
-  {id:"fase-1", name:"Fase 1", sub:"Test", intro:"<h2>Fase 1 · Test (30 min)</h2><p>Regla: marca la opción más larga; en el banco acierta en 73 de 90. Primero domina las <b>17 excepciones</b> (marcadas en naranja) y, si te sobra tiempo, repasa el resto.</p><p>Las opciones se barajan: aprende el contenido, no la letra.</p>",
+  {id:"fase-1", name:"Fase 1", sub:"Test", intro:"<h2>Fase 1 · Test (30 min)</h2><p>Regla: marca la opción más larga; en el banco acierta en 73 de 90. Primero domina las <b>17 excepciones</b> (marcadas en naranja) y, si te sobra tiempo, repasa el resto.</p><p>Con <b>Ocultar pistas</b> se quitan las marcas, la sección y la diapositiva, y los 90 test salen mezclados, como en el examen.</p><p>Las opciones se barajan: aprende el contenido, no la letra.</p>",
    secs:[{t:"Excepciones: la correcta no es la más larga (o empata)", ns:D.exc},
          {t:"Resto de preguntas de test", ns:byType("test").map(function(q){return q.n;}).filter(function(n){return D.exc.indexOf(n)<0;})}]},
   {id:"fase-2", name:"Fase 2", sub:"Huecos y relacionar", read:true, intro:"<h2>Fase 2 · Huecos y relacionar (2 h)</h2><p>Lo que más pesa (3,5 puntos). No las resuelvas despacio: rellena rápido, pulsa <b>Comprobar</b> y lee el texto ya completo. Con <b>Modo lectura</b> ves directamente la solución.</p>",
@@ -193,7 +199,7 @@ function render(){
   if (!p.review) ["todas","pendientes","falladas","dudosas"].forEach(function(f){ h += '<button class="chip' + (filt===f?" on":"") + '" data-f="' + f + '">' + f[0].toUpperCase()+f.slice(1) + '</button>'; });
   if (p.read || p.review) h += '<label class="toggle"><input type="checkbox" id="rm"' + (readMode?" checked":"") + '> Modo lectura</label>';
   h += '</div>';
-  var secs = p.review ? groupReview(ns) : p.secs;
+  var secs = p.review ? groupReview(ns) : (p.id==="fase-1" && S.nohint ? [{t:"Test en orden aleatorio", ns:mixedTests()}] : p.secs);
   var any = false;
   secs.forEach(function(s){
     var list = s.ns.filter(pass);
@@ -206,6 +212,17 @@ function render(){
   h += '<div class="foot"><button class="btn sec" id="reset">Borrar todo el progreso</button></div>';
   main.innerHTML = h;
   var fd = document.getElementById("fd"); if (fd) fd.addEventListener("toggle", function(){ formOpen = fd.open; });
+}
+var mixed = null;
+function mixedTests(){
+  if (!mixed) { mixed = byType("test").map(function(q){return q.n;}); for (var i=mixed.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=mixed[i]; mixed[i]=mixed[j]; mixed[j]=t; } }
+  return mixed;
+}
+function applyHint(){
+  document.body.classList.toggle("nohint", !!S.nohint);
+  var b = document.getElementById("hintBtn");
+  b.textContent = S.nohint ? "👀 Mostrar pistas" : "🙈 Ocultar pistas";
+  b.classList.toggle("on", !!S.nohint);
 }
 function groupReview(ns){
   var order = ["test","huecos","rel","calc","ord","diag"];
@@ -221,7 +238,7 @@ function pass(n){
 
 function header(q){
   var r = S.res[q.n], m = q.m;
-  var h = '<div class="qh"><span class="pn d' + q.d + '">P' + q.n + '</span><span class="meta">' + TIPO[q.t] + ' · Etapa ' + q.e + ' · ' + esc(m.join(" · ")) + ' · ' + DIF[q.d] + '</span>';
+  var h = '<div class="qh"><span class="pn d' + q.d + '">P' + q.n + '</span><span class="meta">' + TIPO[q.t] + '<span class="meta-x"> · Etapa ' + q.e + ' · ' + esc(m.join(" · ")) + ' · ' + DIF[q.d] + '</span></span>';
   if (D.exc.indexOf(q.n) >= 0) h += '<span class="tag">' + (D.tie.indexOf(q.n)>=0 ? "empate de longitud" : "no es la más larga") + '</span>';
   if (r) h += '<span class="st ' + (r.s===r.m?"ok":"ko") + '">' + (r.m>1 ? r.s + "/" + r.m : (r.s ? "acertada" : "fallada")) + '</span>';
   h += '<button class="dud' + (S.dud[q.n]?" on":"") + '" data-dud="' + q.n + '" title="Marcar como dudosa">?</button></div>';
@@ -232,7 +249,8 @@ function why(q, extra){
   (q.w||[]).forEach(function(w,i){ h += '<p>' + (i===0 && !extra ? '<span class="lbl">Por qué: </span>' : '') + rich(w) + '</p>'; });
   return h + '</div>';
 }
-function stem(q){ return '<div class="stem">' + q.s.map(rich).join("<br>") + '</div>'; }
+function hintWrap(h){ return h.replace(/(Pista:[^<]*)/g, '<span class="pista">$1</span>'); }
+function stem(q){ return '<div class="stem">' + hintWrap(q.s.map(rich).join("<br>")) + '</div>'; }
 
 var live = {}; // estado de la UI de cada pregunta en esta sesión
 
@@ -279,7 +297,7 @@ function actions(q, L){
 }
 
 function huecos(q, L, show){
-  var txt = q.s.map(rich).join("<br>");
+  var txt = hintWrap(q.s.map(rich).join("<br>"));
   if (show && !L.done) {
     txt = txt.replace(/\{\{(\d+)\}\}/g, function(_, d){ return '<span class="fix">' + rich(word(q, q.a[d-1])) + '</span>'; });
     return '<div class="stem">' + txt + '</div>' + why(q, '<span class="lbl">Sobran / por qué: </span>');
@@ -334,7 +352,7 @@ function img(n, sol){ var s = String(n); while (s.length<3) s = "0"+s; return "g
 function diag(q, L, show){
   var h = stem(q);
   if (show && !L.done) return h + '<figure><img src="' + img(q.n,true) + '" alt="P' + q.n + ' resuelta" loading="lazy"><figcaption>P' + q.n + ' resuelta</figcaption></figure>' + why(q);
-  h += '<figure><img src="' + img(q.n,false) + '" alt="Diagrama de P' + q.n + '" loading="lazy"></figure>' + (q.unordered ? '<p class="sub">Las casillas admiten cualquier orden.</p>' : '') + '<div class="rows">';
+  h += '<figure><img src="' + img(q.n,false) + '" alt="Diagrama de P' + q.n + '" loading="lazy"></figure>' + (q.unordered ? '<p class="sub pista">Las casillas admiten cualquier orden.</p>' : '') + '<div class="rows">';
   for (var i=0;i<q.k;i++){
     h += '<div class="row"><div>Casilla ' + (i+1) + '</div>' + wordSelect(q, i, L) + (L.done && !L.chk[i] && !q.unordered ? '<div class="sol">→ ' + rich(word(q,q.a[i])) + '</div>' : '') + '</div>';
   }
@@ -351,12 +369,13 @@ function rerender(n){
 }
 
 document.addEventListener("click", function(ev){
-  var t = ev.target.closest("[data-o],[data-check],[data-show],[data-redo],[data-dud],[data-f],#reset,#mYes,#mNo");
+  var t = ev.target.closest("[data-o],[data-check],[data-show],[data-redo],[data-dud],[data-f],#reset,#mYes,#mNo,#hintBtn");
   if (!t) return;
+  if (t.id === "hintBtn") { S.nohint = !S.nohint; save(); applyHint(); if (cur === "fase-1") render(); return; }
   if (t.dataset.f) { filt = t.dataset.f; render(); return; }
   if (t.id === "reset") { document.getElementById("modal").classList.add("on"); return; }
   if (t.id === "mNo") { document.getElementById("modal").classList.remove("on"); return; }
-  if (t.id === "mYes") { S = {res:{}, dud:{}}; live = {}; save(); document.getElementById("modal").classList.remove("on"); render(); return; }
+  if (t.id === "mYes") { S = {res:{}, dud:{}, nohint:S.nohint}; live = {}; save(); document.getElementById("modal").classList.remove("on"); render(); return; }
   if (t.dataset.dud) { var d = +t.dataset.dud; if (S.dud[d]) delete S.dud[d]; else S.dud[d] = 1; save(); t.classList.toggle("on"); renderNav(); return; }
   if (t.dataset.o !== undefined) {
     var n = +t.dataset.q, q = QM[n], pick = +t.dataset.o;
@@ -391,6 +410,7 @@ function route(){
   cur = next; render(); window.scrollTo(0,0);
 }
 window.addEventListener("hashchange", route);
+applyHint();
 route();
 })();
 </script>
