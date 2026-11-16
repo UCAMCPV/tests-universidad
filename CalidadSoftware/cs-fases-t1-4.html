@@ -180,6 +180,7 @@ function render() {
   });
   if (!any) h += '<p class="empty-msg">' + (p.review ? "No tienes fallos ni dudosas todavía. ¡Bien!" : "No hay preguntas con este filtro.") + "</p>";
   v.innerHTML = h;
+  syncAll();
   var fd = document.getElementById("fd"); if (fd) fd.addEventListener("toggle", function () { formOpen = fd.open; });
 }
 function pass(n) {
@@ -242,10 +243,11 @@ function choice(q, L) {
 }
 
 function word(q, l) { var f = q.b.filter(function (x) { return x.l === l; })[0]; return f ? f.w : l; }
+function choiceHtml(text) { return '<span class="g-choice-text">' + text + '</span><span class="g-choice-status" hidden> · En uso</span>'; }
 function bankHtml(q) {
   var b = q.b.slice().sort(function (x, y) { return plain(x.w).localeCompare(plain(y.w), "es"); });
   return '<div class="g-bank"><div class="g-bank-h">BANCO DE PALABRAS · sobran ' + (q.b.length - q.k) + '</div><div class="g-chips">' +
-    b.map(function (x) { return '<span class="g-chip">' + rich(x.w) + "</span>"; }).join("") + "</div></div>";
+    b.map(function (x) { return '<span class="g-chip" data-choice="' + x.l + '">' + choiceHtml(rich(x.w)) + "</span>"; }).join("") + "</div></div>";
 }
 function wordSlot(q, i, L) {
   var v = (L.v || [])[i] || "", cls = "slot" + (L.done ? (L.chk[i] ? " s-ok" : " s-ko") : "");
@@ -257,7 +259,7 @@ function wordSlot(q, i, L) {
 function letterSlot(q, i, L, letters) {
   var v = (L.v || [])[i] || "", cls = "slot" + (L.done ? (L.chk[i] ? " s-ok" : " s-ko") : "");
   return '<select class="' + cls + '" data-q="' + q.n + '" data-i="' + i + '"' + (L.done ? " disabled" : "") + '><option value="">—</option>' +
-    letters.map(function (l) { return "<option" + (v === l ? " selected" : "") + ">" + l + "</option>"; }).join("") + "</select>";
+    letters.map(function (l) { return '<option value="' + l + '"' + (v === l ? " selected" : "") + ">" + l + "</option>"; }).join("") + "</select>";
 }
 
 function huecos(q, L, show) {
@@ -291,7 +293,7 @@ function rel(q, L, show) {
       (L.done && !L.chk[i] ? '<span class="g-fix">→ ' + q.a[i] + "</span>" : "") + "</div>";
   });
   h += '</div><div class="g-rel-col"><div class="g-col-h">Definiciones · sobran ' + (q.df.length - q.k) + '</div><ul class="g-defs">' +
-    q.df.map(function (x) { return "<li><b>" + x.l + "</b> " + rich(x.h) + "</li>"; }).join("") + "</ul></div></div>" + actions(q, L);
+    q.df.map(function (x) { return '<li data-choice="' + x.l + '">' + choiceHtml("<b>" + x.l + ".</b> " + rich(x.h)) + "</li>"; }).join("") + "</ul></div></div>" + actions(q, L);
   return L.done ? h + explain(q) : h;
 }
 
@@ -301,7 +303,7 @@ function ord(q, L, show) {
   var h = stemHtml(q);
   if (show && !L.done) return h + seq(q) + explain(q);
   var letters = q.it.map(function (x) { return x.l; });
-  h += '<ul class="g-defs g-items">' + q.it.map(function (x) { return "<li><b>" + x.l + "</b> " + rich(x.h) + "</li>"; }).join("") + '</ul><div class="g-grid">';
+  h += '<ul class="g-defs g-items">' + q.it.map(function (x) { return '<li data-choice="' + x.l + '">' + choiceHtml("<b>" + x.l + ".</b> " + rich(x.h)) + "</li>"; }).join("") + '</ul><div class="g-grid">';
   for (var i = 0; i < q.k; i++) h += '<label class="g-cell">Posición ' + (i + 1) + letterSlot(q, i, L, letters) + "</label>";
   h += "</div>" + actions(q, L);
   return L.done ? h + seq(q) + explain(q) : h;
@@ -336,11 +338,47 @@ function outcome(n, ok) {
 }
 document.addEventListener("visibilitychange", function () { if (document.hidden) document.querySelectorAll(".g-pokemon-effect").forEach(function (el) { el.remove(); }); });
 
+/* ---------- Opciones en uso (como en las guías) ---------- */
+function syncChoices(cardEl, selected) {
+  if (!cardEl) return;
+  var slots = Array.from(cardEl.querySelectorAll("select.slot"));
+  if (!slots.length) return;
+  var used = slots.map(function (sel) { return sel.value; }).filter(Boolean);
+  slots.forEach(function (sel) {
+    Array.from(sel.options).forEach(function (opt) {
+      var taken = !!opt.value && opt.value !== sel.value && used.indexOf(opt.value) !== -1;
+      opt.disabled = taken; opt.hidden = taken;
+    });
+  });
+  cardEl.querySelectorAll("[data-choice]").forEach(function (choice) {
+    var letter = choice.getAttribute("data-choice"), taken = used.indexOf(letter) !== -1;
+    choice.classList.toggle("g-used", taken);
+    var stEl = choice.querySelector(".g-choice-status"); if (stEl) stEl.hidden = !taken;
+    if (selected && selected.value === letter) {
+      document.querySelectorAll(".g-pokemon-effect").forEach(function (el) { el.remove(); });
+      var fx = document.createElement("span");
+      fx.className = "g-pokemon-effect g-crossout";
+      fx.setAttribute("aria-hidden", "true");
+      fx.innerHTML = poke("pikachu");
+      var bounds = choice.getBoundingClientRect();
+      if (bounds.bottom < 160 || bounds.top > window.innerHeight) {
+        var field = selected.getBoundingClientRect(), box = cardEl.getBoundingClientRect();
+        fx.style.inset = "auto";
+        fx.style.top = (field.top - box.top) + "px"; fx.style.left = (field.left - box.left) + "px";
+        fx.style.width = field.width + "px"; fx.style.height = field.height + "px";
+        cardEl.appendChild(fx);
+      } else choice.appendChild(fx);
+      setTimeout(function () { fx.remove(); }, 850);
+    }
+  });
+}
+function syncAll() { document.querySelectorAll(".g-q").forEach(function (el) { syncChoices(el); }); }
+
 /* ---------- Eventos ---------- */
 function record(n, s, m) { S.res[n] = { s: s, m: m }; save(); }
 function rerender(n) {
   var el = document.getElementById("q" + n);
-  if (el) el.outerHTML = card(QM[n]);
+  if (el) { el.outerHTML = card(QM[n]); syncChoices(document.getElementById("q" + n)); }
   renderNav();
   var p = PH.filter(function (x) { return x.id === cur; })[0], b = document.querySelector(".f-bar");
   if (p && b && !p.review) b.outerHTML = bar(phaseNs(p));
@@ -380,7 +418,7 @@ document.addEventListener("click", function (ev) {
 });
 document.addEventListener("change", function (ev) {
   var t = ev.target;
-  if (t.tagName === "SELECT" && t.dataset.q) { var n = +t.dataset.q; live[n] = live[n] || {}; live[n].v = live[n].v || []; live[n].v[+t.dataset.i] = t.value; }
+  if (t.tagName === "SELECT" && t.dataset.q) { var n = +t.dataset.q; live[n] = live[n] || {}; live[n].v = live[n].v || []; live[n].v[+t.dataset.i] = t.value; syncChoices(t.closest(".g-q"), t.value ? t : null); }
 });
 function route() {
   var h = (location.hash || "").replace("#", "");
